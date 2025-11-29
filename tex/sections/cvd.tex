@@ -1,0 +1,86 @@
+\section{Cosma Vector Database (CVD)}
+
+The CVD represents our core technological differentiation: a proprietary vector search implementation built on PostgreSQL that eliminates the unpredictability of approximate nearest neighbor (ANN) algorithms.
+
+\subsection{Technical Architecture}
+
+Unlike competitors using HNSW or IVF-based approaches, CVD employs a deterministic search algorithm optimized for CPU execution. This provides:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Predictable Latency}: Deterministic query execution (no probabilistic search)
+    \item \textbf{Lower Infrastructure Costs}: CPU-optimized, no GPU required for queries
+    \item \textbf{Enterprise Compatibility}: Built on PostgreSQL, integrates with existing tools
+    \item \textbf{Secure Deployment}: Sealed Docker containers, no source exposure
+\end{itemize}
+
+\subsection{CVD Architecture Diagram}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm, 
+    scale=0.9, 
+    every node/.style={font=\small},
+    % Define styles locally
+    client/.style={rectangle, rounded corners=3pt, minimum width=2.2cm, minimum height=0.8cm, align=center, draw=cosmaPurple!80, top color=cosmaPurple!5, bottom color=cosmaPurple!20, drop shadow},
+    process/.style={rectangle, rounded corners=3pt, minimum width=2.8cm, minimum height=1.0cm, align=center, draw=cosmaGray!80, top color=cosmaGray!5, bottom color=cosmaGray!20, drop shadow},
+    component/.style={rectangle, rounded corners=3pt, minimum width=3.5cm, minimum height=1.2cm, align=center, draw=cosmaBlue!80, top color=cosmaBlue!5, bottom color=cosmaBlue!20, drop shadow},
+    api/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.0cm, align=center, draw=cosmaOrange!80, top color=cosmaOrange!5, bottom color=cosmaOrange!20, drop shadow},
+    storage/.style={cylinder, shape border rotate=90, aspect=0.25, minimum width=2.5cm, minimum height=1.5cm, align=center, draw=cosmaGreen!80, top color=cosmaGreen!5, bottom color=cosmaGreen!20, drop shadow},
+    container/.style={draw=cosmaGray!50, dashed, rounded corners, fill=cosmaGray!5, inner sep=0.4cm, label={[anchor=south west, font=\itshape\scriptsize, text=cosmaGray]north west:Processing Pipeline}},
+    arrow/.style={thick, ->, >=stealth, color=black!70}
+]
+
+% Query Input
+\node (query) [api] {Query Vector \\ $\mathbf{q} \in \mathbb{R}^d$};
+
+% CVD Processing Pipeline
+\node (normalize) [process, below=1.0cm of query] {Normalization \\ $\mathbf{q}' = \mathbf{q}/\|\mathbf{q}\|$};
+\node (traverse) [process, below=0.8cm of normalize] {Proprietary \\ Traversal};
+\node (candidates) [process, below=0.8cm of traverse] {Candidate \\ Selection};
+\node (distance) [process, below=0.8cm of candidates] {Distance \\ Computation};
+\node (rank) [process, below=0.8cm of distance] {Cosma \\ Scoring};
+
+% Container for Pipeline
+\begin{scope}[on background layer]
+    \node (pipeline) [container, fit=(normalize)(traverse)(candidates)(distance)(rank)] {};
+\end{scope}
+
+% Storage
+\node (index) [storage, right=2.5cm of traverse] {Vector Index \\ PostgreSQL};
+
+% Output
+\node (results) [api, below=1.0cm of rank] {Top-K Results};
+
+% Connections
+\draw [arrow] (query) -- (normalize);
+\draw [arrow] (normalize) -- (traverse);
+\draw [arrow] (traverse) -- (candidates);
+\draw [arrow] (candidates) -- (distance);
+\draw [arrow] (distance) -- (rank);
+\draw [arrow] (rank) -- (results);
+
+% Index Interactions
+\draw [arrow, dashed, bend left=15] (traverse.east) to node[midway, above, font=\tiny, text=cosmaGray] {Index Lookup} (index.west);
+\draw [arrow, dashed, bend right=15] (index.west) to node[midway, below, font=\tiny, text=cosmaGray] {Data Retrieval} (candidates.east);
+
+% Annotations
+\node[right=0.5cm of normalize, text width=3.5cm, font=\scriptsize, color=gray] {Vector preprocessing for search optimization};
+\node[right=0.5cm of distance, text width=3.5cm, font=\scriptsize, color=gray] {CosmaDistance metric or cosine similarity};
+
+\end{tikzpicture}
+\caption{CVD Query Execution Pipeline}
+\label{fig:cvd-pipeline}
+\end{figure}
+
+\subsection{Index Characteristics}
+
+\begin{tcolorbox}[enhanced, colback=cosmaGreen!5, colframe=cosmaGreen, title=CVD Index Specifications, drop shadow, interior style={top color=cosmaGreen!5, bottom color=cosmaGreen!15}]
+\begin{itemize}[noitemsep]
+    \item \textbf{Supported Dimensions}: 128, 256, 384, 512, 768, 1024, 1536
+    \item \textbf{Distance Metrics}: CosmaDistance (proprietary), Cosine Similarity
+    \item \textbf{Search Complexity}: $O(\log n)$ deterministic traversal
+    \item \textbf{Memory Efficiency}: Optional quantization reduces footprint by 4-8x
+    \item \textbf{Insertion Performance}: Constant-time amortized updates
+\end{itemize}
+\end{tcolorbox}

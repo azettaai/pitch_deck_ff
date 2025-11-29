@@ -1,0 +1,62 @@
+\section{Market Positioning}
+
+\subsection{Competitive Advantages}
+
+\begin{enumerate}
+    \item \textbf{True Omnilingual Search}: Single unified index, not language-specific routing
+    \item \textbf{Deterministic Performance}: No ANN approximations = predictable latency
+    \item \textbf{Enterprise Security}: SOC 2 Type II compliance and dedicated isolated environments
+    \item \textbf{Cost Efficiency}: CPU-optimized, 60\% lower infrastructure costs vs. GPU-dependent solutions
+\end{enumerate}
+
+\subsection{Target Markets}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Global Enterprises}: Companies with multilingual content (legal, customer support, documentation)
+    \item \textbf{E-commerce}: Cross-border product search and recommendations
+    \item \textbf{Healthcare}: Medical literature search across languages
+    \item \textbf{Government}: Intelligence, diplomatic communications, public records
+    \item \textbf{Legal}: Contract search, due diligence, compliance
+\end{itemize}
+
+\subsection{Competitor Landscape}
+
+The semantic search market includes several key players, each with distinct approaches. Cosma differentiates itself through its unified omnilingual architecture and deterministic performance.
+
+\begin{itemize}
+    \item \textbf{Voyage AI}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Business Model}: Proprietary SaaS API provider specializing in embedding and reranking models.
+        \item \textit{Pricing Model}: Consumption-based. Generous free tier (first 200M tokens free). Paid usage ranges from \$0.02 to \$0.18 per 1 million tokens depending on the model. Multimodal and Reranking models have separate pricing structures.
+        \item \textit{Focus}: High-quality embedding models and rerankers, particularly for RAG applications.
+        \item \textit{Target Customers}: Developers and AI-native companies building RAG pipelines.
+        \item \textit{Differentiation}: While Voyage excels in model quality, it lacks a native vector database. Cosma provides a vertically integrated solution (Model + DB) optimized for cross-lingual performance.
+    \end{itemize}
+
+    \item \textbf{Weaviate}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Business Model}: Open-core model (Open Source software + Managed Cloud services).
+        \item \textit{Pricing Model}: Hybrid: Free open-source self-hosted; Serverless (pay-as-you-go based on stored dimensions); Enterprise (dedicated clusters).
+        \item \textit{Focus}: AI-native open-source vector database with a modular architecture.
+        \item \textit{Target Customers}: Broad range from startups to enterprises requiring flexibility and modular integrations.
+        \item \textit{Differentiation}: Weaviate relies on HNSW (ANN) for search, which introduces probabilistic recall. Cosma's CVD uses a deterministic algorithm, ensuring 100\% recall accuracy.
+    \end{itemize}
+
+    \item \textbf{Pinecone}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Business Model}: Closed-source fully managed SaaS (Database-as-a-Service).
+        \item \textit{Pricing Model}: Usage-based (Serverless read/write units) and Provisioned (hourly rate per pod/instance).
+        \item \textit{Focus}: Fully managed, cloud-native vector database known for ease of use.
+        \item \textit{Target Customers}: Developers and enterprises seeking a "hands-off" managed infrastructure.
+        \item \textit{Differentiation}: Pinecone is a general-purpose vector DB. Cosma offers a vertically integrated solution (Model + DB) specifically optimized for cross-lingual semantic search.
+    \end{itemize}
+
+    \item \textbf{pgvector}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Business Model}: Free and Open Source (PostgreSQL extension).
+        \item \textit{Pricing Model}: Free software; costs are incurred only for the underlying PostgreSQL infrastructure (self-hosted or managed).
+        \item \textit{Focus}: Open-source vector similarity search extension for PostgreSQL.
+        \item \textit{Target Customers}: Existing PostgreSQL users and smaller-scale applications.
+        \item \textit{Differentiation}: pgvector is excellent for simplicity but struggles with performance and latency at enterprise scale (100M+ vectors). Cosma's CVD is purpose-built for high-scale vector workloads.
+    \end{itemize}
+\end{itemize}

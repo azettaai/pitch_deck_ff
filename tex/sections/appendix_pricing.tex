@@ -1,0 +1,108 @@
+\section{Competitor Pricing Details}
+
+\subsection{Voyage AI Detailed Pricing}
+
+\subsubsection{Text Embedding Models}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Model} & \textbf{Price (per 1M tokens)} & \textbf{Free Tier} \\ \hline
+voyage-3-large & \$0.18 & 200M tokens \\ \hline
+voyage-context-3 & \$0.18 & 200M tokens \\ \hline
+voyage-3.5 & \$0.06 & 200M tokens \\ \hline
+voyage-3.5-lite & \$0.02 & 200M tokens \\ \hline
+voyage-code-3 & \$0.18 & 200M tokens \\ \hline
+voyage-finance-2 & \$0.12 & 50M tokens \\ \hline
+voyage-law-2 & \$0.12 & 50M tokens \\ \hline
+voyage-code-2 & \$0.12 & 50M tokens \\ \hline
+\end{tabular}
+\caption{Voyage AI Text Embedding Pricing}
+\end{table}
+
+\subsubsection{Multimodal Embeddings}
+\begin{itemize}[noitemsep]
+    \item \textbf{Model}: voyage-multimodal-3
+    \item \textbf{Text Price}: \$0.12 per 1M tokens
+    \item \textbf{Image Price}: \$0.60 per 1B pixels
+    \item \textbf{Free Tier}: 200M text tokens + 150B pixels
+    \item \textbf{Image Cost Constraints}: Min \$0.00003 (small images), Max \$0.0012 (large images)
+\end{itemize}
+
+\subsubsection{Rerankers}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Model} & \textbf{Price (per 1M tokens)} & \textbf{Free Tier} \\ \hline
+rerank-2.5 & \$0.05 & 200M tokens \\ \hline
+rerank-2.5-lite & \$0.02 & 200M tokens \\ \hline
+\end{tabular}
+\caption{Voyage AI Reranker Pricing}
+\end{table}
+
+\subsection{Vector Scaling Costs}
+
+\begin{itemize}
+    \item \textbf{Voyage AI}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Scaling Model}: No direct storage costs (embedding provider only).
+        \item \textit{Cost Factor}: Costs scale linearly with embedding generation volume (tokens processed).
+        \item \textit{Optimization}: Offers Matryoshka embeddings (256-2048 dims) and quantization (int8/binary) to reduce downstream storage costs by up to 6x.
+    \end{itemize}
+
+    \item \textbf{Weaviate (Serverless)}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Scaling Model}: Charged per 1 million stored dimensions per month.
+        \item \textit{Standard Tier}: $\approx$\$0.095 per 1M dimensions/month (starts at \$25/mo).
+        \item \textit{Business Critical}: $\approx$\$0.175 per 1M dimensions/month.
+        \item \textit{Calculation}: Total Cost = (Number of Vectors $\times$ Dimensions per Vector) $\times$ Rate.
+    \end{itemize}
+
+    \item \textbf{Pinecone (Serverless)}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Scaling Model}: Charged per GB of stored data per month.
+        \item \textit{Storage Rate}: \$0.33 per GB/month.
+        \item \textit{Includes}: Vector data (dense/sparse), metadata, and IDs.
+        \item \textit{Note}: Separate costs for Read/Write units (\$8.25 per 1M units).
+    \end{itemize}
+
+    \item \textbf{pgvector (Self-Hosted/AWS RDS)}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Scaling Model}: Infrastructure-based (Storage + RAM).
+        \item \textit{Memory Requirement}: High. HNSW index typically requires 2-3x the raw vector size in RAM for optimal performance.
+        \item \textit{Scaling Cost}: Step-function cost increases when upgrading to larger RAM instances (e.g., AWS r6g.xlarge to 2xlarge).
+        \item \textit{Optimization}: \texttt{halfvec} (2-byte floats) and quantization can reduce RAM needs by 50\%+.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Search Cost Scaling (1M vs 100M vs 1B Vectors)}
+
+\begin{itemize}
+    \item \textbf{Voyage AI}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Search Cost}: \textbf{\$0} (External). Voyage charges only for embedding the query text.
+        \item \textit{Scaling}: Constant cost per query, regardless of database size (1M or 1B).
+    \end{itemize}
+
+    \item \textbf{Weaviate (Serverless)}:
+    \begin{itemize}[noitemsep]
+        \item \textit{1M Vectors}: Covered by Standard Tier ($\approx$\$25/mo).
+        \item \textit{100M Vectors}: Cost is driven by \textbf{storage} (stored dimensions), not query volume. High monthly storage fee ($\approx$\$1,500+ for 1536d), but unlimited queries included.
+        \item \textit{1B Vectors}: Requires Enterprise/Business Critical tier. Primary cost driver is the massive storage footprint, not the search operation itself.
+    \end{itemize}
+
+    \item \textbf{Pinecone (Serverless)}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Query Cost}: Measured in Read Units (RUs).
+        \item \textit{Scaling Behavior}: \textbf{Sublinear}. Querying a 4x larger index does \textit{not} cost 4x RUs (e.g., 50k vectors $\approx$ 5 RUs, 200k vectors $\approx$ 8 RUs).
+        \item \textit{1B Vectors}: While per-query RU efficiency improves, the sheer volume of data requires dedicated read nodes or high shard counts to maintain latency, increasing base infrastructure costs.
+    \end{itemize}
+
+    \item \textbf{pgvector (Self-Hosted)}:
+    \begin{itemize}[noitemsep]
+        \item \textit{1M Vectors}: Low cost. Fits in standard RAM (e.g., 4GB instance).
+        \item \textit{100M Vectors}: \textbf{The RAM Cliff}. HNSW index for 1536d vectors requires $\approx$600GB RAM. Requires expensive high-memory instances (e.g., AWS r6g.24xlarge).
+        \item \textit{1B Vectors}: \textbf{Prohibitive without Quantization}. Uncompressed HNSW requires $\approx$6TB RAM. Practical implementation mandates binary quantization or disk-based indexing (e.g., \texttt{pgvectorscale}) to avoid \$20k+/month infrastructure bills.
+    \end{itemize}
+\end{itemize}

@@ -1,0 +1,82 @@
+\section{Cosma Search Layer (CSL)}
+
+CSL provides the production-ready search API that coordinates embedding generation, vector search, and result ranking.
+
+\subsection{End-to-End Search Sequence}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm, 
+    scale=0.9, 
+    every node/.style={font=\small},
+    % Define styles locally
+    client/.style={rectangle, rounded corners=3pt, minimum width=2.0cm, minimum height=0.8cm, align=center, draw=cosmaPurple!80, top color=cosmaPurple!5, bottom color=cosmaPurple!20, drop shadow},
+    component/.style={rectangle, rounded corners=3pt, minimum width=2.0cm, minimum height=0.8cm, align=center, draw=cosmaBlue!80, top color=cosmaBlue!5, bottom color=cosmaBlue!20, drop shadow},
+    api/.style={rectangle, rounded corners=3pt, minimum width=2.0cm, minimum height=0.8cm, align=center, draw=cosmaOrange!80, top color=cosmaOrange!5, bottom color=cosmaOrange!20, drop shadow},
+    lifeline/.style={dashed, draw=gray!50},
+    activation/.style={rectangle, fill=white, draw=black!50, minimum width=0.3cm},
+    message/.style={->, >=stealth, thick}
+]
+
+% Actors
+\node (client) [client] {Client};
+\node (csl) [component, right=2.5cm of client] {CSL API};
+\node (cee) [api, right=2.5cm of csl] {CEE};
+\node (cvd) [component, right=2.5cm of cee] {CVD};
+
+% Lifelines
+\draw[lifeline] (client) -- ++(0,-8.5);
+\draw[lifeline] (csl) -- ++(0,-8.5);
+\draw[lifeline] (cee) -- ++(0,-8.5);
+\draw[lifeline] (cvd) -- ++(0,-8.5);
+
+% Activation Bars (Simulated)
+% Client active at start/end
+\node[activation, minimum height=0.5cm] at (client |- 0,-1) {};
+\node[activation, minimum height=0.5cm] at (client |- 0,-8) {};
+
+% CSL active throughout
+\node[activation, minimum height=7cm] at (csl |- 0,-4.5) {};
+
+% CEE active for embedding
+\node[activation, minimum height=1.5cm] at (cee |- 0,-2.5) {};
+
+% CVD active for search
+\node[activation, minimum height=1.5cm] at (cvd |- 0,-4.5) {};
+
+% Messages
+% 1. Search Request
+\draw[message] (client) ++(0,-1) -- node[midway, above, font=\scriptsize] {1: Search("AI in healthcare")} (csl |- 0,-1);
+
+% 2. Embedding Request
+\draw[message] (csl) ++(0.15,-2) -- node[midway, above, font=\scriptsize] {2: Embed(text)} (cee |- 0,-2);
+
+% 3. Embedding Response
+\draw[message, dashed] (cee) ++(-0.15,-3) -- node[midway, above, font=\scriptsize] {3: vector $\mathbf{v}$} (csl |- 0,-3);
+
+% 4. Search Request
+\draw[message] (csl) ++(0.15,-4) -- node[midway, above, font=\scriptsize] {4: VectorSearch($\mathbf{v}$, filters)} (cvd |- 0,-4);
+
+% 5. Search Response
+\draw[message, dashed] (cvd) ++(-0.15,-5) -- node[midway, above, font=\scriptsize] {5: candidates[]} (csl |- 0,-5);
+
+% Internal Process: Re-ranking
+\node[rectangle, draw=cosmaGray, fill=cosmaGray!10, rounded corners, minimum width=2.2cm, minimum height=0.6cm, font=\scriptsize] at (csl |- 0,-6.5) {Semantic Re-ranking};
+
+% 6. Final Response
+\draw[message, dashed] (csl) ++(-0.15,-8) -- node[midway, above, font=\scriptsize] {6: results[]} (client |- 0,-8);
+
+\end{tikzpicture}
+\caption{CSL Search Sequence Diagram}
+\label{fig:search-sequence}
+\end{figure}
+
+\subsection{Search Features}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Automatic Embedding}: Text automatically converted to vectors
+    \item \textbf{Metadata Filtering}: Structured filters (date, category, author)
+    \item \textbf{Semantic Re-ranking}: Distance + coherence + language priors
+    \item \textbf{Result Normalization}: Consistent scoring across languages
+\end{itemize}

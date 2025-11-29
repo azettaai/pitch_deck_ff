@@ -1,0 +1,36 @@
+\section{Deployment Models}
+
+Cosma supports three deployment tiers designed for different organizational needs.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=2cm]
+
+% Free Tier
+\node (free) [component, minimum width=4cm, minimum height=1.5cm] {Free Tier \\ Multi-tenant shared};
+\node[below=0.1cm of free, text width=3.5cm, font=\scriptsize, align=center] {
+    1,000 searches/month \\
+    10,000 embeddings/month \\
+    Shared CVD cluster
+};
+
+% Premium Tier
+\node (premium) [component, minimum width=4cm, minimum height=1.5cm, right=1cm of free] {Premium Tier \\ Dedicated compute};
+\node[below=0.1cm of premium, text width=3.5cm, font=\scriptsize, align=center] {
+    Unlimited usage \\
+    Private CVD instance \\
+    99.9\% SLA
+};
+
+% Enterprise
+\node (enterprise) [component, minimum width=4cm, minimum height=1.5cm, right=1cm of premium] {Enterprise \\ Dedicated Cloud};
+\node[below=0.1cm of enterprise, text width=3.5cm, font=\scriptsize, align=center] {
+    Single-tenant cluster \\
+    Custom VPC peering \\
+    Advanced compliance
+};
+
+\end{tikzpicture}
+\caption{Cosma Deployment Tiers}
+\label{fig:deployment-tiers}
+\end{figure}

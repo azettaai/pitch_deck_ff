@@ -1,0 +1,120 @@
+\section{System Architecture}
+
+\subsection{High-Level Overview}
+
+Figure \ref{fig:system-overview} illustrates Cosma's four-layer architecture designed for enterprise deployment.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm, 
+    scale=0.95, 
+    every node/.style={font=\small},
+    % Define styles locally
+    client/.style={rectangle, rounded corners=3pt, minimum width=2.0cm, minimum height=0.8cm, align=center, draw=cosmaPurple!80, top color=cosmaPurple!5, bottom color=cosmaPurple!20, drop shadow},
+    process/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.0cm, align=center, draw=cosmaGray!80, top color=cosmaGray!5, bottom color=cosmaGray!20, drop shadow},
+    component/.style={rectangle, rounded corners=3pt, minimum width=3.0cm, minimum height=1.0cm, align=center, draw=cosmaBlue!80, top color=cosmaBlue!5, bottom color=cosmaBlue!20, drop shadow},
+    api/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.0cm, align=center, draw=cosmaOrange!80, top color=cosmaOrange!5, bottom color=cosmaOrange!20, drop shadow},
+    storage/.style={cylinder, shape border rotate=90, aspect=0.25, minimum width=2.5cm, minimum height=1.2cm, align=center, draw=cosmaGreen!80, top color=cosmaGreen!5, bottom color=cosmaGreen!20, drop shadow},
+    layer/.style={draw=gray!40, dashed, rounded corners, fill=gray!5, inner sep=0.4cm},
+    layerlabel/.style={font=\bfseries\small, color=gray!80},
+    arrow/.style={thick, ->, >=stealth, color=black!70}
+]
+
+% Client Layer
+\node (web) [client] {Web UI};
+\node (mobile) [client, right=0.3cm of web] {Mobile SDK};
+\node (api) [client, right=0.3cm of mobile] {REST API};
+\node (cli) [client, right=0.3cm of api] {CLI};
+
+\begin{scope}[on background layer]
+    \node (clientlayer) [layer, fit=(web) (mobile) (api) (cli), label={[layerlabel]above:Client Layer}] {};
+\end{scope}
+
+% Application Layer
+\node (search) [component, below=2.0cm of mobile] {Search Service};
+\node (billing) [component, left=0.5cm of search] {Billing};
+\node (monitor) [component, right=0.5cm of search] {Monitoring};
+
+\begin{scope}[on background layer]
+    \node (applayer) [layer, fit=(billing) (search) (monitor), label={[layerlabel]above:Application Layer}] {};
+\end{scope}
+
+% Model Layer
+\node (embedapi) [api, below=2.0cm of billing] {Embedding API};
+\node (coem) [component, below=0.5cm of embedapi] {COEM Models};
+\node (inference) [process, right=0.5cm of coem] {GPU Inference};
+
+\begin{scope}[on background layer]
+    \node (modellayer) [layer, fit=(embedapi) (coem) (inference), label={[layerlabel]above:Model Layer}] {};
+\end{scope}
+
+% Storage Layer
+\node (cvd) [component, below=2.0cm of coem] {CVD Engine};
+\node (postgres) [storage, below=0.5cm of cvd] {PostgreSQL};
+\node (index) [process, right=0.5cm of postgres] {Vector Index};
+
+\begin{scope}[on background layer]
+    \node (storagelayer) [layer, fit=(cvd) (postgres) (index), label={[layerlabel]above:Storage Layer}] {};
+\end{scope}
+
+% Connections between layers
+\draw [arrow] (clientlayer.south) -- (applayer.north);
+\draw [arrow] (applayer.south) -- (modellayer.north);
+\draw [arrow] (applayer.south) -- (storagelayer.north);
+\draw [arrow] (modellayer.south) -- (storagelayer.north);
+
+\end{tikzpicture}
+\caption{Cosma System Architecture - Four-Layer Design}
+\label{fig:system-overview}
+\end{figure}
+
+\subsection{Component Interaction}
+
+Figure \ref{fig:component-diagram} shows detailed relationships between core components.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    node distance=2.0cm, 
+    scale=0.9, 
+    every node/.style={font=\small},
+    % Define styles locally
+    client/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.0cm, align=center, draw=cosmaPurple!80, top color=cosmaPurple!5, bottom color=cosmaPurple!20, drop shadow},
+    process/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.0cm, align=center, draw=cosmaGray!80, top color=cosmaGray!5, bottom color=cosmaGray!20, drop shadow},
+    component/.style={rectangle, rounded corners=3pt, minimum width=3.0cm, minimum height=1.2cm, align=center, draw=cosmaBlue!80, top color=cosmaBlue!5, bottom color=cosmaBlue!20, drop shadow},
+    api/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.0cm, align=center, draw=cosmaOrange!80, top color=cosmaOrange!5, bottom color=cosmaOrange!20, drop shadow},
+    storage/.style={cylinder, shape border rotate=90, aspect=0.25, minimum width=2.5cm, minimum height=1.5cm, align=center, draw=cosmaGreen!80, top color=cosmaGreen!5, bottom color=cosmaGreen!20, drop shadow},
+    arrow/.style={thick, ->, >=stealth, color=black!70}
+]
+
+% Core Components
+\node (csl) [component] {Cosma Search Layer \\ (CSL)};
+\node (cee) [component, below left=1.5cm and 0.5cm of csl] {Embedding Engine \\ (CEE)};
+\node (cvd) [component, below right=1.5cm and 0.5cm of csl] {Vector Database \\ (CVD)};
+
+% Supporting Components
+\node (coem) [process, below=1.2cm of cee] {COEM Models \\ 128-1536 dims};
+\node (postgres) [storage, below=1.2cm of cvd] {PostgreSQL \\ + Custom Index};
+
+% External
+\node (client) [client, above=1.5cm of csl] {Client Applications};
+\node (metadata) [process, right=1.5cm of cvd] {Metadata \\ Filter};
+\node (rank) [process, right=1.5cm of metadata] {Re-ranking \\ Engine};
+
+% Connections
+\draw [arrow] (client) -- node[midway, left, font=\scriptsize] {Query} (csl);
+\draw [arrow] (csl) -- node[midway, left, font=\scriptsize] {Text} (cee);
+\draw [arrow] (csl) -- node[midway, right, font=\scriptsize] {Vector} (cvd);
+\draw [arrow] (cee) -- node[midway, left, font=\scriptsize] {Inference} (coem);
+\draw [arrow] (cvd) -- node[midway, right, font=\scriptsize] {Storage} (postgres);
+
+% Search Flow
+\draw [arrow] (cvd) -- (metadata);
+\draw [arrow] (metadata) -- (rank);
+\draw [arrow] (rank) |- (csl);
+
+\end{tikzpicture}
+\caption{Component Interaction Diagram}
+\label{fig:component-diagram}
+\end{figure}
