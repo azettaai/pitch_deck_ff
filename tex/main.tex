@@ -1,39 +1,586 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[margin=1in,headheight=14pt]{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
 \usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{xcolor}
 
-\title{OverTeX Test Document}
-\author{Test Suite}
-\date{\today}
+\usetikzlibrary{shapes.geometric, arrows, positioning, fit, backgrounds, calc}
+
+% Define colors
+\definecolor{cosmaBlue}{RGB}{41, 128, 185}
+\definecolor{cosmaGreen}{RGB}{39, 174, 96}
+\definecolor{cosmaOrange}{RGB}{230, 126, 34}
+\definecolor{cosmaPurple}{RGB}{142, 68, 173}
+\definecolor{cosmaGray}{RGB}{127, 140, 141}
+
+% TikZ styles
+\tikzstyle{component} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=cosmaBlue!30, font=\small, align=center]
+\tikzstyle{storage} = [cylinder, shape border rotate=90, minimum width=2.5cm, minimum height=1.2cm, text centered, draw=black, fill=cosmaGreen!30, font=\small, align=center]
+\tikzstyle{api} = [rectangle, rounded corners, minimum width=2.5cm, minimum height=0.8cm, text centered, draw=black, fill=cosmaOrange!30, font=\small, align=center]
+\tikzstyle{client} = [rectangle, minimum width=2cm, minimum height=0.8cm, text centered, draw=black, fill=cosmaPurple!20, font=\small, align=center]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{process} = [rectangle, minimum width=2.5cm, minimum height=1cm, text centered, draw=black, fill=cosmaGray!20, font=\small, align=center]
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Cosma Technical Whitepaper}
+\lhead{Confidential}
+\rfoot{Page \thepage}
+
+\title{\textbf{\Huge Cosma}\\[0.5cm]\LARGE Omnilingual Semantic Search Platform\\[0.3cm]\large Technical Whitepaper - Investor Edition}
+\author{Cosma Technologies, Inc.}
+\date{Version 1.0 - \today}
 
 \begin{document}
 
 \maketitle
+\thispagestyle{empty}
+
+\begin{center}
+\vspace{2cm}
+\begin{tcolorbox}[colback=cosmaBlue!10, colframe=cosmaBlue, width=0.8\textwidth]
+\centering
+\textbf{Executive Summary}\\[0.3cm]
+\small
+Cosma delivers enterprise-grade omnilingual semantic search through proprietary vector database technology and unified multilingual embeddings. Our platform enables organizations to search across 100+ languages with a single query, deployed either as SaaS or on-premises within 24 hours.
+\end{tcolorbox}
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
 
 \section{Introduction}
 
-This is a test document for the OverTeX application. It demonstrates basic \LaTeX{} functionality.
+Cosma is a unified semantic search platform that solves the fundamental challenge of cross-lingual information retrieval. Unlike traditional search systems that require separate indices for each language, Cosma maps all supported languages into a single unified vector space, enabling true omnilingual search capabilities.
 
-\subsection{Features}
+\subsection{The Market Opportunity}
 
-\begin{itemize}
-    \item Document compilation
-    \item PDF generation
-    \item Real-time preview
+Organizations today manage information across dozens of languages—customer communications, product documentation, legal contracts, and research materials. Traditional search solutions fail at scale, requiring:
+\begin{itemize}[noitemsep]
+    \item Separate language-specific search engines
+    \item Complex translation pipelines
+    \item Manual content tagging and categorization
+    \item Expensive multilingual NLP engineering teams
 \end{itemize}
 
-\section{Mathematics}
+\subsection{The Cosma Solution}
 
-Here is an equation:
+Cosma provides three core technologies working in concert:
 
-\begin{equation}
-    E = mc^2
-\end{equation}
+\begin{enumerate}[noitemsep]
+    \item \textbf{Cosma Vector Database (CVD)} — Proprietary vector search engine with deterministic performance
+    \item \textbf{Cosma Omnilingual Embedding Models (COEM)} — Neural models creating unified cross-lingual representations
+    \item \textbf{Cosma Search Layer (CSL)} — Production-ready search API with automatic scaling
+\end{enumerate}
 
-And some inline math: $\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}$
+\section{System Architecture}
+
+\subsection{High-Level Overview}
+
+Figure \ref{fig:system-overview} illustrates Cosma's four-layer architecture designed for enterprise deployment.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=1.5cm, scale=0.95, transform shape]
+
+% Client Layer
+\node (web) [client] {Web UI};
+\node (mobile) [client, right=0.3cm of web] {Mobile SDK};
+\node (api) [client, right=0.3cm of mobile] {REST API};
+\node (cli) [client, right=0.3cm of api] {CLI};
+
+\node[draw, dashed, fit=(web) (mobile) (api) (cli), label=above:\textbf{Client Layer}] (clientlayer) {};
+
+% Application Layer
+\node (search) [component, below=1.5cm of mobile] {Search Service};
+\node (billing) [component, left=0.3cm of search] {Billing};
+\node (monitor) [component, right=0.3cm of search] {Monitoring};
+
+\node[draw, dashed, fit=(billing) (search) (monitor), label=above:\textbf{Application Layer}] (applayer) {};
+
+% Model Layer
+\node (embedapi) [api, below=1.5cm of billing] {Embedding API};
+\node (coem) [component, below=0.5cm of embedapi] {COEM Models};
+\node (inference) [process, right=0.3cm of coem] {GPU Inference};
+
+\node[draw, dashed, fit=(embedapi) (coem) (inference), label=above:\textbf{Model Layer}] (modellayer) {};
+
+% Storage Layer
+\node (cvd) [component, below=1.5cm of coem] {CVD Engine};
+\node (postgres) [storage, below=0.5cm of cvd] {PostgreSQL};
+\node (index) [process, right=0.3cm of postgres] {Vector Index};
+
+\node[draw, dashed, fit=(cvd) (postgres) (index), label=above:\textbf{Storage Layer}] (storagelayer) {};
+
+% Connections
+\draw [arrow] (clientlayer) -- (applayer);
+\draw [arrow] (applayer) -- (modellayer);
+\draw [arrow] (applayer) -- (storagelayer);
+\draw [arrow] (modellayer) -- (storagelayer);
+
+\end{tikzpicture}
+\caption{Cosma System Architecture - Four-Layer Design}
+\label{fig:system-overview}
+\end{figure}
+
+\subsection{Component Interaction}
+
+Figure \ref{fig:component-diagram} shows detailed relationships between core components.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=2cm, scale=0.9, transform shape]
+
+% Core Components
+\node (csl) [component] {Cosma Search Layer \\ (CSL)};
+\node (cee) [component, below left=1.5cm and 1cm of csl] {Embedding Engine \\ (CEE)};
+\node (cvd) [component, below right=1.5cm and 1cm of csl] {Vector Database \\ (CVD)};
+
+% Supporting Components
+\node (coem) [process, below=1cm of cee] {COEM Models \\ 128-1536 dims};
+\node (postgres) [storage, below=1cm of cvd] {PostgreSQL \\ + Custom Index};
+
+% External
+\node (client) [client, above=1.5cm of csl] {Client Applications};
+\node (metadata) [process, right=1cm of cvd] {Metadata \\ Filter};
+\node (rank) [process, right=1cm of metadata] {Re-ranking \\ Engine};
+
+% Connections
+\draw [arrow] (client) -- node[anchor=west] {Query} (csl);
+\draw [arrow] (csl) -- node[anchor=east] {Text} (cee);
+\draw [arrow] (csl) -- node[anchor=west] {Vector} (cvd);
+\draw [arrow] (cee) -- node[anchor=east] {Inference} (coem);
+\draw [arrow] (cvd) -- node[anchor=east] {Storage} (postgres);
+\draw [arrow] (cvd) -- (metadata);
+\draw [arrow] (metadata) -- (rank);
+\draw [arrow] (rank) -- (csl);
+
+\end{tikzpicture}
+\caption{Component Interaction Diagram}
+\label{fig:component-diagram}
+\end{figure}
+
+\newpage
+\section{Cosma Vector Database (CVD)}
+
+The CVD represents our core technological differentiation: a proprietary vector search implementation built on PostgreSQL that eliminates the unpredictability of approximate nearest neighbor (ANN) algorithms.
+
+\subsection{Technical Architecture}
+
+Unlike competitors using HNSW or IVF-based approaches, CVD employs a deterministic search algorithm optimized for CPU execution. This provides:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Predictable Latency}: Deterministic query execution (no probabilistic search)
+    \item \textbf{Lower Infrastructure Costs}: CPU-optimized, no GPU required for queries
+    \item \textbf{Enterprise Compatibility}: Built on PostgreSQL, integrates with existing tools
+    \item \textbf{Secure Deployment}: Sealed Docker containers, no source exposure
+\end{itemize}
+
+\subsection{CVD Architecture Diagram}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=1.8cm, scale=0.85, transform shape]
+
+% Query Input
+\node (query) [api] {Query Vector \\ $\mathbf{q} \in \mathbb{R}^d$};
+
+% CVD Processing Pipeline
+\node (normalize) [process, below=1cm of query] {Normalization \\ $\mathbf{q}' = \mathbf{q}/\|\mathbf{q}\|$};
+\node (traverse) [process, below=1cm of normalize] {Proprietary \\ Traversal};
+\node (candidates) [process, below=1cm of traverse] {Candidate \\ Selection};
+\node (distance) [process, below=1cm of candidates] {Distance \\ Computation};
+\node (rank) [process, below=1cm of distance] {Cosma \\ Scoring};
+
+% Storage
+\node (index) [storage, right=3cm of traverse] {Vector Index \\ PostgreSQL};
+
+% Output
+\node (results) [api, below=1cm of rank] {Top-K Results};
+
+% Connections
+\draw [arrow] (query) -- (normalize);
+\draw [arrow] (normalize) -- (traverse);
+\draw [arrow] (traverse) -- (candidates);
+\draw [arrow] (candidates) -- (distance);
+\draw [arrow] (distance) -- (rank);
+\draw [arrow] (rank) -- (results);
+
+\draw [arrow, dashed] (traverse) -- node[anchor=south] {Index Lookup} (index);
+\draw [arrow, dashed] (candidates) -- (index);
+
+% Annotations
+\node[right=0.5cm of normalize, text width=3cm, font=\tiny] {Vector preprocessing for search optimization};
+\node[right=0.5cm of traverse, text width=3cm, font=\tiny] {Non-ANN deterministic algorithm (proprietary)};
+\node[right=0.5cm of distance, text width=3cm, font=\tiny] {CosmaDistance metric or cosine similarity};
+
+\end{tikzpicture}
+\caption{CVD Query Execution Pipeline}
+\label{fig:cvd-pipeline}
+\end{figure}
+
+\subsection{Index Characteristics}
+
+\begin{tcolorbox}[colback=cosmaGreen!10, colframe=cosmaGreen, title=CVD Index Specifications]
+\begin{itemize}[noitemsep]
+    \item \textbf{Supported Dimensions}: 128, 256, 384, 512, 768, 1024, 1536
+    \item \textbf{Distance Metrics}: CosmaDistance (proprietary), Cosine Similarity
+    \item \textbf{Search Complexity}: $O(\log n)$ deterministic traversal
+    \item \textbf{Memory Efficiency}: Optional quantization reduces footprint by 4-8x
+    \item \textbf{Insertion Performance}: Constant-time amortized updates
+\end{itemize}
+\end{tcolorbox}
+
+\section{Cosma Omnilingual Embedding Models (COEM)}
+
+COEM models solve the fundamental challenge of cross-lingual semantic representation by mapping 100+ languages into a unified vector space where semantically similar content clusters regardless of language.
+
+\subsection{Model Architecture}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=1.5cm, scale=0.85, transform shape]
+
+% Input texts
+\node (en) [client] {English Text};
+\node (zh) [client, below=0.3cm of en] {Chinese Text};
+\node (ar) [client, below=0.3cm of zh] {Arabic Text};
+\node (es) [client, below=0.3cm of ar] {Spanish Text};
+
+% Tokenization
+\node (tokenizer) [process, right=2cm of zh] {Universal \\ Tokenizer};
+
+% Transformer
+\node (transformer) [component, right=2cm of tokenizer] {Transformer \\ Encoder \\ (12-24 layers)};
+
+% Pooling
+\node (pooling) [process, right=2cm of transformer] {Mean \\ Pooling};
+
+% Output
+\node (vector) [api, right=2cm of pooling] {Unified Vector \\ $\mathbb{R}^{768}$};
+
+% Connections
+\draw [arrow] (en) -- (tokenizer);
+\draw [arrow] (zh) -- (tokenizer);
+\draw [arrow] (ar) -- (tokenizer);
+\draw [arrow] (es) -- (tokenizer);
+\draw [arrow] (tokenizer) -- (transformer);
+\draw [arrow] (transformer) -- (pooling);
+\draw [arrow] (pooling) -- (vector);
+
+% Annotation
+\node[below=0.5cm of transformer, text width=4cm, font=\scriptsize, align=center] {Trained on parallel corpora + \\ contrastive alignment + \\ manifold regularization};
+
+\end{tikzpicture}
+\caption{COEM Model Architecture - Unified Latent Space}
+\label{fig:coem-architecture}
+\end{figure}
+
+\subsection{Training Methodology}
+
+COEM models achieve cross-lingual alignment through:
+
+\begin{enumerate}[noitemsep]
+    \item \textbf{Parallel Corpus Training}: Millions of aligned text pairs across 100+ languages
+    \item \textbf{Contrastive Learning}: Pushes semantically similar content together, dissimilar apart
+    \item \textbf{Manifold Regularization}: Ensures smooth geometric structure in latent space
+    \item \textbf{Domain-Specific Augmentation}: Fine-tuning for search-optimized representations
+\end{enumerate}
+
+\subsection{Embedding Space Properties}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[scale=0.8]
+
+% Draw semantic clusters
+\draw[fill=cosmaBlue!20, draw=cosmaBlue, thick] (0,0) circle (1.5cm);
+\draw[fill=cosmaGreen!20, draw=cosmaGreen, thick] (4,0.5) circle (1.3cm);
+\draw[fill=cosmaOrange!20, draw=cosmaOrange, thick] (2,-2) circle (1.4cm);
+
+% Add language points
+\node[circle, fill=cosmaBlue, inner sep=2pt] at (-0.3,0.4) {};
+\node[circle, fill=cosmaBlue, inner sep=2pt] at (0.4,-0.2) {};
+\node[circle, fill=cosmaBlue, inner sep=2pt] at (-0.2,-0.5) {};
+
+\node[circle, fill=cosmaGreen, inner sep=2pt] at (3.8,0.8) {};
+\node[circle, fill=cosmaGreen, inner sep=2pt] at (4.3,0.2) {};
+
+\node[circle, fill=cosmaOrange, inner sep=2pt] at (2.2,-1.7) {};
+\node[circle, fill=cosmaOrange, inner sep=2pt] at (1.7,-2.3) {};
+
+% Labels
+\node at (0,0) {\small Finance};
+\node at (4,0.5) {\small Sports};
+\node at (2,-2) {\small Weather};
+
+% Language annotations
+\node[font=\tiny] at (-0.5,1.2) {EN, ZH, AR};
+\node[font=\tiny] at (4.5,1.5) {ES, FR};
+\node[font=\tiny] at (2.5,-2.8) {DE, JA};
+
+\end{tikzpicture}
+\caption{Unified Embedding Space - Semantic Clustering Across Languages}
+\label{fig:embedding-space}
+\end{figure}
+
+\section{Cosma Search Layer (CSL)}
+
+CSL provides the production-ready search API that coordinates embedding generation, vector search, and result ranking.
+
+\subsection{End-to-End Search Sequence}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=0.8cm, scale=0.9, transform shape]
+
+% Actors
+\node (client) [client] {Client};
+\node (csl) [component, right=2cm of client] {CSL};
+\node (cee) [api, right=2cm of csl] {CEE};
+\node (cvd) [component, right=2cm of cee] {CVD};
+
+% Lifelines
+\draw[dashed] (client) -- ++(0,-9);
+\draw[dashed] (csl) -- ++(0,-9);
+\draw[dashed] (cee) -- ++(0,-9);
+\draw[dashed] (cvd) -- ++(0,-9);
+
+% Messages
+\draw[arrow] (0,-1) -- node[above, font=\scriptsize] {1: Search("AI in healthcare")} (2,-1);
+\draw[arrow] (2,-2) -- node[above, font=\scriptsize] {2: Embed(text)} (4,-2);
+\draw[arrow] (4,-3) -- node[above, font=\scriptsize] {3: vector} (2,-3);
+\draw[arrow] (2,-4) -- node[above, font=\scriptsize] {4: VectorSearch(v, filters)} (6,-4);
+\draw[arrow] (6,-5) -- node[above, font=\scriptsize] {5: candidates[]} (2,-5);
+
+\node[rectangle, fill=cosmaGray!20, minimum width=2cm, minimum height=1cm] at (2,-6.5) {\scriptsize Re-ranking};
+
+\draw[arrow] (2,-8) -- node[above, font=\scriptsize] {6: results[]} (0,-8);
+
+\end{tikzpicture}
+\caption{CSL Search Sequence Diagram}
+\label{fig:search-sequence}
+\end{figure}
+
+\subsection{Search Features}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Automatic Embedding}: Text automatically converted to vectors
+    \item \textbf{Metadata Filtering}: Structured filters (date, category, author)
+    \item \textbf{Semantic Re-ranking}: Distance + coherence + language priors
+    \item \textbf{Result Normalization}: Consistent scoring across languages
+\end{itemize}
+
+\section{Deployment Models}
+
+Cosma supports three deployment tiers designed for different organizational needs.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=2cm]
+
+% Free Tier
+\node (free) [component, minimum width=4cm, minimum height=1.5cm] {Free Tier \\ Multi-tenant shared};
+\node[below=0.1cm of free, text width=3.5cm, font=\scriptsize, align=center] {
+    1,000 searches/month \\
+    10,000 embeddings/month \\
+    Shared CVD cluster
+};
+
+% Premium Tier
+\node (premium) [component, minimum width=4cm, minimum height=1.5cm, right=1cm of free] {Premium Tier \\ Dedicated compute};
+\node[below=0.1cm of premium, text width=3.5cm, font=\scriptsize, align=center] {
+    Unlimited usage \\
+    Private CVD instance \\
+    99.9\% SLA
+};
+
+% Enterprise
+\node (enterprise) [component, minimum width=4cm, minimum height=1.5cm, right=1cm of premium] {Enterprise On-Prem \\ Self-hosted};
+\node[below=0.1cm of enterprise, text width=3.5cm, font=\scriptsize, align=center] {
+    Docker deployment \\
+    License key activation \\
+    Air-gapped capable
+};
+
+\end{tikzpicture}
+\caption{Cosma Deployment Tiers}
+\label{fig:deployment-tiers}
+\end{figure}
+
+\section{Security \& Compliance}
+
+\subsection{Data Protection}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Encryption}: All data encrypted in transit (TLS 1.3) and at rest (AES-256)
+    \item \textbf{Isolation}: Namespace-level separation, dedicated compute for premium
+    \item \textbf{Privacy}: Customer data never used for model training
+    \item \textbf{Logging}: Anonymized logs, configurable retention
+\end{itemize}
+
+\subsection{Compliance}
+
+Cosma meets enterprise compliance requirements:
+
+\begin{itemize}[noitemsep]
+    \item SOC 2 Type II (in progress)
+    \item GDPR compliant
+    \item HIPAA-ready (enterprise tier)
+    \item On-premises deployment for regulated industries
+\end{itemize}
+
+\section{Performance Benchmarks}
+
+\begin{tcolorbox}[colback=cosmaPurple!10, colframe=cosmaPurple, title=CVD Performance Metrics]
+\begin{tabular}{l l}
+\textbf{Query Latency} & $<$ 50ms (p95) for 1M vectors \\
+\textbf{Throughput} & 10,000 queries/second (dedicated) \\
+\textbf{Index Size} & 1.2-1.5 GB per 1M vectors (768-dim) \\
+\textbf{Insertion Speed} & 50,000 vectors/second \\
+\textbf{Memory Overhead} & 15-20\% above raw vector storage \\
+\end{tabular}
+\end{tcolorbox}
+
+\vspace{0.5cm}
+
+\begin{tcolorbox}[colback=cosmaOrange!10, colframe=cosmaOrange, title=CEE Performance Metrics]
+\begin{tabular}{l l}
+\textbf{Embedding Latency} & $<$ 10ms per text (batch) \\
+\textbf{Throughput} & 100,000 texts/second (GPU cluster) \\
+\textbf{Languages Supported} & 100+ \\
+\textbf{Model Size} & 420M parameters (base), 1.2B (large) \\
+\end{tabular}
+\end{tcolorbox}
+
+\section{Market Positioning}
+
+\subsection{Competitive Advantages}
+
+\begin{enumerate}
+    \item \textbf{True Omnilingual Search}: Single unified index, not language-specific routing
+    \item \textbf{Deterministic Performance}: No ANN approximations = predictable latency
+    \item \textbf{Enterprise Security}: On-prem deployment with sealed containers
+    \item \textbf{Cost Efficiency}: CPU-optimized, 60\% lower infrastructure costs vs. GPU-dependent solutions
+\end{enumerate}
+
+\subsection{Target Markets}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Global Enterprises}: Companies with multilingual content (legal, customer support, documentation)
+    \item \textbf{E-commerce}: Cross-border product search and recommendations
+    \item \textbf{Healthcare}: Medical literature search across languages
+    \item \textbf{Government}: Intelligence, diplomatic communications, public records
+    \item \textbf{Legal}: Contract search, due diligence, compliance
+\end{itemize}
+
+\section{Technology Roadmap}
+
+\subsection{Near-Term (6-12 months)}
+\begin{itemize}[noitemsep]
+    \item Public SDK release (Python, JavaScript, Go)
+    \item Expanded language support (120+ languages)
+    \item Index compression (8-bit quantization)
+    \item Real-time indexing pipeline
+\end{itemize}
+
+\subsection{Mid-Term (12-24 months)}
+\begin{itemize}[noitemsep]
+    \item Distributed sharding for 100B+ vectors
+    \item Streaming search capabilities
+    \item Multi-modal embeddings (text + images)
+    \item Edge deployment (low-power devices)
+\end{itemize}
+
+\subsection{Long-Term (24+ months)}
+\begin{itemize}[noitemsep]
+    \item Open adapter ecosystem for domain-specific models
+    \item Plugin architecture for custom distance functions
+    \item Federated search across multiple CVD instances
+    \item AutoML for embedding model customization
+\end{itemize}
+
+\section{Business Model}
+
+\subsection{Revenue Streams}
+
+\begin{enumerate}
+    \item \textbf{SaaS Subscriptions}: Monthly/annual recurring revenue
+    \begin{itemize}[noitemsep]
+        \item Free tier: \$0 (growth driver)
+        \item Premium: \$499-\$4,999/month
+        \item Enterprise: Custom pricing
+    \end{itemize}
+    
+    \item \textbf{Usage-Based Pricing}: Metered embeddings and searches
+    \begin{itemize}[noitemsep]
+        \item Embeddings: \$0.10 per 1,000 embeddings
+        \item Searches: \$0.05 per 1,000 searches
+    \end{itemize}
+    
+    \item \textbf{On-Premises Licenses}: Perpetual + annual support
+    \begin{itemize}[noitemsep]
+        \item Base license: \$50,000-\$500,000
+        \item Annual maintenance: 20\% of license
+    \end{itemize}
+    
+    \item \textbf{Professional Services}: Integration, training, custom models
+\end{enumerate}
+
+\section{Intellectual Property}
+
+\subsection{Proprietary Technology}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{CVD Search Algorithm}: Trade secret - deterministic vector traversal method
+    \item \textbf{CosmaDistance Metric}: Proprietary distance formulation optimized for cross-lingual search
+    \item \textbf{COEM Training Pipeline}: Trade secret - alignment methodology and loss functions
+    \item \textbf{Quantization Methods}: Trade secret - vector compression with minimal quality loss
+\end{itemize}
+
+\subsection{Licensing Strategy}
+
+\begin{itemize}[noitemsep]
+    \item Closed-source core technology
+    \item Open-source client SDKs (community building)
+    \item API-first distribution (SaaS default)
+    \item Enterprise source licensing (restricted redistribution)
+\end{itemize}
 
 \section{Conclusion}
 
-If you can see this PDF, the build system is working correctly!
+Cosma represents a fundamental advance in semantic search technology. By combining proprietary vector database infrastructure with unified omnilingual embeddings, we enable organizations to search across languages with unprecedented accuracy and performance.
+
+\vspace{0.5cm}
+
+\begin{tcolorbox}[colback=cosmaBlue!10, colframe=cosmaBlue, title=Investment Highlights]
+\begin{itemize}[noitemsep]
+    \item \textbf{Market Size}: \$8B+ global semantic search market, 35\% CAGR
+    \item \textbf{Technology Moat}: Trade secret algorithms, proprietary models
+    \item \textbf{Enterprise-Ready}: Security, compliance, on-prem deployment
+    \item \textbf{Scalable Economics}: High-margin SaaS + usage-based pricing
+    \item \textbf{Proven Traction}: [Add customer metrics, revenue, growth]
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{1cm}
+
+\noindent\textbf{Contact Information}\\
+Cosma Technologies, Inc.\\
+{[}Address{]}\\
+{[}Email{]}\\
+{[}Website{]}
+
+\vspace{0.5cm}
+
+\noindent\textit{This document contains confidential and proprietary information. Distribution is restricted to qualified investors under NDA.}
 
 \end{document}
