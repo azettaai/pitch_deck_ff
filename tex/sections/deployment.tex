@@ -4,33 +4,91 @@ Cosma supports three deployment tiers designed for different organizational need
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}[node distance=2cm]
+\begin{tikzpicture}[
+    node distance=2.2cm,
+    every node/.style={font=\small},
+    % Enhanced tier card styles with progressive richness
+    tier_free/.style={
+        rectangle, rounded corners=8pt, 
+        minimum width=4.5cm, minimum height=3.5cm, 
+        align=center, 
+        draw=cosmaBlue!50, line width=1pt,
+        top color=white, bottom color=cosmaBlue!8,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.15}
+    },
+    tier_premium/.style={
+        rectangle, rounded corners=8pt, 
+        minimum width=4.5cm, minimum height=3.5cm, 
+        align=center, 
+        draw=cosmaGreen!60, line width=1.5pt,
+        top color=cosmaGreen!3, bottom color=cosmaGreen!18,
+        drop shadow={shadow xshift=0.2cm, shadow yshift=-0.2cm, opacity=0.25}
+    },
+    tier_enterprise/.style={
+        rectangle, rounded corners=8pt, 
+        minimum width=4.5cm, minimum height=3.5cm, 
+        align=center, 
+        draw=cosmaOrange!70, line width=2pt,
+        top color=cosmaOrange!5, bottom color=cosmaOrange!25,
+        drop shadow={shadow xshift=0.25cm, shadow yshift=-0.25cm, opacity=0.35}
+    },
+    tier_header/.style={
+        rectangle, rounded corners=5pt,
+        minimum width=3.8cm, minimum height=1.2cm,
+        align=center, font=\bfseries\small
+    },
+    upgrade_arrow/.style={
+        ->, >=stealth, thick, dotted, color=gray!50
+    }
+]
 
 % Free Tier
-\node (free) [component, minimum width=4cm, minimum height=1.5cm] {Free Tier \\ Multi-tenant shared};
-\node[below=0.1cm of free, text width=3.5cm, font=\scriptsize, align=center] {
-    1,000 searches/month \\
-    10,000 embeddings/month \\
-    Shared CVD cluster
+\node (free_header) [tier_header, draw=cosmaBlue!70, top color=cosmaBlue!15, bottom color=cosmaBlue!30] {
+    \textcolor{cosmaBlue!90}{Free Tier} \\ 
+    {\scriptsize\textit{Multi-tenant shared}}
 };
+\node (free_details) [below=0.3cm of free_header, text width=3.8cm, font=\scriptsize, align=left] {
+    {\color{cosmaBlue}$\checkmark$} 1,000 searches/month \\[2pt]
+    {\color{cosmaBlue}$\checkmark$} 10,000 embeddings/month \\[2pt]
+    {\color{cosmaBlue}$\checkmark$} Shared CVD cluster
+};
+\begin{scope}[on background layer]
+    \node (free_box) [tier_free, fit=(free_header)(free_details), inner sep=0.5cm] {};
+\end{scope}
 
 % Premium Tier
-\node (premium) [component, minimum width=4cm, minimum height=1.5cm, right=1cm of free] {Premium Tier \\ Dedicated compute};
-\node[below=0.1cm of premium, text width=3.5cm, font=\scriptsize, align=center] {
-    Unlimited usage \\
-    Private CVD instance \\
-    99.9\% SLA
+\node (premium_header) [tier_header, right=2.2cm of free_header, draw=cosmaGreen!70, top color=cosmaGreen!20, bottom color=cosmaGreen!40] {
+    \textcolor{cosmaGreen!90}{Premium Tier} \\ 
+    {\scriptsize\textit{Dedicated compute}}
 };
+\node (premium_details) [below=0.3cm of premium_header, text width=3.8cm, font=\scriptsize, align=left] {
+    {\color{cosmaGreen}$\checkmark$} Unlimited usage \\[2pt]
+    {\color{cosmaGreen}$\checkmark$} Private CVD instance \\[2pt]
+    {\color{cosmaGreen}$\checkmark$} 99.9\% SLA guarantee
+};
+\begin{scope}[on background layer]
+    \node (premium_box) [tier_premium, fit=(premium_header)(premium_details), inner sep=0.5cm] {};
+\end{scope}
 
-% Enterprise
-\node (enterprise) [component, minimum width=4cm, minimum height=1.5cm, right=1cm of premium] {Enterprise \\ Dedicated Cloud};
-\node[below=0.1cm of enterprise, text width=3.5cm, font=\scriptsize, align=center] {
-    Single-tenant cluster \\
-    Custom VPC peering \\
-    Advanced compliance
+% Enterprise Tier
+\node (enterprise_header) [tier_header, right=2.2cm of premium_header, draw=cosmaOrange!70, top color=cosmaOrange!25, bottom color=cosmaOrange!50] {
+    \textcolor{cosmaOrange!90}{Enterprise} \\ 
+    {\scriptsize\textit{Dedicated Cloud}}
 };
+\node (enterprise_details) [below=0.3cm of enterprise_header, text width=3.8cm, font=\scriptsize, align=left] {
+    {\color{cosmaOrange}$\checkmark$} Single-tenant cluster \\[2pt]
+    {\color{cosmaOrange}$\checkmark$} Custom VPC peering \\[2pt]
+    {\color{cosmaOrange}$\checkmark$} Advanced compliance
+};
+\begin{scope}[on background layer]
+    \node (enterprise_box) [tier_enterprise, fit=(enterprise_header)(enterprise_details), inner sep=0.5cm] {};
+\end{scope}
+
+% Upgrade path arrows
+\draw [upgrade_arrow] (free_box.east) -- node[above, font=\tiny, text=gray] {upgrade} (premium_box.west);
+\draw [upgrade_arrow] (premium_box.east) -- node[above, font=\tiny, text=gray] {upgrade} (enterprise_box.west);
 
 \end{tikzpicture}
-\caption{Cosma Deployment Tiers}
+\caption{Cosma Deployment Tiers - Progressive Service Levels}
 \label{fig:deployment-tiers}
 \end{figure}

@@ -10,30 +10,63 @@ COEM models solve the fundamental challenge of cross-lingual semantic representa
     node distance=1.5cm, 
     scale=0.9, 
     every node/.style={font=\small},
-    % Define styles locally
-    client/.style={rectangle, rounded corners=3pt, minimum width=2.2cm, minimum height=0.8cm, align=center, draw=cosmaPurple!80, top color=cosmaPurple!5, bottom color=cosmaPurple!20, drop shadow},
-    process/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.2cm, align=center, draw=cosmaGray!80, top color=cosmaGray!5, bottom color=cosmaGray!20, drop shadow},
-    component/.style={rectangle, rounded corners=3pt, minimum width=3.5cm, minimum height=1.2cm, align=center, draw=cosmaBlue!80, top color=cosmaBlue!5, bottom color=cosmaBlue!20, drop shadow},
-    api/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.2cm, align=center, draw=cosmaOrange!80, top color=cosmaOrange!5, bottom color=cosmaOrange!20, drop shadow},
-    container/.style={draw=cosmaBlue!50, dashed, rounded corners, fill=cosmaBlue!5, inner sep=0.5cm, label={[anchor=south east, font=\itshape\scriptsize, text=cosmaBlue]north east:COEM Core Engine}},
-    arrow/.style={thick, ->, >=stealth, color=black!70}
+    % Enhanced component styles with richer gradients
+    client/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.2cm, minimum height=0.8cm, align=center, 
+        draw=cosmaPurple!85, line width=0.8pt,
+        top color=cosmaPurple!5, bottom color=cosmaPurple!28,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.25}
+    },
+    process/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.5cm, minimum height=1.2cm, align=center, 
+        draw=cosmaGray!85, line width=0.8pt,
+        top color=cosmaGray!5, bottom color=cosmaGray!28,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.25}
+    },
+    component/.style={
+        rectangle, rounded corners=5pt, 
+        minimum width=3.5cm, minimum height=1.2cm, align=center, 
+        draw=cosmaBlue!90, line width=1pt,
+        top color=cosmaBlue!8, bottom color=cosmaBlue!32,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.3}
+    },
+    api/.style={
+        rectangle, rounded corners=5pt, 
+        minimum width=2.5cm, minimum height=1.2cm, align=center, 
+        draw=cosmaOrange!85, line width=1pt,
+        top color=cosmaOrange!8, bottom color=cosmaOrange!32,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.3}
+    },
+    container/.style={
+        draw=cosmaBlue!65, dashed, rounded corners=8pt, 
+        top color=cosmaBlue!5, bottom color=cosmaBlue!15,
+        inner sep=0.5cm,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.25},
+        label={[anchor=south east, font=\itshape\scriptsize\bfseries, 
+                text=white, fill=cosmaBlue!85, rounded corners=3pt, 
+                inner sep=4pt]north east:COEM Core Engine}
+    },
+    arrow/.style={thick, ->, >=stealth, color=black!65, line width=1.2pt},
+    data_arrow/.style={ultra thick, ->, >=stealth, color=cosmaBlue!65, line width=1.5pt}
 ]
 
-% Input texts - Stacked
+% Input texts - Stacked with enhanced styling
 \node (en) [client] {English Input};
 \node (zh) [client, below=0.2cm of en] {Chinese Input};
 \node (ar) [client, below=0.2cm of zh] {Arabic Input};
-\node (more) [below=0.1cm of ar, font=\scriptsize, text=gray] {+ 100 Languages};
+\node (more) [below=0.1cm of ar, font=\scriptsize\itshape, text=gray!70] {+ 100 Languages};
 
 % Group inputs
 \node (inputs) [fit=(en)(zh)(ar)(more), inner sep=0.2cm] {};
 
-% Core Pipeline
+% Core Pipeline with enhanced components
 \node (tokenizer) [process, right=1.5cm of zh] {Universal \\ Tokenizer};
-\node (transformer) [component, right=1.0cm of tokenizer] {Transformer \\ Encoder \\ (12-24 Layers)};
+\node (transformer) [component, right=1.0cm of tokenizer] {\textbf{Transformer} \\ Encoder \\ (12-24 Layers)};
 \node (pooling) [process, right=1.0cm of transformer] {Mean \\ Pooling};
 
-% Container for Core
+% Enhanced container for core
 \begin{scope}[on background layer]
     \node (core) [container, fit=(tokenizer)(transformer)(pooling)] {};
 \end{scope}
@@ -41,25 +74,27 @@ COEM models solve the fundamental challenge of cross-lingual semantic representa
 % Output
 \node (vector) [api, right=1.5cm of pooling] {Unified Vector \\ $\mathbb{R}^{768}$};
 
-% Connections
+% Enhanced connections with data flow emphasis
 \draw [arrow] (en.east) -- (tokenizer.west);
 \draw [arrow] (zh.east) -- (tokenizer.west);
 \draw [arrow] (ar.east) -- (tokenizer.west);
 
-\draw [arrow] (tokenizer) -- (transformer);
-\draw [arrow] (transformer) -- (pooling);
-\draw [arrow] (pooling) -- (vector);
+\draw [data_arrow] (tokenizer) -- (transformer);
+\draw [data_arrow] (transformer) -- (pooling);
+\draw [data_arrow] (pooling) -- (vector);
 
-% Annotations
-\node[below=0.8cm of transformer, text width=5cm, align=center, font=\scriptsize\color{black!70}] {
+% Enhanced annotations with improved styling
+\node[below=0.8cm of transformer, text width=5.5cm, align=center, font=\scriptsize, 
+      rectangle, rounded corners=4pt, fill=gray!8, 
+      draw=gray!30, inner sep=5pt] {
     \textbf{Training Objectives:}\\
-    Parallel Corpus Alignment \\
-    Contrastive Learning \\
-    Manifold Regularization
+    {\color{cosmaBlue}$\bullet$} Parallel Corpus Alignment \\
+    {\color{cosmaBlue}$\bullet$} Contrastive Learning \\
+    {\color{cosmaBlue}$\bullet$} Manifold Regularization
 };
 
 \end{tikzpicture}
-\caption{COEM Model Architecture - Unified Latent Space}
+\caption{COEM Model Architecture - Unified Cross-Lingual Latent Space}
 \label{fig:coem-architecture}
 \end{figure}
 
@@ -80,56 +115,63 @@ COEM models achieve cross-lingual alignment through:
 \centering
 \begin{tikzpicture}[scale=0.9]
 
-    % Axes
-    \draw[->, thick, color=gray!50] (-1,-3.5) -- (-1, 2.5) node[above, color=gray] {\scriptsize Dimension 2};
-    \draw[->, thick, color=gray!50] (-1,-3.5) -- (6, -3.5) node[right, color=gray] {\scriptsize Dimension 1};
-    \draw[step=1cm, gray!10, very thin] (-0.9,-3.4) grid (5.9, 2.4);
+    % Enhanced axes with better styling
+    \draw[->, ultra thick, color=gray!60] (-1,-3.5) -- (-1, 2.5) node[above, color=gray!80, font=\small] {Dimension 2};
+    \draw[->, ultra thick, color=gray!60] (-1,-3.5) -- (6, -3.5) node[right, color=gray!80, font=\small] {Dimension 1};
+    \draw[step=1cm, gray!15, very thin] (-0.9,-3.4) grid (5.9, 2.4);
 
-    % Clusters - Soft, organic shapes
-    % Finance
-    \fill[cosmaBlue!15, rounded corners=10pt] (-0.5, -0.5) -- (0.5, 1.5) -- (1.5, 0.5) -- (0.5, -1.0) -- cycle;
-    \node at (0.5, 0.2) [text=cosmaBlue!80, font=\bfseries\small] {Finance};
+    % Enhanced clusters with glow effects and richer gradients
+    % Finance cluster with glow
+    \fill[cosmaBlue!8, rounded corners=10pt, opacity=0.6] (-0.6, -0.6) -- (0.6, 1.6) -- (1.6, 0.6) -- (0.6, -1.1) -- cycle;
+    \fill[cosmaBlue!20, rounded corners=10pt] (-0.5, -0.5) -- (0.5, 1.5) -- (1.5, 0.5) -- (0.5, -1.0) -- cycle;
+    \node at (0.5, 0.2) [text=cosmaBlue!90, font=\bfseries\small] {Finance};
     
-    % Sports
-    \fill[cosmaGreen!15, rounded corners=12pt] (3.0, -0.5) -- (5.0, 0.0) -- (5.5, 1.5) -- (3.5, 1.8) -- cycle;
-    \node at (4.2, 0.8) [text=cosmaGreen!80, font=\bfseries\small] {Sports};
+    % Sports cluster with glow
+    \fill[cosmaGreen!8, rounded corners=12pt, opacity=0.6] (2.9, -0.6) -- (5.1, -0.1) -- (5.6, 1.6) -- (3.4, 1.9) -- cycle;
+    \fill[cosmaGreen!20, rounded corners=12pt] (3.0, -0.5) -- (5.0, 0.0) -- (5.5, 1.5) -- (3.5, 1.8) -- cycle;
+    \node at (4.2, 0.8) [text=cosmaGreen!90, font=\bfseries\small] {Sports};
     
-    % Weather
-    \fill[cosmaOrange!15, rounded corners=8pt] (1.0, -3.0) -- (3.0, -1.5) -- (3.5, -2.5) -- (2.0, -3.2) -- cycle;
-    \node at (2.2, -2.5) [text=cosmaOrange!80, font=\bfseries\small] {Weather};
+    % Weather cluster with glow
+    \fill[cosmaOrange!8, rounded corners=8pt, opacity=0.6] (0.9, -3.1) -- (3.1, -1.4) -- (3.6, -2.4) -- (1.9, -3.3) -- cycle;
+    \fill[cosmaOrange!20, rounded corners=8pt] (1.0, -3.0) -- (3.0, -1.5) -- (3.5, -2.5) -- (2.0, -3.2) -- cycle;
+    \node at (2.2, -2.5) [text=cosmaOrange!90, font=\bfseries\small] {Weather};
 
-    % Data Points - Mixed languages
+    % Enhanced data points with better visibility
     % Finance Points
     \foreach \x/\y in {0.0/0.0, 0.2/0.5, 0.8/0.1, -0.2/0.8, 0.5/-0.3, 1.0/0.4}
-        \node[circle, fill=cosmaBlue, inner sep=1.5pt] at (\x,\y) {};
+        \node[circle, fill=cosmaBlue!80, inner sep=1.8pt, draw=cosmaBlue!90, line width=0.3pt] at (\x,\y) {};
     
     % Sports Points
     \foreach \x/\y in {3.5/0.5, 4.0/1.0, 4.5/0.3, 3.8/1.2, 4.8/0.8, 5.0/0.2}
-        \node[circle, fill=cosmaGreen, inner sep=1.5pt] at (\x,\y) {};
+        \node[circle, fill=cosmaGreen!80, inner sep=1.8pt, draw=cosmaGreen!90, line width=0.3pt] at (\x,\y) {};
         
     % Weather Points
     \foreach \x/\y in {1.5/-2.8, 2.0/-2.0, 2.5/-1.8, 2.8/-2.5, 1.8/-3.0, 3.0/-2.2}
-        \node[circle, fill=cosmaOrange, inner sep=1.5pt] at (\x,\y) {};
+        \node[circle, fill=cosmaOrange!80, inner sep=1.8pt, draw=cosmaOrange!90, line width=0.3pt] at (\x,\y) {};
 
-    % Annotations for languages (just a few examples to show mixing)
-    \node[font=\tiny, text=cosmaBlue] at (-0.3, 0.2) {EN};
-    \node[font=\tiny, text=cosmaBlue] at (0.9, 0.6) {ZH};
-    \node[font=\tiny, text=cosmaBlue] at (0.3, -0.5) {AR};
+    % Language annotations with better styling
+    \node[font=\tiny\bfseries, text=cosmaBlue!90, fill=white, rounded corners=2pt, inner sep=1.5pt, opacity=0.9] at (-0.3, 0.2) {EN};
+    \node[font=\tiny\bfseries, text=cosmaBlue!90, fill=white, rounded corners=2pt, inner sep=1.5pt, opacity=0.9] at (0.9, 0.6) {ZH};
+    \node[font=\tiny\bfseries, text=cosmaBlue!90, fill=white, rounded corners=2pt, inner sep=1.5pt, opacity=0.9] at (0.3, -0.5) {AR};
     
-    \node[font=\tiny, text=cosmaGreen] at (3.6, 1.4) {ES};
-    \node[font=\tiny, text=cosmaGreen] at (4.9, 1.1) {FR};
+    \node[font=\tiny\bfseries, text=cosmaGreen!90, fill=white, rounded corners=2pt, inner sep=1.5pt, opacity=0.9] at (3.6, 1.4) {ES};
+    \node[font=\tiny\bfseries, text=cosmaGreen!90, fill=white, rounded corners=2pt, inner sep=1.5pt, opacity=0.9] at (4.9, 1.1) {FR};
     
-    \node[font=\tiny, text=cosmaOrange] at (1.4, -2.5) {DE};
-    \node[font=\tiny, text=cosmaOrange] at (3.2, -1.9) {JA};
+    \node[font=\tiny\bfseries, text=cosmaOrange!90, fill=white, rounded corners=2pt, inner sep=1.5pt, opacity=0.9] at (1.4, -2.5) {DE};
+    \node[font=\tiny\bfseries, text=cosmaOrange!90, fill=white, rounded corners=2pt, inner sep=1.5pt, opacity=0.9] at (3.2, -1.9) {JA};
 
-    % Legend
-    \matrix [draw=gray!20, fill=white, below left, column sep=5pt] at (current bounding box.north east) {
-        \node[circle, fill=cosmaBlue, inner sep=1.5pt, label=right:\tiny Finance] {}; \\
-        \node[circle, fill=cosmaGreen, inner sep=1.5pt, label=right:\tiny Sports] {}; \\
-        \node[circle, fill=cosmaOrange, inner sep=1.5pt, label=right:\tiny Weather] {}; \\
+    % Enhanced legend with better styling
+    \matrix [draw=gray!30, fill=white, rounded corners=3pt, drop shadow={opacity=0.15}, 
+             below left, column sep=6pt, row sep=3pt, inner sep=5pt] at (current bounding box.north east) {
+        \node[circle, fill=cosmaBlue!80, inner sep=1.8pt, draw=cosmaBlue!90, line width=0.3pt] {}; &
+        \node[font=\tiny, anchor=west] {Finance (mixed langs)}; \\
+        \node[circle, fill=cosmaGreen!80, inner sep=1.8pt, draw=cosmaGreen!90, line width=0.3pt] {}; &
+        \node[font=\tiny, anchor=west] {Sports (mixed langs)}; \\
+        \node[circle, fill=cosmaOrange!80, inner sep=1.8pt, draw=cosmaOrange!90, line width=0.3pt] {}; &
+        \node[font=\tiny, anchor=west] {Weather (mixed langs)}; \\
     };
 
 \end{tikzpicture}
-\caption{Unified Embedding Space - Semantic Clustering Across Languages}
+\caption{Unified Embedding Space - Semantic Clustering Across 100+ Languages}
 \label{fig:embedding-space}
 \end{figure}

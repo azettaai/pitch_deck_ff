@@ -1,0 +1,85 @@
+% Example: Deployment Diagram using Cosma Package
+% This shows how clean diagrams can be with the unified style
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+
+% Load the cosma-diagrams package
+\usepackage{cosma-diagrams}
+
+\begin{document}
+
+\section{Deployment Tiers - Refactored Example}
+
+This diagram uses the \texttt{cosma-diagrams} package for clean, maintainable code.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=2.2cm]
+
+% Free Tier - using cosma styles
+\node (free) [cosma component, 
+              draw=cosmaBlue!50, 
+              top color=white, 
+              bottom color=cosmaBlue!8,
+              minimum width=4cm,
+              minimum height=3cm] {
+    \textbf{Free Tier} \\[0.3cm]
+    {\small Multi-tenant shared} \\[0.5cm]
+    {\footnotesize
+    $\checkmark$ 1,000 searches/month \\
+    $\checkmark$ 10,000 embeddings/month \\
+    $\checkmark$ Shared CVD cluster
+    }
+};
+
+% Premium Tier
+\node (premium) [cosma component, right=of free,
+                 draw=cosmaGreen!60,
+                 top color=cosmaGreen!3,
+                 bottom color=cosmaGreen!18,
+                 line width=1.5pt,
+                 minimum width=4cm,
+                 minimum height=3cm] {
+    \textbf{Premium Tier} \\[0.3cm]
+    {\small Dedicated compute} \\[0.5cm]
+    {\footnotesize
+    $\checkmark$ Unlimited usage \\
+    $\checkmark$ Private CVD instance \\
+    $\checkmark$ 99.9\% SLA
+    }
+};
+
+% Enterprise Tier
+\node (enterprise) [cosma component, right=of premium,
+                    draw=cosmaOrange!70,
+                    top color=cosmaOrange!5,
+                    bottom color=cosmaOrange!25,
+                    line width=2pt,
+                    minimum width=4cm,
+                    minimum height=3cm] {
+    \textbf{Enterprise} \\[0.3cm]
+    {\small Dedicated Cloud} \\[0.5cm]
+    {\footnotesize
+    $\checkmark$ Single-tenant cluster \\
+    $\checkmark$ Custom VPC peering \\
+    $\checkmark$ Advanced compliance
+    }
+};
+
+% Upgrade arrows
+\draw [cosma upgrade] (free.east) -- node[above, font=\tiny] {upgrade} (premium.west);
+\draw [cosma upgrade] (premium.east) -- node[above, font=\tiny] {upgrade} (enterprise.west);
+
+\end{tikzpicture}
+\caption{Deployment Tiers using Cosma Package}
+\end{figure}
+
+\textbf{Code Comparison:}
+
+\textit{Before:} 50+ lines of local style definitions + diagram code
+
+\textit{After:} Just the diagram code using package styles (70\% reduction!)
+
+\end{document}

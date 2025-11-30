@@ -8,67 +8,97 @@ CSL provides the production-ready search API that coordinates embedding generati
 \centering
 \begin{tikzpicture}[
     node distance=0.8cm, 
-    scale=0.9, 
+    scale=0.9,
     every node/.style={font=\small},
-    % Define styles locally
-    client/.style={rectangle, rounded corners=3pt, minimum width=2.0cm, minimum height=0.8cm, align=center, draw=cosmaPurple!80, top color=cosmaPurple!5, bottom color=cosmaPurple!20, drop shadow},
-    component/.style={rectangle, rounded corners=3pt, minimum width=2.0cm, minimum height=0.8cm, align=center, draw=cosmaBlue!80, top color=cosmaBlue!5, bottom color=cosmaBlue!20, drop shadow},
-    api/.style={rectangle, rounded corners=3pt, minimum width=2.0cm, minimum height=0.8cm, align=center, draw=cosmaOrange!80, top color=cosmaOrange!5, bottom color=cosmaOrange!20, drop shadow},
-    lifeline/.style={dashed, draw=gray!50},
-    activation/.style={rectangle, fill=white, draw=black!50, minimum width=0.3cm},
-    message/.style={->, >=stealth, thick}
+    % Enhanced actor styles with richer gradients
+    client/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.0cm, minimum height=0.8cm, align=center, 
+        draw=cosmaPurple!85, line width=1pt,
+        top color=cosmaPurple!8, bottom color=cosmaPurple!30,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.3}
+    },
+    component/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.0cm, minimum height=0.8cm, align=center, 
+        draw=cosmaBlue!85, line width=1pt,
+        top color=cosmaBlue!8, bottom color=cosmaBlue!30,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.3}
+    },
+    api/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.0cm, minimum height=0.8cm, align=center, 
+        draw=cosmaOrange!85, line width=1pt,
+        top color=cosmaOrange!8, bottom color=cosmaOrange!30,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.3}
+    },
+    lifeline/.style={
+        thick, draw=gray!60, line width=1.2pt
+    },
+    activation/.style={
+        rectangle, 
+        top color=white, bottom color=gray!15,
+        draw=black!60, line width=0.8pt,
+        minimum width=0.35cm,
+        rounded corners=1pt
+    },
+    message/.style={->, >=stealth, thick, line width=1.2pt},
+    request_msg/.style={message, color=cosmaBlue!70},
+    response_msg/.style={message, dashed, color=cosmaGreen!70}
 ]
 
-% Actors
-\node (client) [client] {Client};
-\node (csl) [component, right=2.5cm of client] {CSL API};
-\node (cee) [api, right=2.5cm of csl] {CEE};
-\node (cvd) [component, right=2.5cm of cee] {CVD};
+% Actors with enhanced styling
+\node (client) [client] {\textbf{Client}};
+\node (csl) [component, right=2.5cm of client] {\textbf{CSL API}};
+\node (cee) [api, right=2.5cm of csl] {\textbf{CEE}};
+\node (cvd) [component, right=2.5cm of cee] {\textbf{CVD}};
 
-% Lifelines
+% Enhanced lifelines
 \draw[lifeline] (client) -- ++(0,-8.5);
 \draw[lifeline] (csl) -- ++(0,-8.5);
 \draw[lifeline] (cee) -- ++(0,-8.5);
 \draw[lifeline] (cvd) -- ++(0,-8.5);
 
-% Activation Bars (Simulated)
+% Activation Bars with gradients
 % Client active at start/end
 \node[activation, minimum height=0.5cm] at (client |- 0,-1) {};
 \node[activation, minimum height=0.5cm] at (client |- 0,-8) {};
 
 % CSL active throughout
-\node[activation, minimum height=7cm] at (csl |- 0,-4.5) {};
+\node[activation, minimum height=7cm, top color=cosmaBlue!5, bottom color=cosmaBlue!20] at (csl |- 0,-4.5) {};
 
 % CEE active for embedding
-\node[activation, minimum height=1.5cm] at (cee |- 0,-2.5) {};
+\node[activation, minimum height=1.5cm, top color=cosmaOrange!5, bottom color=cosmaOrange!20] at (cee |- 0,-2.5) {};
 
 % CVD active for search
-\node[activation, minimum height=1.5cm] at (cvd |- 0,-4.5) {};
+\node[activation, minimum height=1.5cm, top color=cosmaBlue!5, bottom color=cosmaBlue!20] at (cvd |- 0,-4.5) {};
 
-% Messages
+% Enhanced messages with progressive styling
 % 1. Search Request
-\draw[message] (client) ++(0,-1) -- node[midway, above, font=\scriptsize] {1: Search("AI in healthcare")} (csl |- 0,-1);
+\draw[request_msg] (client) ++(0,-1) -- node[midway, above, font=\scriptsize\bfseries, text=cosmaBlue!80] {1: Search("AI in healthcare")} (csl |- 0,-1);
 
 % 2. Embedding Request
-\draw[message] (csl) ++(0.15,-2) -- node[midway, above, font=\scriptsize] {2: Embed(text)} (cee |- 0,-2);
+\draw[request_msg] (csl) ++(0.15,-2) -- node[midway, above, font=\scriptsize] {2: Embed(text)} (cee |- 0,-2);
 
 % 3. Embedding Response
-\draw[message, dashed] (cee) ++(-0.15,-3) -- node[midway, above, font=\scriptsize] {3: vector $\mathbf{v}$} (csl |- 0,-3);
+\draw[response_msg] (cee) ++(-0.15,-3) -- node[midway, above, font=\scriptsize] {3: vector $\mathbf{v}$} (csl |- 0,-3);
 
 % 4. Search Request
-\draw[message] (csl) ++(0.15,-4) -- node[midway, above, font=\scriptsize] {4: VectorSearch($\mathbf{v}$, filters)} (cvd |- 0,-4);
+\draw[request_msg] (csl) ++(0.15,-4) -- node[midway, above, font=\scriptsize] {4: VectorSearch($\mathbf{v}$, filters)} (cvd |- 0,-4);
 
 % 5. Search Response
-\draw[message, dashed] (cvd) ++(-0.15,-5) -- node[midway, above, font=\scriptsize] {5: candidates[]} (csl |- 0,-5);
+\draw[response_msg] (cvd) ++(-0.15,-5) -- node[midway, above, font=\scriptsize] {5: candidates[]} (csl |- 0,-5);
 
-% Internal Process: Re-ranking
-\node[rectangle, draw=cosmaGray, fill=cosmaGray!10, rounded corners, minimum width=2.2cm, minimum height=0.6cm, font=\scriptsize] at (csl |- 0,-6.5) {Semantic Re-ranking};
+% Internal Process: Re-ranking with enhanced styling
+\node[rectangle, draw=cosmaGray!70, top color=cosmaGray!10, bottom color=cosmaGray!25, 
+      rounded corners=3pt, minimum width=2.2cm, minimum height=0.7cm, font=\scriptsize\bfseries,
+      drop shadow={opacity=0.2}] at (csl |- 0,-6.5) {Semantic Re-ranking};
 
 % 6. Final Response
-\draw[message, dashed] (csl) ++(-0.15,-8) -- node[midway, above, font=\scriptsize] {6: results[]} (client |- 0,-8);
+\draw[response_msg, line width=1.5pt, color=cosmaGreen!80] (csl) ++(-0.15,-8) -- node[midway, above, font=\scriptsize\bfseries, text=cosmaGreen!80] {6: results[]} (client |- 0,-8);
 
 \end{tikzpicture}
-\caption{CSL Search Sequence Diagram}
+\caption{CSL Search Sequence - End-to-End Query Processing Flow}
 \label{fig:search-sequence}
 \end{figure}
 

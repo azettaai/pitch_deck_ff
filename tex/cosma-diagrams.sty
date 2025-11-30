@@ -1,0 +1,154 @@
+% Cosma Diagrams Style Package
+% Unified TikZ styling for all technical diagrams
+% Author: Cosma Technologies, Inc.
+% Version: 1.1
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cosma-diagrams}[2025/11/29 Cosma Diagram Styles v1.1]
+
+% Required packages
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+
+% TikZ libraries
+\usetikzlibrary{shapes.geometric, arrows, positioning, fit, backgrounds, calc, shadows, fadings}
+
+%% ============================================================================
+%% COLOR DEFINITIONS
+%% ============================================================================
+
+\definecolor{cosmaBlue}{RGB}{41, 128, 185}
+\definecolor{cosmaGreen}{RGB}{39, 174, 96}
+\definecolor{cosmaOrange}{RGB}{230, 126, 34}
+\definecolor{cosmaPurple}{RGB}{142, 68, 173}
+\definecolor{cosmaGray}{RGB}{127, 140, 141}
+
+%% ============================================================================
+%% NODE STYLES  
+%% ============================================================================
+
+\tikzset{
+    % Client/User Interface nodes
+    cosma client/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.2cm, minimum height=0.8cm, 
+        align=center, 
+        draw=cosmaPurple!85, line width=0.8pt,
+        top color=cosmaPurple!5, bottom color=cosmaPurple!28,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.25},
+        font=\small
+    },
+    
+    % Processing/Logic nodes
+    cosma process/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.5cm, minimum height=1.0cm, 
+        align=center, 
+        draw=cosmaGray!85, line width=0.8pt,
+        top color=cosmaGray!5, bottom color=cosmaGray!28,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.25},
+        font=\small
+    },
+    
+    % Component/Service nodes
+    cosma component/.style={
+        rectangle, rounded corners=5pt, 
+        minimum width=3.0cm, minimum height=1.0cm, 
+        align=center, 
+        draw=cosmaBlue!90, line width=1pt,
+        top color=cosmaBlue!8, bottom color=cosmaBlue!32,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.3},
+        font=\small
+    },
+    
+    % API/Interface nodes
+    cosma api/.style={
+        rectangle, rounded corners=5pt, 
+        minimum width=2.5cm, minimum height=1.0cm, 
+        align=center, 
+        draw=cosmaOrange!85, line width=1pt,
+        top color=cosmaOrange!8, bottom color=cosmaOrange!30,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.3},
+        font=\small
+    },
+    
+    % Storage/Database nodes
+    cosma storage/.style={
+        cylinder, shape border rotate=90, aspect=0.25, 
+        minimum width=2.5cm, minimum height=1.2cm, 
+        align=center, 
+        draw=cosmaGreen!90, line width=1pt,
+        top color=cosmaGreen!10, bottom color=cosmaGreen!35,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.3},
+        font=\small
+    },
+    
+    % Layer containers
+    cosma layer/.style={
+        draw=gray!50, dashed, rounded corners=6pt, 
+        top color=gray!3, bottom color=gray!12, 
+        inner sep=0.4cm,
+        drop shadow={shadow xshift=0.1cm, shadow yshift=-0.1cm, opacity=0.15}
+    },
+    
+    % Layer labels (badge style)
+    cosma layer label/.style={
+        font=\bfseries\small, 
+        text=white,
+        rectangle, rounded corners=3pt,
+        inner sep=3pt,
+        top color=gray!70, bottom color=gray!90
+    },
+    
+    % Generic container
+    cosma container/.style={
+        draw=cosmaBlue!60, dashed, rounded corners=8pt, 
+        top color=cosmaBlue!3, bottom color=cosmaBlue!12,
+        inner sep=0.5cm,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.2}
+    },
+}
+
+%% ============================================================================
+%% ARROW STYLES
+%% ============================================================================
+
+\tikzset{
+    % Standard arrow
+    cosma arrow/.style={
+        thick, ->, >=stealth, 
+        color=black!65, line width=1.2pt
+    },
+    
+    % Data flow arrow (emphasized)
+    cosma data arrow/.style={
+        ultra thick, ->, >=stealth, 
+        color=cosmaBlue!65, line width=1.5pt
+    },
+    
+    % Dashed arrow (for auxiliary connections)
+    cosma dashed arrow/.style={
+        thick, ->, >=stealth, dashed, 
+        color=cosmaGray!60, line width=1pt
+    },
+    
+    % Request message (for sequence diagrams)
+    cosma request/.style={
+        ->, >=stealth, thick, line width=1.2pt,
+        color=cosmaBlue!70
+    },
+    
+    % Response message (for sequence diagrams)
+    cosma response/.style={
+        ->, >=stealth, thick, dashed, line width=1.2pt,
+        color=cosmaGreen!70
+    },
+    
+    % Upgrade/progression arrow
+    cosma upgrade/.style={
+        ->, >=stealth, thick, dotted, 
+        color=gray!50
+    },
+}
+
+\endinput

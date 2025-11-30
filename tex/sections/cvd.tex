@@ -21,55 +21,103 @@ Unlike competitors using HNSW or IVF-based approaches, CVD employs a determinist
     node distance=1.2cm, 
     scale=0.9, 
     every node/.style={font=\small},
-    % Define styles locally
-    client/.style={rectangle, rounded corners=3pt, minimum width=2.2cm, minimum height=0.8cm, align=center, draw=cosmaPurple!80, top color=cosmaPurple!5, bottom color=cosmaPurple!20, drop shadow},
-    process/.style={rectangle, rounded corners=3pt, minimum width=2.8cm, minimum height=1.0cm, align=center, draw=cosmaGray!80, top color=cosmaGray!5, bottom color=cosmaGray!20, drop shadow},
-    component/.style={rectangle, rounded corners=3pt, minimum width=3.5cm, minimum height=1.2cm, align=center, draw=cosmaBlue!80, top color=cosmaBlue!5, bottom color=cosmaBlue!20, drop shadow},
-    api/.style={rectangle, rounded corners=3pt, minimum width=2.5cm, minimum height=1.0cm, align=center, draw=cosmaOrange!80, top color=cosmaOrange!5, bottom color=cosmaOrange!20, drop shadow},
-    storage/.style={cylinder, shape border rotate=90, aspect=0.25, minimum width=2.5cm, minimum height=1.5cm, align=center, draw=cosmaGreen!80, top color=cosmaGreen!5, bottom color=cosmaGreen!20, drop shadow},
-    container/.style={draw=cosmaGray!50, dashed, rounded corners, fill=cosmaGray!5, inner sep=0.4cm, label={[anchor=south west, font=\itshape\scriptsize, text=cosmaGray]north west:Processing Pipeline}},
-    arrow/.style={thick, ->, >=stealth, color=black!70}
+    % Enhanced pipeline styles with progressive intensity
+    api/.style={
+        rectangle, rounded corners=5pt, 
+        minimum width=2.5cm, minimum height=1.2cm, align=center, 
+        draw=cosmaOrange!85, line width=1pt,
+        top color=cosmaOrange!8, bottom color=cosmaOrange!30,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.3}
+    },
+    process_light/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.8cm, minimum height=1.0cm, align=center, 
+        draw=cosmaGray!75, line width=0.8pt,
+        top color=cosmaGray!5, bottom color=cosmaGray!22,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.2}
+    },
+    process_medium/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.8cm, minimum height=1.0cm, align=center, 
+        draw=cosmaBlue!80, line width=0.8pt,
+        top color=cosmaBlue!8, bottom color=cosmaBlue!28,
+        drop shadow={shadow xshift=0.13cm, shadow yshift=-0.13cm, opacity=0.25}
+    },
+    process_intense/.style={
+        rectangle, rounded corners=4pt, 
+        minimum width=2.8cm, minimum height=1.0cm, align=center, 
+        draw=cosmaBlue!90, line width=1pt,
+        top color=cosmaBlue!12, bottom color=cosmaBlue!35,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.3}
+    },
+    storage/.style={
+        cylinder, shape border rotate=90, aspect=0.25, 
+        minimum width=2.5cm, minimum height=1.5cm, align=center, 
+        draw=cosmaGreen!90, line width=1pt,
+        top color=cosmaGreen!10, bottom color=cosmaGreen!35,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.3}
+    },
+    container/.style={
+        draw=cosmaBlue!60, dashed, rounded corners=8pt, 
+        top color=cosmaBlue!3, bottom color=cosmaBlue!12,
+        inner sep=0.5cm,
+        drop shadow={shadow xshift=0.12cm, shadow yshift=-0.12cm, opacity=0.2},
+        label={[anchor=north west, font=\itshape\scriptsize\bfseries, 
+                text=white, fill=cosmaBlue!80, rounded corners=3pt, 
+                inner sep=3pt]north west:CVD Processing Pipeline}
+    },
+    arrow/.style={thick, ->, >=stealth, color=black!65, line width=1.2pt},
+    data_arrow/.style={ultra thick, ->, >=stealth, color=cosmaBlue!65, line width=1.5pt},
+    dashed_arrow/.style={thick, ->, >=stealth, dashed, color=cosmaGray!60, line width=1pt}
 ]
 
 % Query Input
 \node (query) [api] {Query Vector \\ $\mathbf{q} \in \mathbb{R}^d$};
 
-% CVD Processing Pipeline
-\node (normalize) [process, below=1.0cm of query] {Normalization \\ $\mathbf{q}' = \mathbf{q}/\|\mathbf{q}\|$};
-\node (traverse) [process, below=0.8cm of normalize] {Proprietary \\ Traversal};
-\node (candidates) [process, below=0.8cm of traverse] {Candidate \\ Selection};
-\node (distance) [process, below=0.8cm of candidates] {Distance \\ Computation};
-\node (rank) [process, below=0.8cm of distance] {Cosma \\ Scoring};
+% CVD Processing Pipeline with progressive intensity
+\node (normalize) [process_light, below=1.0cm of query] {Normalization \\ $\mathbf{q}' = \mathbf{q}/\|\mathbf{q}\|$};
+\node (traverse) [process_medium, below=0.8cm of normalize] {Proprietary \\ Traversal};
+\node (candidates) [process_medium, below=0.8cm of traverse] {Candidate \\ Selection};
+\node (distance) [process_intense, below=0.8cm of candidates] {Distance \\ Computation};
+\node (rank) [process_intense, below=0.8cm of distance] {Cosma \\ Scoring};
 
-% Container for Pipeline
+% Enhanced container for pipeline
 \begin{scope}[on background layer]
     \node (pipeline) [container, fit=(normalize)(traverse)(candidates)(distance)(rank)] {};
 \end{scope}
 
-% Storage
-\node (index) [storage, right=2.5cm of traverse] {Vector Index \\ PostgreSQL};
+% Storage with enhanced 3D effect
+\node (index) [storage, right=2.8cm of traverse] {Vector Index \\ PostgreSQL};
 
 % Output
 \node (results) [api, below=1.0cm of rank] {Top-K Results};
 
-% Connections
-\draw [arrow] (query) -- (normalize);
+% Main data flow with progressive emphasis
+\draw [data_arrow] (query) -- (normalize);
 \draw [arrow] (normalize) -- (traverse);
 \draw [arrow] (traverse) -- (candidates);
 \draw [arrow] (candidates) -- (distance);
 \draw [arrow] (distance) -- (rank);
-\draw [arrow] (rank) -- (results);
+\draw [data_arrow] (rank) -- (results);
 
-% Index Interactions
-\draw [arrow, dashed, bend left=15] (traverse.east) to node[midway, above, font=\tiny, text=cosmaGray] {Index Lookup} (index.west);
-\draw [arrow, dashed, bend right=15] (index.west) to node[midway, below, font=\tiny, text=cosmaGray] {Data Retrieval} (candidates.east);
+% Index interactions with refined styling
+\draw [dashed_arrow, bend left=18] (traverse.east) to node[midway, above, font=\tiny, text=cosmaGray!80] {Index Lookup} (index.west);
+\draw [dashed_arrow, bend right=18] (index.west) to node[midway, below, font=\tiny, text=cosmaGray!80] {Data Retrieval} (candidates.east);
 
-% Annotations
-\node[right=0.5cm of normalize, text width=3.5cm, font=\scriptsize, color=gray] {Vector preprocessing for search optimization};
-\node[right=0.5cm of distance, text width=3.5cm, font=\scriptsize, color=gray] {CosmaDistance metric or cosine similarity};
+% Enhanced annotations with better positioning
+\node[right=0.5cm of normalize, text width=3.8cm, font=\scriptsize, color=gray!70, align=left] {
+    \textit{Preprocessing step:} \\
+    Vector normalization for \\
+    search optimization
+};
+\node[right=0.5cm of distance, text width=3.8cm, font=\scriptsize, color=gray!70, align=left] {
+    \textit{Metric computation:} \\
+    CosmaDistance or \\
+    cosine similarity
+};
 
 \end{tikzpicture}
-\caption{CVD Query Execution Pipeline}
+\caption{CVD Query Execution Pipeline - Deterministic Search Flow}
 \label{fig:cvd-pipeline}
 \end{figure}
 
