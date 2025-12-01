@@ -1,19 +1,27 @@
 \section{Cosma Vector Database (CVD)}
 
-The CVD represents our core technological differentiation: a proprietary vector search implementation built on PostgreSQL that eliminates the unpredictability of approximate nearest neighbor (ANN) algorithms.
+We utilize a proprietary storage engine that eliminates graph-maintenance overhead.
 
-\subsection{Technical Architecture}
+\subsection{The Architecture of Efficiency}
 
-Unlike competitors using HNSW or IVF-based approaches, CVD employs a deterministic search algorithm optimized for CPU execution. This provides:
+Traditional vector databases rely on graph-based indexing (HNSW) or cluster-based approximations (IVF) to overcome the scaling limit. These legacy architectures introduce unavoidable hardware and operational taxes.
 
-\begin{itemize}[noitemsep]
-    \item \textbf{Predictable Latency}: Deterministic query execution (no probabilistic search)
-    \item \textbf{Lower Infrastructure Costs}: CPU-optimized, no GPU required for queries
-    \item \textbf{Enterprise Compatibility}: Built on PostgreSQL, integrates with existing tools
-    \item \textbf{Secure Deployment}: Sealed Docker containers, no source exposure
+\subsubsection*{What We Eliminated}
+
+\begin{itemize}
+    \item \textbf{No Graph Construction Overhead}: Competitors burn 30-50\% of CPU cycles just "wiring" the index graph during ingestion. CVD eliminates this step entirely, enabling instant-read availability.
+    \item \textbf{No "RAM Cliff"}: Graph indices must reside in memory to be performant, forcing customers to rent expensive high-RAM instances (e.g., AWS r6g.24xlarge). CVD is architected for Disk-Native Efficiency, running on standard commodity storage without latency degradation.
+    \item \textbf{No Re-Indexing Lag}: CVD removes the need for background "build" or "warm-up" phases. Data is searchable the millisecond it is ingested.
 \end{itemize}
 
-\subsection{CVD Architecture Diagram}
+\subsection{Proprietary Search Execution}
+
+CVD employs a trade-secret Direct-Storage Traversal algorithm. By decoupling semantic precision from RAM-heavy graph structures, we achieve:
+
+\begin{itemize}
+    \item \textbf{Predictable Latency}: Removing the probabilistic variance of graph "hops."
+    \item \textbf{Linear Cost Scaling}: Costs grow with storage (cheap), not memory (expensive).
+\end{itemize}
 
 \begin{figure}[ht]
 \centering
@@ -121,14 +129,29 @@ Unlike competitors using HNSW or IVF-based approaches, CVD employs a determinist
 \label{fig:cvd-pipeline}
 \end{figure}
 
-\subsection{Index Characteristics}
+\subsection{The Hidden Taxes of HNSW (Current Standard)}
 
-\begin{tcolorbox}[enhanced, colback=cosmaGreen!5, colframe=cosmaGreen, title=CVD Index Specifications, drop shadow, interior style={top color=cosmaGreen!5, bottom color=cosmaGreen!15}]
-\begin{itemize}[noitemsep]
-    \item \textbf{Supported Dimensions}: 128, 256, 384, 512, 768, 1024, 1536
-    \item \textbf{Distance Metrics}: CosmaDistance (proprietary), Cosine Similarity
-    \item \textbf{Search Complexity}: $O(\log n)$ deterministic traversal
-    \item \textbf{Memory Efficiency}: Optional quantization reduces footprint by 4-8x
-    \item \textbf{Insertion Performance}: Constant-time amortized updates
+While HNSW (used by Pinecone, Weaviate) offers fast read speeds, it forces a "Trilemma" of compromises that Cosma eliminates:
+
+\begin{itemize}
+    \item \textbf{The Write Tax}: HNSW requires calculating distances to multiple neighbors and re-writing graph edges for every single insertion.
+    \textit{Result}: Write throughput is capped, and CPUs spike during ingestion.
+    
+    \item \textbf{The Memory Tax}: The HNSW graph structure requires storing millions of edge pointers in RAM.
+    \textit{Result}: 1 Billion vectors require $\sim$1.5TB - $\sim$3TB of RAM, costing $>\$15$k/month in raw infrastructure just to hold the index.
+    
+    \item \textbf{The Mutability Tax}: Deleting or updating vectors in a graph is computationally expensive and often degrades the graph's quality over time, forcing a complete "Re-Index" (downtime/CPU spike).
 \end{itemize}
-\end{tcolorbox}
+
+\subsection{The Cosma Advantage}
+
+Cosma eliminates the graph entirely. Our proprietary indexing method is stateless regarding neighbor relationships at the storage layer. This means:
+
+\begin{itemize}
+    \item \textbf{O(1) Memory Overhead}: We do not store edge pointers.
+    \item \textbf{Instant Mutability}: Updates and deletes are standard database operations, not graph repairs.
+\end{itemize}
+
+\begin{quote}
+"Unlike graph-based approximations where query pathing changes based on index fragmentation (leading to jitter), Cosma's search path is architecturally fixed. This delivers consistent latency profiles regardless of data scale."
+\end{quote}

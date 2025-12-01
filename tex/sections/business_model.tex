@@ -1,12 +1,16 @@
 \section{Business Model}
 
+\subsection{Overview}
+
+Azetta.ai delivers \textbf{Cosma}, an enterprise-grade omnilingual semantic search platform operating on a tiered subscription model with usage-based pricing. We target five distinct customer segments with differentiated value propositions and cost structures, generating revenue through three primary streams.
+
 \subsection{Revenue Streams}
 
 \begin{enumerate}
-    \item \textbf{Model Usage Fees}: Consumption-based pricing for intelligence
+    \item \textbf{Model Usage Fees}: Consumption-based pricing for COEM embeddings
     \begin{itemize}[noitemsep]
-        \item Standard COEM Models: \$0.10 per 1M tokens
-        \item Fine-Tuned Models: Custom pricing per 1M tokens
+        \item Dimension-based tiered pricing (see Section \ref{sec:coem-pricing})
+        \item Bundled in subscription tiers or pay-as-you-go overage
     \end{itemize}
     
     \item \textbf{Managed Infrastructure}: At-cost pass-through pricing
@@ -17,11 +21,91 @@
     \end{itemize}
     
     \item \textbf{Professional Services}: Integration, training, custom models
+    \begin{itemize}[noitemsep]
+        \item Typical engagements: \$50K-\$250K
+        \item Expected revenue mix: 10-15\% (Years 1-2), declining to 5\% (Year 5)
+        \item Services include: Custom model training, integration support, enterprise onboarding
+    \end{itemize}
 \end{enumerate}
 
-\subsection{COEM Model Pricing Tiers}
+\subsection{Strategic Business Model Advantages}
 
-COEM models are available in multiple dimensions, with pricing reflecting computational cost:
+Azetta.ai's pricing model is architected to create \textbf{sustainable competitive moats} while maximizing customer lifetime value:
+
+\subsubsection{1. At-Cost Infrastructure Pass-Through}
+
+\textbf{What it means:} Customers pay the raw cloud provider cost (AWS/GCP) for compute and storage with \textbf{zero markup}.
+
+\textbf{Why this wins:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Radical Transparency}: No hidden margins or surprise infrastructure bills—customers see exactly what they're paying for
+    \item \textbf{Competitive Immunity}: Competitors can't undercut us on infrastructure since we charge \$0 margin (they can only match at best)
+    \item \textbf{Trust Builder}: Enterprise buyers love knowing we're not profiting from their infrastructure spend—builds long-term partnerships
+    \item \textbf{Revenue Focus}: We make money on value-add (COEM models, search intelligence), not commodity infrastructure
+\end{itemize}
+
+\textbf{Customer impact:} A company spending \$5,000/month on infrastructure pays exactly \$5,000. With traditional vendors (20-40\% markup), the same workload costs \$6,000-\$7,000/month.
+
+\subsubsection{2. Annual Commitments = Predictable Revenue}
+
+\textbf{What it means:} Infrastructure costs are billed \textbf{annually in advance}, not month-to-month.
+
+\textbf{Why this wins:}
+\begin{itemize}[noitemsep]
+    \item \textbf{12-Month Cash Flow}: Every customer provides upfront capital, reducing working capital needs
+    \item \textbf{Lower Churn Risk}: Annual contracts create switching friction—customers don't casually cancel mid-year
+    \item \textbf{Financial Predictability}: ARR becomes highly predictable, making revenue forecasting accurate for investors
+    \item \textbf{Customer Savings}: We pass along AWS annual commitment discounts (10-15\% savings vs. on-demand)
+\end{itemize}
+
+\textbf{Investor impact:} By Year 3, 70\%+ of revenue is under annual contracts, providing \textbf{\$19.7M+ in prepaid cash} to fund operations without relying on external capital.
+
+\subsubsection{3. Zero-Fee Scaling Flexibility}
+
+\textbf{What it means:} Customers can scale infrastructure up or down \textbf{without change fees or penalties}, enabled by our decoupled storage architecture.
+
+\textbf{Why this wins:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Eliminates Upgrade Friction}: Customers don't fear scaling up (no "gotcha" fees), accelerating expansion revenue
+    \item \textbf{Technical Moat}: Decoupled architecture is hard to replicate—competitors lock customers into fixed instance sizes
+    \item \textbf{Expansion Revenue Driver}: Easy scaling drives 20-30\% annual upsells through natural usage growth
+    \item \textbf{Risk Mitigation}: Customers can downgrade during slowdowns without penalty, reducing churn during economic downturns
+\end{itemize}
+
+\textbf{Economic impact:} Net Revenue Retention (NRR) of 110-130\% driven by frictionless expansion—every \$1 of new ARR becomes \$1.10-\$1.30 the following year.
+
+\subsubsection{4. Hybrid Pay-As-You-Go + Subscription Model}
+
+\textbf{What it means:} Customers buy bundled tiers (predictable base) + pay overage fees for usage spikes (consumption alignment).
+
+\textbf{Why this wins:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Land-and-Expand}: Start with small subscription, grow into higher tiers as usage increases organically
+    \item \textbf{Revenue Upside}: Overage fees capture unexpected growth (20-30\% of customers exceed base tier monthly)
+    \item \textbf{Budget Certainty}: Base subscription is fixed; overage only applies when customers scale, aligning costs with their revenue growth
+    \item \textbf{Self-Service Friendly}: Usage-based pricing removes sales friction—customers self-select appropriate tiers
+\end{itemize}
+
+\textbf{Revenue mix:} 60\% subscription (predictable) + 30\% infrastructure pass-through (annual) + 10\% overage/services (expansion) = highly diversified revenue base.
+
+\vspace{0.5cm}
+
+\begin{tcolorbox}[colback=cosmaGreen!10, colframe=cosmaGreen, title=Combined Strategic Impact]
+\begin{itemize}[noitemsep]
+    \item \textbf{Customer Retention}: Annual contracts + zero-fee scaling + transparent pricing = <5\% churn (vs. 10-15\% industry average)
+    
+    \item \textbf{Net Revenue Retention}: Easy expansion + usage-based overage = 110-130\% NRR (best-in-class SaaS metric)
+    
+    \item \textbf{Gross Margins}: 70\% by Year 5 despite at-cost infrastructure (we monetize intelligence, not infrastructure)
+    
+    \item \textbf{Competitive Defensibility}: Pass-through pricing + decoupled architecture = nearly impossible for competitors to match without rebuilding their entire platform
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{COEM Model Pricing Tiers}
+\label{sec:coem-pricing}
+
+COEM models are available in multiple dimensions, with pricing reflecting computational cost. Subscription tiers bundle prepaid COEM tokens with managed infrastructure and unlimited search queries.
 
 \begin{table}[ht]
 \centering
@@ -48,11 +132,7 @@ COEM-XXL & 1536 & \$0.30 & 15x & Maximum precision \\
 
 \textbf{Pricing factors:} Higher dimensions = more GPU memory, larger index storage, lower throughput per GPU, but better semantic precision.
 
-\section{Business Model \& Financial Projections}
-
-\subsection{Revenue Model}
-
-Azetta.ai operates on a tiered subscription model with usage-based pricing, targeting five distinct customer segments with differentiated value propositions and cost structures.
+\textbf{Example:} The "Professional" tier (\$999/month) includes 5M embeddings (~40B tokens using COEM-Base at \$0.08/1M = \$3.20 in compute) plus hosted infrastructure and unlimited searches.
 
 \subsection{Customer Segmentation}
 
@@ -86,7 +166,8 @@ Tech Giants & Platform-scale, millions of users & Multi-region clusters & 100M+ 
     \item Free Tier: Shared CPU + 10,000 embeddings/month (unlimited searches, \$0 revenue)
     \item Starter: \$9/month - Shared CPU + 50,000 embeddings (unlimited searches)
     \item Pro: \$29/month - 1 vCPU + 200,000 embeddings (unlimited searches)
-    \item Overage: \$0.10 per 10K embeddings beyond quota
+    \item \textbf{Included Model:} COEM-Small (256 dims, \$0.04/1M tokens)
+    \item Overage: \$0.10 per 10K embeddings beyond quota (COEM-Small)
 \end{itemize}
 
 \textbf{Cost Analysis (per paying user):}
@@ -106,7 +187,8 @@ Tech Giants & Platform-scale, millions of users & Multi-region clusters & 100M+ 
 \begin{itemize}[noitemsep]
     \item Growth: \$99/month - 1 vCPU instance + 500K embeddings (unlimited searches)
     \item Business: \$299/month - 2 vCPU instance + 2M embeddings (unlimited searches)
-    \item Overage: \$0.10 per 10K embeddings beyond quota
+    \item \textbf{Included Model:} COEM-Small (256 dims, \$0.04/1M tokens)
+    \item Overage: \$0.10 per 10K embeddings beyond quota (COEM-Small)
 \end{itemize}
 
 \textbf{Cost Analysis (per customer):}
@@ -133,6 +215,8 @@ Tech Giants & Platform-scale, millions of users & Multi-region clusters & 100M+ 
 \begin{itemize}[noitemsep]
     \item Professional: \$999/month - 4 vCPU instance + 5M embeddings (unlimited searches)
     \item Premium: \$2,999/month - 8 vCPU instance + 20M embeddings (unlimited searches)
+    \item \textbf{Included Model:} COEM-Base (512 dims, \$0.08/1M tokens)
+    \item Overage: \$0.12 per 10K embeddings (COEM-Base)
     \item Includes: 99.9\% SLA, dedicated support, advanced features
 \end{itemize}
 
@@ -160,6 +244,8 @@ Tech Giants & Platform-scale, millions of users & Multi-region clusters & 100M+ 
 \begin{itemize}[noitemsep]
     \item Enterprise: \$9,999/month - 16 vCPU cluster + 50M embeddings (unlimited searches)
     \item Enterprise Plus: \$29,999/month - 32 vCPU cluster + 200M embeddings (unlimited searches)
+    \item \textbf{Included Model:} COEM-Large (768 dims, \$0.12/1M tokens)
+    \item Overage: \$0.15 per 10K embeddings (COEM-Large)
     \item Includes: Single-tenant, VPC peering, premium support, compliance
 \end{itemize}
 
@@ -187,6 +273,8 @@ Tech Giants & Platform-scale, millions of users & Multi-region clusters & 100M+ 
 \textbf{Revenue Model:}
 \begin{itemize}[noitemsep]
     \item Custom pricing: \$100,000-500,000+/month
+    \item \textbf{Included Model:} COEM-XL or COEM-XXL (1024-1536 dims, negotiated)
+    \item Overage: Custom volume-based pricing
     \item Volume discounts, custom SLAs, white-glove service
     \item Platform integration, co-marketing opportunities
 \end{itemize}
@@ -210,6 +298,27 @@ Tech Giants & Platform-scale, millions of users & Multi-region clusters & 100M+ 
     \item Contract length: 2-5 years
 \end{itemize}
 
+\subsection{Revenue Stream Mix}
+
+Our revenue model evolves as the business scales, with infrastructure and services revenue growing alongside core model usage:
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Revenue Stream} & \textbf{Years 1-2} & \textbf{Years 3-5} \\
+\hline
+Model Usage Fees & 60\% & 55\% \\
+Managed Infrastructure & 30\% & 35\% \\
+Professional Services & 10\% & 10\% \\
+\hline
+\end{tabular}
+\caption{Projected Revenue Mix by Stream}
+\end{table}
+
+Infrastructure revenue grows as customers scale to larger deployment tiers, while professional services remain stable at ~10\% as improved documentation and self-service tooling reduce dependency.
+
 \subsection{5-Year Revenue Projection}
 
 \begin{table}[ht]
@@ -231,16 +340,78 @@ Tech Giants & \$0 & \$1.8M & \$7.2M & \$18M & \$36M \\
 \caption{Projected Annual Recurring Revenue by Segment}
 \end{table}
 
-\subsection{Key Assumptions}
+\subsection{Key Growth Assumptions}
 
 \begin{enumerate}[noitemsep]
     \item Customer acquisition ramps progressively: 200 → 800 → 2,500 → 5,000 → 8,000 total customers
     \item Average revenue per customer grows from \$520/month (Y1) to \$1,275/month (Y5)
     \item Gross margin improves from 55\% (Y1) to 70\% (Y5) through scale efficiencies
-    \item Churn rate: 5\%/month (hobbyists), 3\%/month (SMB), 1\%/month (enterprise), 0.5\%/month (tech giants)
+    \item \textbf{Churn rates:} 5\%/month (hobbyists), 3\%/month (SMB), 1\%/month (enterprise), 0.5\%/month (tech giants)
+    \item \textbf{Net Revenue Retention:} 110-130\% driven by usage growth and tier upgrades
     \item Infrastructure costs decrease 15-20\% annually through optimization and better pricing
     \item Sales efficiency improves 30\% year-over-year as product matures
 \end{enumerate}
+
+\subsection{Lean Team Strategy: Capital-Efficient Scaling}
+
+Unlike traditional SaaS companies that aggressively hire large sales and support teams, Azetta.ai is designed for \textbf{extreme operational leverage} through automation, product-led growth, and technical excellence.
+
+\subsubsection{Headcount Projection}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+\textbf{Function} & \textbf{Year 1} & \textbf{Year 2} & \textbf{Year 3} & \textbf{Year 4} & \textbf{Year 5} \\
+\hline
+Engineering (Product \& Infra) & 3 & 5 & 8 & 12 & 15 \\
+Sales \& Marketing & 1 & 2 & 4 & 6 & 8 \\
+Customer Success \& Support & 0.5 & 1 & 2 & 4 & 6 \\
+G\&A (Finance, Legal, Ops) & 0.5 & 1 & 2 & 3 & 6 \\
+\hline
+\textbf{Total Headcount} & \textbf{5} & \textbf{9} & \textbf{16} & \textbf{25} & \textbf{35} \\
+\hline
+\hline
+Revenue per Employee & \textbf{\$250K} & \textbf{\$967K} & \textbf{\$1.76M} & \textbf{\$2.6M} & \textbf{\$3.5M} \\
+\hline
+\end{tabular}
+\caption{Projected Headcount \& Revenue per Employee}
+\end{table}
+
+\subsubsection{How We Stay Lean}
+
+\begin{enumerate}[noitemsep]
+    \item \textbf{Product-Led Growth (PLG)}: Self-service onboarding and freemium tiers eliminate need for large SDR/BDR teams. Target: 70\%+ customers acquired through product, not outbound sales
+    
+    \item \textbf{Automated Customer Success}: Built-in usage analytics, proactive alerts, and comprehensive documentation reduce support tickets by 60\%. One CSM can manage 100+ accounts vs. industry standard of 30-40
+    
+    \item \textbf{Engineering Leverage}: Investing in infrastructure automation (auto-scaling, monitoring, deployment) means 15 engineers in Year 5 can support \$122M ARR workloads that competitors need 50+ engineers to manage
+    
+    \item \textbf{Founder-Led Sales (Early Stage)}: Founders handle enterprise deals through Year 2, deferring expensive sales hires until repeatable playbook is proven
+    
+    \item \textbf{Outsourced Non-Core Functions}: Accounting, legal, HR, and recruiting handled via fractional executives and external vendors rather than full-time hires
+\end{enumerate}
+
+\subsubsection{Benchmark Comparison}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Metric} & \textbf{Azetta.ai} & \textbf{Typical SaaS} & \textbf{Advantage} \\
+\hline
+Revenue per Employee (Year 5) & \$3.5M & \$150K-250K & \textbf{10-20x} \\
+Customer Support Ratio & 1:100+ & 1:30-40 & \textbf{3x leverage} \\
+Sales Team \% of Headcount & 23\% & 40-50\% & \textbf{50\% reduction} \\
+Eng \% of Headcount & 43\% & 25-30\% & \textbf{Product focus} \\
+\hline
+\end{tabular}
+\caption{Lean Operations vs. Industry Benchmarks}
+\end{table}
+
+\textbf{Capital Efficiency Impact}: By Year 5, Azetta.ai achieves \$3.5M revenue per employee—\textbf{10-20x higher than typical SaaS companies}. This operational leverage is the primary driver of our 18\% EBITDA margins and positions us to reach profitability faster with less dilution.
 
 \subsection{Path to Profitability}
 
@@ -252,13 +423,36 @@ Tech Giants & \$0 & \$1.8M & \$7.2M & \$18M & \$36M \\
 \textbf{Metric} & \textbf{Year 1} & \textbf{Year 2} & \textbf{Year 3} & \textbf{Year 4} & \textbf{Year 5} \\
 \hline
 Total Revenue & \$1.25M & \$8.7M & \$28.2M & \$65M & \$122.5M \\
-COGS (45-30\%) & -\$563K & -\$3.0M & -\$9.0M & -\$19.5M & -\$36.7M \\
+COGS (45-30\%) & -\$563K & -\$2.96M & -\$9.02M & -\$19.5M & -\$36.75M \\
 \hline
-\textbf{Gross Profit} & \textbf{\$687K} & \textbf{\$5.7M} & \textbf{\$19.2M} & \textbf{\$45.5M} & \textbf{\$85.8M} \\
+\textbf{Gross Profit} & \textbf{\$687K} & \textbf{\$5.74M} & \textbf{\$19.18M} & \textbf{\$45.5M} & \textbf{\$85.75M} \\
 \textbf{Gross Margin} & \textbf{55\%} & \textbf{66\%} & \textbf{68\%} & \textbf{70\%} & \textbf{70\%} \\
 \hline
+\hline
+Sales \& Marketing & -\$875K & -\$4.35M & -\$9.87M & -\$16.25M & -\$24.5M \\
+(as \% revenue) & (70\%) & (50\%) & (35\%) & (25\%) & (20\%) \\
+\hline
+R\&D & -\$500K & -\$3.05M & -\$8.46M & -\$16.25M & -\$24.5M \\
+(as \% revenue) & (40\%) & (35\%) & (30\%) & (25\%) & (20\%) \\
+\hline
+G\&A & -\$188K & -\$1.04M & -\$3.38M & -\$7.8M & -\$14.7M \\
+(as \% revenue) & (15\%) & (12\%) & (12\%) & (12\%) & (12\%) \\
+\hline
+\hline
+\textbf{EBITDA} & \textbf{-\$876K} & \textbf{-\$2.7M} & \textbf{-\$2.53M} & \textbf{+\$5.2M} & \textbf{+\$22.05M} \\
+\textbf{EBITDA Margin} & \textbf{-70\%} & \textbf{-31\%} & \textbf{-9\%} & \textbf{+8\%} & \textbf{+18\%} \\
+\hline
 \end{tabular}
-\caption{Projected Gross Profit Margins}
+\caption{Projected Income Statement \& Path to Profitability}
 \end{table}
 
-\textbf{Break-even:} Expected in Year 2 at \$5-7M ARR with 300-500 paying customers (excluding fundraising expenses).
+\textbf{Break-even:} EBITDA-positive by Year 4 at \$65M ARR. Company prioritizes aggressive market share capture in Years 1-3 while steadily improving operational efficiency. By Year 5, achieves best-in-class SaaS metrics with 70\% gross margins and 18\% EBITDA margins, demonstrating sustainable unit economics at scale.
+
+\textbf{Key efficiency drivers:}
+\begin{itemize}[noitemsep]
+    \item \textbf{S\&M optimization:} Product-led growth (PLG) motion reduces CAC by 60\% from Year 1 to Year 5; self-service adoption drives 70\%+ of new customers by Year 5
+    \item \textbf{R\&D leverage:} Core platform matures by Year 3; later-stage R\&D focuses on incremental features and vertical expansion rather than foundational rebuilds
+    \item \textbf{Infrastructure efficiency:} Economies of scale reduce per-customer compute costs 40\% through better GPU utilization and AWS volume discounts
+\end{itemize}
+
+\textbf{Note:} This trajectory balances growth and profitability. More aggressive growth scenario (maintaining 30\% S\&M spend through Year 5) could achieve \$200M+ ARR but delay profitability to Year 6.

@@ -56,8 +56,8 @@ Cosma supports three deployment tiers designed for different organizational need
     \node (free_box) [tier_free, fit=(free_header)(free_details), inner sep=0.5cm] {};
 \end{scope}
 
-% Premium Tier
-\node (premium_header) [tier_header, right=2.2cm of free_header, draw=cosmaGreen!70, top color=cosmaGreen!20, bottom color=cosmaGreen!40] {
+% Premium Tier - vertical layout below Free Tier
+\node (premium_header) [tier_header, below=1.5cm of free_details, draw=cosmaGreen!70, top color=cosmaGreen!20, bottom color=cosmaGreen!40] {
     \textcolor{cosmaGreen!90}{Premium Tier} \\ 
     {\scriptsize\textit{Dedicated compute}}
 };
@@ -70,8 +70,8 @@ Cosma supports three deployment tiers designed for different organizational need
     \node (premium_box) [tier_premium, fit=(premium_header)(premium_details), inner sep=0.5cm] {};
 \end{scope}
 
-% Enterprise Tier
-\node (enterprise_header) [tier_header, right=2.2cm of premium_header, draw=cosmaOrange!70, top color=cosmaOrange!25, bottom color=cosmaOrange!50] {
+% Enterprise Tier - vertical layout below Premium Tier
+\node (enterprise_header) [tier_header, below=1.5cm of premium_details, draw=cosmaOrange!70, top color=cosmaOrange!25, bottom color=cosmaOrange!50] {
     \textcolor{cosmaOrange!90}{Enterprise} \\ 
     {\scriptsize\textit{Dedicated Cloud}}
 };
@@ -84,9 +84,9 @@ Cosma supports three deployment tiers designed for different organizational need
     \node (enterprise_box) [tier_enterprise, fit=(enterprise_header)(enterprise_details), inner sep=0.5cm] {};
 \end{scope}
 
-% Upgrade path arrows
-\draw [upgrade_arrow] (free_box.east) -- node[above, font=\tiny, text=gray] {upgrade} (premium_box.west);
-\draw [upgrade_arrow] (premium_box.east) -- node[above, font=\tiny, text=gray] {upgrade} (enterprise_box.west);
+% Upgrade path arrows - vertical
+\draw [upgrade_arrow] (free_box.south) -- node[right, font=\tiny, text=gray, xshift=2pt] {upgrade} (premium_box.north);
+\draw [upgrade_arrow] (premium_box.south) -- node[right, font=\tiny, text=gray, xshift=2pt] {upgrade} (enterprise_box.north);
 
 \end{tikzpicture}
 \caption{Cosma Deployment Tiers - Progressive Service Levels}

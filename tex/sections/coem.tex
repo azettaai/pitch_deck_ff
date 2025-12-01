@@ -61,10 +61,10 @@ COEM models solve the fundamental challenge of cross-lingual semantic representa
 % Group inputs
 \node (inputs) [fit=(en)(zh)(ar)(more), inner sep=0.2cm] {};
 
-% Core Pipeline with enhanced components
-\node (tokenizer) [process, right=1.5cm of zh] {Universal \\ Tokenizer};
-\node (transformer) [component, right=1.0cm of tokenizer] {\textbf{Transformer} \\ Encoder \\ (12-24 Layers)};
-\node (pooling) [process, right=1.0cm of transformer] {Mean \\ Pooling};
+% Core Pipeline with enhanced components - more compact vertical layout
+\node (tokenizer) [process, right=1.2cm of zh] {Universal \\ Tokenizer};
+\node (transformer) [component, below=0.8cm of tokenizer] {\textbf{Transformer} \\ Encoder \\ (12-24 Layers)};
+\node (pooling) [process, below=0.8cm of transformer] {Mean \\ Pooling};
 
 % Enhanced container for core
 \begin{scope}[on background layer]
@@ -72,7 +72,7 @@ COEM models solve the fundamental challenge of cross-lingual semantic representa
 \end{scope}
 
 % Output
-\node (vector) [api, right=1.5cm of pooling] {Unified Vector \\ $\mathbb{R}^{768}$};
+\node (vector) [api, right=1.2cm of transformer] {Unified Vector \\ $\mathbb{R}^{768}$};
 
 % Enhanced connections with data flow emphasis
 \draw [arrow] (en.east) -- (tokenizer.west);
@@ -81,10 +81,10 @@ COEM models solve the fundamental challenge of cross-lingual semantic representa
 
 \draw [data_arrow] (tokenizer) -- (transformer);
 \draw [data_arrow] (transformer) -- (pooling);
-\draw [data_arrow] (pooling) -- (vector);
+\draw [data_arrow] (pooling.east) -| (vector.south);
 
 % Enhanced annotations with improved styling
-\node[below=0.8cm of transformer, text width=5.5cm, align=center, font=\scriptsize, 
+\node[below=0.8cm of pooling, text width=5.5cm, align=center, font=\scriptsize, 
       rectangle, rounded corners=4pt, fill=gray!8, 
       draw=gray!30, inner sep=5pt] {
     \textbf{Training Objectives:}\\

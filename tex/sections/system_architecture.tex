@@ -169,10 +169,10 @@ Figure \ref{fig:component-diagram} shows detailed relationships between core com
 \node (coem) [process, below=1.2cm of cee] {COEM Models \\ 128-1536 dims};
 \node (postgres) [storage, below=1.2cm of cvd] {PostgreSQL \\ + Custom Index};
 
-% External
+% External - vertical layout
 \node (client) [client, above=1.5cm of csl] {Client Applications};
-\node (metadata) [process, right=1.5cm of cvd] {Metadata \\ Filter};
-\node (rank) [process, right=1.5cm of metadata] {Re-ranking \\ Engine};
+\node (metadata) [process, below=1.2cm of postgres] {Metadata \\ Filter};
+\node (rank) [process, below=1.0cm of metadata] {Re-ranking \\ Engine};
 
 % Primary data flow connections with enhanced styling and proper routing
 \draw [data_arrow] (client) -- node[midway, left, font=\scriptsize\bfseries, text=cosmaBlue] {Query} (csl);
@@ -181,10 +181,10 @@ Figure \ref{fig:component-diagram} shows detailed relationships between core com
 \draw [arrow] (cee) -- node[midway, left, font=\scriptsize] {Inference} (coem);
 \draw [arrow] (cvd) -- node[midway, right, font=\scriptsize] {Storage} (postgres);
 
-% Search Flow with visual emphasis - routed around components
-\draw [arrow] (cvd.east) -| node[near start, above, font=\scriptsize] {} (metadata.north);
-\draw [arrow] (metadata.east) -- (rank.west);
-\draw [data_arrow] (rank.north) |- ([yshift=0.8cm]rank.north) -| node[near end, right, font=\tiny] {} (csl.east);
+% Search Flow with visual emphasis - vertical routing
+\draw [arrow] (postgres.south) -- (metadata.north);
+\draw [arrow] (metadata.south) -- (rank.north);
+\draw [data_arrow] (rank.west) -| ([xshift=-1.5cm]rank.west) |- (csl.south);
 
 
 \end{tikzpicture}
