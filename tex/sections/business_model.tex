@@ -88,6 +88,28 @@ Azetta.ai's pricing model is architected to create \textbf{sustainable competiti
 
 \textbf{Revenue mix:} 60\% subscription (predictable) + 30\% infrastructure pass-through (annual) + 10\% overage/services (expansion) = highly diversified revenue base.
 
+\subsubsection{5. Proprietary Ecosystem Lock-in}
+
+\textbf{What it means:} The Cosma Vector Database (CVD) is tightly coupled with our model architecture.
+
+\textbf{Why this wins:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Technical Dependency}: CVD's "zero-build" efficiency relies on specific vector properties produced only by Cosma models or our adaptation API.
+    \item \textbf{No "Bring Your Own Vector" Leakage}: Customers cannot simply generate vectors with OpenAI and query CVD directly. They \textit{must} use our adaptation layer, ensuring we capture revenue even if they use third-party models.
+    \item \textbf{Sticky Ecosystem}: The database and model reinforce each other—using one makes the other more valuable.
+\end{itemize}
+
+\subsubsection{6. Volume Expansion (The Jevons Paradox)}
+
+\textbf{What it means:} By reducing the unit cost of vector search by 10x, we unlock massive-scale use cases that were previously cost-prohibitive.
+
+\textbf{Why this wins:}
+\begin{itemize}[noitemsep]
+    \item \textbf{New Workloads}: Instead of just indexing "hot" data (recent 10\%), customers can now afford to index \textit{everything} (archival data, logs, full history).
+    \item \textbf{Higher Aggregate Spend}: While unit price is lower, the volume of indexed data explodes (100x), leading to significantly higher total contract values.
+    \item \textbf{Data Gravity}: Once a customer indexes petabytes of data with us (because it's cheap), moving it becomes impractical, creating immense churn resistance.
+\end{itemize}
+
 \vspace{0.5cm}
 
 \begin{tcolorbox}[colback=cosmaGreen!10, colframe=cosmaGreen, title=Combined Strategic Impact]
