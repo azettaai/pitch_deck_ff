@@ -17,21 +17,6 @@ Current approaches to multilingual search are fundamentally broken:
     
     \item \textbf{Prohibitive Costs}: Maintaining multilingual NLP teams, separate infrastructure per language, and complex data pipelines drains resources that could fuel product innovation
 \end{itemize}
-
-\subsection{Quantifying the Impact}
-
-The multilingual search problem has measurable, significant consequences:
-
-\begin{tcolorbox}[colback=cosmaOrange!10, colframe=cosmaOrange, title=Enterprise Pain Points]
-\begin{itemize}[noitemsep]
-    \item \textbf{Lost Revenue}: E-commerce companies lose 15-25\% of cross-border conversion due to poor multilingual search accuracy (Forrester Research, 2023)
-    
-    \item \textbf{Compliance Risk}: Financial institutions face regulatory penalties when critical multilingual documents are unindexed or unreachable during audits
-    
-    \item \textbf{Engineering Waste}: Large enterprises spend \$500K-\$2M annually maintaining separate search infrastructure across 10+ languages
-    
-    \item \textbf{Knowledge Fragmentation}: 40\% of enterprise knowledge workers report critical information gaps due to language barriers in internal search systems (Gartner, 2024)
-\end{itemize}
 \end{tcolorbox}
 
 \subsection{The Technical Barriers}
@@ -70,23 +55,6 @@ To mitigate this, existing solutions use approximation techniques (ANN - Approxi
 
 \begin{itemize}[noitemsep]
     \item \textbf{HNSW} (Hierarchical Navigable Small Worlds): Graph-based indexing that trades accuracy for speed
-    \item \textbf{IVF} (Inverted File Index): Clustering-based search that misses results outside cluster boundaries
-    \item \textbf{LSH} (Locality-Sensitive Hashing): Probabilistic bucketing with unpredictable recall
-\end{itemize}
-
-These approximations introduce a fatal tradeoff:
-
-\begin{tcolorbox}[colback=cosmaOrange!10, colframe=cosmaOrange, title=The Approximation Penalty]
-\begin{itemize}[noitemsep]
-    \item \textbf{Degraded Accuracy}: 10-30\% of relevant results are never found (poor recall)
-    \item \textbf{Non-Deterministic Performance}: Query latency varies unpredictably based on data distribution
-    \item \textbf{Index Bloat}: Approximate indices consume 2-5x more memory than the raw vectors
-    \item \textbf{Indexing Lag Crisis}: HNSW requires \textbf{hours to days} to rebuild indices when adding new documents—making real-time updates impossible
-    \item \textbf{Stale Search Results}: During index rebuilds, users search against outdated data, missing recently added content
-    \item \textbf{Infrastructure Downtime}: Index updates force production systems offline or require expensive dual-index architectures
-\end{itemize}
-\end{tcolorbox}
-
 \subsubsection{The Enterprise Cost Crisis}
 
 For organizations scaling to billions of documents, this mathematical bottleneck creates unsustainable economics:
