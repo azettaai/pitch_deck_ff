@@ -3,114 +3,103 @@
 \contentsline {subsubsection}{\numberline {1.1.1}Taha Bouhsine - Co-Founder \& CEO}{5}{subsubsection.1.1.1}%
 \contentsline {subsubsection}{\numberline {1.1.2}Poppy Yuan - Co-Founder \& COO}{6}{subsubsection.1.1.2}%
 \contentsline {subsubsection}{\numberline {1.1.3}Douglas Seo - Co-Founder \& CTO}{7}{subsubsection.1.1.3}%
-\contentsline {section}{\numberline {2}The Problem}{8}{section.2}%
-\contentsline {subsection}{\numberline {2.1}The Multilingual Search Crisis}{8}{subsection.2.1}%
-\contentsline {subsubsection}{\numberline {2.1.1}Why Existing Solutions Fail}{8}{subsubsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.2}Quantifying the Impact}{8}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}The Technical Barriers}{9}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}The Similarity Search Cost Bottleneck}{9}{subsection.2.4}%
-\contentsline {subsubsection}{\numberline {2.4.1}The O(n) Scaling Problem}{9}{subsubsection.2.4.1}%
-\contentsline {subsubsection}{\numberline {2.4.2}Why Approximation Fails}{9}{subsubsection.2.4.2}%
-\contentsline {subsubsection}{\numberline {2.4.3}The Enterprise Cost Crisis}{10}{subsubsection.2.4.3}%
-\contentsline {subsection}{\numberline {2.5}Who Experiences This Problem}{10}{subsection.2.5}%
-\contentsline {subsection}{\numberline {2.6}Why Now?}{11}{subsection.2.6}%
-\contentsline {subsection}{\numberline {2.7}The Market Void}{11}{subsection.2.7}%
-\contentsline {section}{\numberline {3}Introduction}{11}{section.3}%
-\contentsline {subsection}{\numberline {3.1}The Jevons Paradox: Unlocking Dormant Demand}{11}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}The Structural Crisis}{12}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}The Cosma Monopoly}{12}{subsection.3.3}%
-\contentsline {section}{\numberline {4}System Architecture}{12}{section.4}%
-\contentsline {subsection}{\numberline {4.1}High-Level Overview}{12}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Component Interaction}{12}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Cosma Vector Database (CVD)}{13}{section.5}%
-\contentsline {subsection}{\numberline {5.1}The Architecture of Efficiency}{13}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Proprietary Search Execution}{14}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}The Hidden Taxes of HNSW (Current Standard)}{15}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}The Cosma Advantage}{15}{subsection.5.4}%
-\contentsline {section}{\numberline {6}Cosma Omnilingual Embedding Models (COEM)}{16}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Model Architecture}{16}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Training Methodology}{16}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Embedding Space Properties}{16}{subsection.6.3}%
-\contentsline {section}{\numberline {7}Cosma Search Layer (CSL)}{17}{section.7}%
-\contentsline {subsection}{\numberline {7.1}End-to-End Search Sequence}{17}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Search Features}{17}{subsection.7.2}%
-\contentsline {section}{\numberline {8}Deployment Models}{18}{section.8}%
-\contentsline {section}{\numberline {9}Security \& Compliance}{18}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Data Protection}{18}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Compliance}{18}{subsection.9.2}%
-\contentsline {section}{\numberline {10}Market Positioning}{19}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Competitive Advantages}{19}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Target Markets}{19}{subsection.10.2}%
-\contentsline {subsection}{\numberline {10.3}Competitor Landscape}{19}{subsection.10.3}%
-\contentsline {section}{\numberline {11}Technology Roadmap}{20}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Near-Term (6-12 months)}{20}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Mid-Term (12-24 months)}{20}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Long-Term (24+ months)}{20}{subsection.11.3}%
-\contentsline {section}{\numberline {12}Business Model}{20}{section.12}%
-\contentsline {subsection}{\numberline {12.1}Overview}{21}{subsection.12.1}%
-\contentsline {subsection}{\numberline {12.2}Revenue Streams}{21}{subsection.12.2}%
-\contentsline {subsection}{\numberline {12.3}Strategic Business Model Advantages}{21}{subsection.12.3}%
-\contentsline {subsubsection}{\numberline {12.3.1}1. At-Cost Infrastructure Pass-Through}{21}{subsubsection.12.3.1}%
-\contentsline {subsubsection}{\numberline {12.3.2}2. Annual Commitments = Predictable Revenue}{22}{subsubsection.12.3.2}%
-\contentsline {subsubsection}{\numberline {12.3.3}3. Zero-Fee Scaling Flexibility}{22}{subsubsection.12.3.3}%
-\contentsline {subsubsection}{\numberline {12.3.4}4. Hybrid Pay-As-You-Go + Subscription Model}{22}{subsubsection.12.3.4}%
-\contentsline {subsubsection}{\numberline {12.3.5}5. Proprietary Ecosystem Lock-in}{23}{subsubsection.12.3.5}%
-\contentsline {subsubsection}{\numberline {12.3.6}6. Volume Expansion (The Jevons Paradox)}{23}{subsubsection.12.3.6}%
-\contentsline {subsection}{\numberline {12.4}COEM Model Pricing Tiers}{23}{subsection.12.4}%
-\contentsline {subsection}{\numberline {12.5}Customer Segmentation}{24}{subsection.12.5}%
-\contentsline {subsection}{\numberline {12.6}Unit Economics by Segment}{24}{subsection.12.6}%
-\contentsline {subsubsection}{\numberline {12.6.1}Individuals \& Hobbyists}{24}{subsubsection.12.6.1}%
-\contentsline {subsubsection}{\numberline {12.6.2}Small Startups}{25}{subsubsection.12.6.2}%
-\contentsline {subsubsection}{\numberline {12.6.3}Medium Companies}{25}{subsubsection.12.6.3}%
-\contentsline {subsubsection}{\numberline {12.6.4}Large Enterprises}{26}{subsubsection.12.6.4}%
-\contentsline {subsubsection}{\numberline {12.6.5}Technology Giants}{26}{subsubsection.12.6.5}%
-\contentsline {subsection}{\numberline {12.7}Revenue Stream Mix}{27}{subsection.12.7}%
-\contentsline {subsection}{\numberline {12.8}5-Year Revenue Projection}{27}{subsection.12.8}%
-\contentsline {subsection}{\numberline {12.9}Key Growth Assumptions}{27}{subsection.12.9}%
-\contentsline {subsection}{\numberline {12.10}Lean Team Strategy: Capital-Efficient Scaling}{28}{subsection.12.10}%
-\contentsline {subsubsection}{\numberline {12.10.1}Headcount Projection}{28}{subsubsection.12.10.1}%
-\contentsline {subsubsection}{\numberline {12.10.2}How We Stay Lean}{28}{subsubsection.12.10.2}%
-\contentsline {subsubsection}{\numberline {12.10.3}Benchmark Comparison}{28}{subsubsection.12.10.3}%
-\contentsline {subsection}{\numberline {12.11}Path to Profitability}{28}{subsection.12.11}%
-\contentsline {section}{\numberline {13}Intellectual Property}{29}{section.13}%
-\contentsline {subsection}{\numberline {13.1}Proprietary Technology}{29}{subsection.13.1}%
-\contentsline {subsection}{\numberline {13.2}Licensing Strategy}{29}{subsection.13.2}%
-\contentsline {section}{\numberline {14}Risk Factors \& Mitigation}{30}{section.14}%
-\contentsline {subsection}{\numberline {14.1}Market \& Competitive Risks}{30}{subsection.14.1}%
-\contentsline {subsubsection}{\numberline {14.1.1}Risk: Competitive Replication}{30}{subsubsection.14.1.1}%
-\contentsline {subsubsection}{\numberline {14.1.2}Risk: Big Tech Competition}{30}{subsubsection.14.1.2}%
-\contentsline {subsubsection}{\numberline {14.1.3}Risk: Market Timing}{31}{subsubsection.14.1.3}%
-\contentsline {subsection}{\numberline {14.2}Technical Risks}{31}{subsection.14.2}%
-\contentsline {subsubsection}{\numberline {14.2.1}Risk: Scaling Challenges}{31}{subsubsection.14.2.1}%
-\contentsline {subsubsection}{\numberline {14.2.2}Risk: Model Performance}{31}{subsubsection.14.2.2}%
-\contentsline {subsection}{\numberline {14.3}Execution Risks}{32}{subsection.14.3}%
-\contentsline {subsubsection}{\numberline {14.3.1}Risk: Customer Acquisition}{32}{subsubsection.14.3.1}%
-\contentsline {subsubsection}{\numberline {14.3.2}Risk: Operational Complexity}{32}{subsubsection.14.3.2}%
-\contentsline {subsection}{\numberline {14.4}Regulatory \& Compliance Risks}{32}{subsection.14.4}%
-\contentsline {subsubsection}{\numberline {14.4.1}Risk: Data Privacy Regulations}{32}{subsubsection.14.4.1}%
-\contentsline {subsubsection}{\numberline {14.4.2}Risk: AI Liability \& Ethics}{33}{subsubsection.14.4.2}%
-\contentsline {subsection}{\numberline {14.5}Financial Risks}{33}{subsection.14.5}%
-\contentsline {subsubsection}{\numberline {14.5.1}Risk: Longer Runway Needed}{33}{subsubsection.14.5.1}%
-\contentsline {subsection}{\numberline {14.6}Risk Management Philosophy}{33}{subsection.14.6}%
-\contentsline {section}{\numberline {15}The Ask: \$1.11M Pre-Seed Round}{33}{section.15}%
-\contentsline {subsection}{\numberline {15.1}Funding Request}{34}{subsection.15.1}%
-\contentsline {subsection}{\numberline {15.2}Use of Funds}{34}{subsection.15.2}%
-\contentsline {subsection}{\numberline {15.3}Key Milestones with This Funding}{34}{subsection.15.3}%
-\contentsline {subsubsection}{\numberline {15.3.1}Technical Milestones (Months 1-9)}{34}{subsubsection.15.3.1}%
-\contentsline {subsubsection}{\numberline {15.3.2}Commercial Milestones (Months 6-18)}{35}{subsubsection.15.3.2}%
-\contentsline {subsection}{\numberline {15.4}Capital Efficiency Strategy}{35}{subsection.15.4}%
-\contentsline {subsection}{\numberline {15.5}Business Model Moats: Built-In Defensibility}{35}{subsection.15.5}%
-\contentsline {subsubsection}{\numberline {15.5.1}1. Self-Funding Growth Engine}{35}{subsubsection.15.5.1}%
-\contentsline {subsubsection}{\numberline {15.5.2}2. Competitive Immunity from At-Cost Pass-Through}{36}{subsubsection.15.5.2}%
-\contentsline {subsubsection}{\numberline {15.5.3}3. Expansion Revenue Built Into Architecture}{36}{subsubsection.15.5.3}%
-\contentsline {subsubsection}{\numberline {15.5.4}4. Technical Moat = Pricing Moat}{36}{subsubsection.15.5.4}%
-\contentsline {subsection}{\numberline {15.6}Why This Round Sets Us Up for Series A}{37}{subsection.15.6}%
-\contentsline {subsection}{\numberline {15.7}Post-Series A Vision (18-36 Months)}{37}{subsection.15.7}%
-\contentsline {section}{\numberline {16}Conclusion}{38}{section.16}%
-\contentsline {section}{\numberline {A}Competitor Pricing Details}{39}{appendix.A}%
-\contentsline {subsection}{\numberline {A.1}Voyage AI Detailed Pricing}{39}{subsection.A.1}%
-\contentsline {subsubsection}{\numberline {A.1.1}Text Embedding Models}{39}{subsubsection.A.1.1}%
-\contentsline {subsubsection}{\numberline {A.1.2}Multimodal Embeddings}{39}{subsubsection.A.1.2}%
-\contentsline {subsubsection}{\numberline {A.1.3}Rerankers}{39}{subsubsection.A.1.3}%
-\contentsline {subsection}{\numberline {A.2}Vector Scaling Costs}{39}{subsection.A.2}%
-\contentsline {subsection}{\numberline {A.3}Search Cost Scaling (1M vs 100M vs 1B Vectors)}{40}{subsection.A.3}%
+\contentsline {section}{\numberline {2}Problem Statement}{8}{section.2}%
+\contentsline {subsection}{\numberline {2.1}The Filter Trap: Artificial Intelligence in Silos}{8}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}The Scale Wall: The High Cost of "Pure" Search}{8}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Stifled Innovation: The Unbuilt Applications}{9}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Introduction}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}The Jevons Paradox: Unlocking Dormant Demand}{9}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}The Structural Crisis}{10}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}The Cosma Monopoly}{10}{subsection.3.3}%
+\contentsline {section}{\numberline {4}System Architecture}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}High-Level Overview}{10}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Component Interaction}{10}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Cosma Vector Database (CVD)}{11}{section.5}%
+\contentsline {subsection}{\numberline {5.1}The Architecture of Efficiency}{11}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Proprietary Search Execution}{12}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}The Hidden Taxes of HNSW (Current Standard)}{13}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}The Cosma Advantage}{13}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Cosma Omnilingual Embedding Models (COEM)}{14}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Model Architecture}{14}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Training Methodology}{14}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Embedding Space Properties}{14}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Cosma Search Layer (CSL)}{15}{section.7}%
+\contentsline {subsection}{\numberline {7.1}End-to-End Search Sequence}{15}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Search Features}{15}{subsection.7.2}%
+\contentsline {section}{\numberline {8}Deployment Models}{16}{section.8}%
+\contentsline {section}{\numberline {9}Security \& Compliance}{16}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Data Protection}{16}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Compliance}{16}{subsection.9.2}%
+\contentsline {section}{\numberline {10}Market Positioning}{17}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Competitive Advantages}{17}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Target Markets}{17}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Competitor Landscape}{17}{subsection.10.3}%
+\contentsline {section}{\numberline {11}Technology Roadmap}{18}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Near-Term (6-12 months)}{18}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Mid-Term (12-24 months)}{18}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Long-Term (24+ months)}{18}{subsection.11.3}%
+\contentsline {section}{\numberline {12}Business Model}{18}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Overview}{19}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}Revenue Streams}{19}{subsection.12.2}%
+\contentsline {subsection}{\numberline {12.3}Strategic Business Model Advantages}{19}{subsection.12.3}%
+\contentsline {subsubsection}{\numberline {12.3.1}1. At-Cost Infrastructure Pass-Through}{19}{subsubsection.12.3.1}%
+\contentsline {subsubsection}{\numberline {12.3.2}2. Annual Commitments = Predictable Revenue}{20}{subsubsection.12.3.2}%
+\contentsline {subsubsection}{\numberline {12.3.3}3. Zero-Fee Scaling Flexibility}{20}{subsubsection.12.3.3}%
+\contentsline {subsubsection}{\numberline {12.3.4}4. Hybrid Pay-As-You-Go + Subscription Model}{20}{subsubsection.12.3.4}%
+\contentsline {subsubsection}{\numberline {12.3.5}5. Proprietary Ecosystem Lock-in}{21}{subsubsection.12.3.5}%
+\contentsline {subsubsection}{\numberline {12.3.6}6. Volume Expansion (The Jevons Paradox)}{21}{subsubsection.12.3.6}%
+\contentsline {subsection}{\numberline {12.4}COEM Model Pricing Tiers}{21}{subsection.12.4}%
+\contentsline {subsection}{\numberline {12.5}Customer Segmentation}{21}{subsection.12.5}%
+\contentsline {subsection}{\numberline {12.6}Unit Economics by Segment}{21}{subsection.12.6}%
+\contentsline {subsubsection}{\numberline {12.6.1}Individuals \& Hobbyists}{21}{subsubsection.12.6.1}%
+\contentsline {subsubsection}{\numberline {12.6.2}Small Startups}{22}{subsubsection.12.6.2}%
+\contentsline {subsubsection}{\numberline {12.6.3}Medium Companies}{23}{subsubsection.12.6.3}%
+\contentsline {subsubsection}{\numberline {12.6.4}Large Enterprises}{23}{subsubsection.12.6.4}%
+\contentsline {subsubsection}{\numberline {12.6.5}Technology Giants}{24}{subsubsection.12.6.5}%
+\contentsline {subsection}{\numberline {12.7}Revenue Stream Mix}{24}{subsection.12.7}%
+\contentsline {subsection}{\numberline {12.8}5-Year Revenue Projection}{25}{subsection.12.8}%
+\contentsline {subsection}{\numberline {12.9}Key Growth Assumptions}{25}{subsection.12.9}%
+\contentsline {subsection}{\numberline {12.10}Lean Team Strategy: Capital-Efficient Scaling}{25}{subsection.12.10}%
+\contentsline {subsubsection}{\numberline {12.10.1}Headcount Projection}{25}{subsubsection.12.10.1}%
+\contentsline {subsubsection}{\numberline {12.10.2}How We Stay Lean}{25}{subsubsection.12.10.2}%
+\contentsline {subsubsection}{\numberline {12.10.3}Benchmark Comparison}{26}{subsubsection.12.10.3}%
+\contentsline {subsection}{\numberline {12.11}Path to Profitability}{26}{subsection.12.11}%
+\contentsline {section}{\numberline {13}Intellectual Property}{27}{section.13}%
+\contentsline {subsection}{\numberline {13.1}Proprietary Technology}{27}{subsection.13.1}%
+\contentsline {subsection}{\numberline {13.2}Licensing Strategy}{27}{subsection.13.2}%
+\contentsline {section}{\numberline {14}Risk Factors \& Mitigation}{27}{section.14}%
+\contentsline {subsection}{\numberline {14.1}Market \& Competitive Risks}{27}{subsection.14.1}%
+\contentsline {subsubsection}{\numberline {14.1.1}Risk: Competitive Replication}{27}{subsubsection.14.1.1}%
+\contentsline {subsubsection}{\numberline {14.1.2}Risk: Big Tech Competition}{28}{subsubsection.14.1.2}%
+\contentsline {subsubsection}{\numberline {14.1.3}Risk: Market Timing}{28}{subsubsection.14.1.3}%
+\contentsline {subsection}{\numberline {14.2}Technical Risks}{28}{subsection.14.2}%
+\contentsline {subsubsection}{\numberline {14.2.1}Risk: Scaling Challenges}{28}{subsubsection.14.2.1}%
+\contentsline {subsubsection}{\numberline {14.2.2}Risk: Model Performance}{29}{subsubsection.14.2.2}%
+\contentsline {subsection}{\numberline {14.3}Execution Risks}{29}{subsection.14.3}%
+\contentsline {subsubsection}{\numberline {14.3.1}Risk: Customer Acquisition}{29}{subsubsection.14.3.1}%
+\contentsline {subsubsection}{\numberline {14.3.2}Risk: Operational Complexity}{29}{subsubsection.14.3.2}%
+\contentsline {subsection}{\numberline {14.4}Regulatory \& Compliance Risks}{30}{subsection.14.4}%
+\contentsline {subsubsection}{\numberline {14.4.1}Risk: Data Privacy Regulations}{30}{subsubsection.14.4.1}%
+\contentsline {subsubsection}{\numberline {14.4.2}Risk: AI Liability \& Ethics}{30}{subsubsection.14.4.2}%
+\contentsline {subsection}{\numberline {14.5}Financial Risks}{30}{subsection.14.5}%
+\contentsline {subsubsection}{\numberline {14.5.1}Risk: Longer Runway Needed}{30}{subsubsection.14.5.1}%
+\contentsline {subsection}{\numberline {14.6}Risk Management Philosophy}{30}{subsection.14.6}%
+\contentsline {section}{\numberline {15}The Ask: \$1.11M Pre-Seed Round}{31}{section.15}%
+\contentsline {subsection}{\numberline {15.1}Funding Request}{31}{subsection.15.1}%
+\contentsline {subsection}{\numberline {15.2}Use of Funds}{31}{subsection.15.2}%
+\contentsline {subsection}{\numberline {15.3}Key Milestones with This Funding}{31}{subsection.15.3}%
+\contentsline {subsubsection}{\numberline {15.3.1}Technical Milestones (Months 1-9)}{31}{subsubsection.15.3.1}%
+\contentsline {subsubsection}{\numberline {15.3.2}Commercial Milestones (Months 6-18)}{31}{subsubsection.15.3.2}%
+\contentsline {subsection}{\numberline {15.4}Capital Efficiency Strategy}{32}{subsection.15.4}%
+\contentsline {subsection}{\numberline {15.5}Business Model Moats: Built-In Defensibility}{33}{subsection.15.5}%
+\contentsline {subsubsection}{\numberline {15.5.1}1. Self-Funding Growth Engine}{33}{subsubsection.15.5.1}%
+\contentsline {subsubsection}{\numberline {15.5.2}2. Competitive Immunity from At-Cost Pass-Through}{33}{subsubsection.15.5.2}%
+\contentsline {subsubsection}{\numberline {15.5.3}3. Expansion Revenue Built Into Architecture}{33}{subsubsection.15.5.3}%
+\contentsline {subsubsection}{\numberline {15.5.4}4. Technical Moat = Pricing Moat}{33}{subsubsection.15.5.4}%
+\contentsline {section}{\numberline {A}Competitor Pricing Details}{35}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Voyage AI Detailed Pricing}{35}{subsection.A.1}%
+\contentsline {subsubsection}{\numberline {A.1.1}Text Embedding Models}{35}{subsubsection.A.1.1}%
+\contentsline {subsubsection}{\numberline {A.1.2}Multimodal Embeddings}{35}{subsubsection.A.1.2}%
+\contentsline {subsubsection}{\numberline {A.1.3}Rerankers}{35}{subsubsection.A.1.3}%
+\contentsline {subsection}{\numberline {A.2}Vector Scaling Costs}{35}{subsection.A.2}%
+\contentsline {subsection}{\numberline {A.3}Search Cost Scaling (1M vs 100M vs 1B Vectors)}{36}{subsection.A.3}%
