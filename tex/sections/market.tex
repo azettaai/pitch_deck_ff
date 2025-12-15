@@ -21,22 +21,22 @@
 
 \subsection{Competitor Landscape}
 
-The semantic search market includes several key players, each with distinct approaches. Cosma differentiates itself through its unified omnilingual architecture and deterministic performance.
+The semantic search market includes several key players. Cosma differentiates itself through its unified omnilingual architecture and deterministic performance.
 
 \begin{itemize}
     \item \textbf{Voyage AI}:
     \begin{itemize}[noitemsep]
-        \item \textit{Business Model}: Proprietary SaaS API provider specializing in embedding and reranking models.
+        \item \textit{Business Model}: Proprietary SaaS API provider specializing in embeddings and reranking.
         \item \textit{Pricing Model}: Consumption-based. Generous free tier (first 200M tokens free). Paid usage ranges from \$0.02 to \$0.18 per 1 million tokens depending on the model. Multimodal and Reranking models have separate pricing structures.
         \item \textit{Focus}: High-quality embedding models and rerankers, particularly for RAG applications.
         \item \textit{Target Customers}: Developers and AI-native companies building RAG pipelines.
-        \item \textit{Differentiation}: While Voyage excels in model quality, it lacks a native vector database. Cosma provides a vertically integrated solution (Model + DB) optimized for cross-lingual performance.
+        \item \textit{Differentiation}: While Voyage excels in model quality, it lacks a native vector DB.
     \end{itemize}
 
     \item \textbf{Weaviate}:
     \begin{itemize}[noitemsep]
         \item \textit{Business Model}: Open-core model (Open Source software + Managed Cloud services).
-        \item \textit{Pricing Model}: Hybrid: Free open-source self-hosted; Serverless (pay-as-you-go based on stored dimensions); Enterprise (dedicated clusters).
+        \item \textit{Pricing Model}: Hybrid: Free open-source; Serverless (pay-as-you-go); Enterprise.
         \item \textit{Focus}: AI-native open-source vector database with a modular architecture.
         \item \textit{Target Customers}: Broad range from startups to enterprises requiring flexibility and modular integrations.
         \item \textit{Differentiation}: Weaviate relies on HNSW (ANN) for search, which introduces probabilistic recall. Cosma's CVD uses a deterministic algorithm, ensuring 100\% recall accuracy.

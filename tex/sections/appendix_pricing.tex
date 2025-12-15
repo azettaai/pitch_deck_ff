@@ -3,7 +3,7 @@
 \subsection{Voyage AI Detailed Pricing}
 
 \subsubsection{Text Embedding Models}
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -30,7 +30,7 @@ voyage-code-2 & \$0.12 & 50M tokens \\ \hline
 \end{itemize}
 
 \subsubsection{Rerankers}
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -48,7 +48,7 @@ rerank-2.5-lite & \$0.02 & 200M tokens \\ \hline
     \begin{itemize}[noitemsep]
         \item \textit{Scaling Model}: No direct storage costs (embedding provider only).
         \item \textit{Cost Factor}: Costs scale linearly with embedding generation volume (tokens processed).
-        \item \textit{Optimization}: Offers Matryoshka embeddings (256-2048 dims) and quantization (int8/binary) to reduce downstream storage costs by up to 6x.
+        \item \textit{Optimization}: Offers Matryoshka (256-2048 dims) and quantization (int8/binary) to reduce downstream storage costs by up to 6x.
     \end{itemize}
 
     \item \textbf{Weaviate (Serverless)}:
@@ -103,6 +103,6 @@ rerank-2.5-lite & \$0.02 & 200M tokens \\ \hline
     \begin{itemize}[noitemsep]
         \item \textit{1M Vectors}: Low cost. Fits in standard RAM (e.g., 4GB instance).
         \item \textit{100M Vectors}: \textbf{The RAM Cliff}. HNSW index for 1536d vectors requires $\approx$600GB RAM. Requires expensive high-memory instances (e.g., AWS r6g.24xlarge).
-        \item \textit{1B Vectors}: \textbf{Prohibitive without Quantization}. Uncompressed HNSW requires $\approx$6TB RAM. Practical implementation mandates binary quantization or disk-based indexing (e.g., \texttt{pgvectorscale}) to avoid \$20k+/month infrastructure bills.
+        \item \textit{1B Vectors}: \textbf{Prohibitive w/o Quantization}. Uncompressed HNSW requires $\approx$6TB RAM. Practical implementation mandates binary quantization or disk-based indexing to avoid \$20k+/month infrastructure bills.
     \end{itemize}
 \end{itemize}

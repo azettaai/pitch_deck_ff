@@ -17,21 +17,21 @@
 \contentsline {section}{\numberline {5}Cosma Vector Database (CVD)}{11}{section.5}%
 \contentsline {subsection}{\numberline {5.1}The Architecture of Efficiency}{11}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Proprietary Search Execution}{12}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}The Hidden Taxes of HNSW (Current Standard)}{13}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.3}The Hidden Taxes of HNSW (Current Standard)}{12}{subsection.5.3}%
 \contentsline {subsection}{\numberline {5.4}The Cosma Advantage}{13}{subsection.5.4}%
 \contentsline {section}{\numberline {6}Cosma Omnilingual Embedding Models (COEM)}{14}{section.6}%
 \contentsline {subsection}{\numberline {6.1}Model Architecture}{14}{subsection.6.1}%
 \contentsline {subsection}{\numberline {6.2}Training Methodology}{14}{subsection.6.2}%
 \contentsline {subsection}{\numberline {6.3}Embedding Space Properties}{14}{subsection.6.3}%
-\contentsline {section}{\numberline {7}Cosma Search Layer (CSL)}{15}{section.7}%
+\contentsline {section}{\numberline {7}Cosma Search Layer (CSL)}{14}{section.7}%
 \contentsline {subsection}{\numberline {7.1}End-to-End Search Sequence}{15}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}Search Features}{15}{subsection.7.2}%
-\contentsline {section}{\numberline {8}Deployment Models}{16}{section.8}%
-\contentsline {section}{\numberline {9}Security \& Compliance}{16}{section.9}%
+\contentsline {section}{\numberline {8}Deployment Models}{15}{section.8}%
+\contentsline {section}{\numberline {9}Security \& Compliance}{15}{section.9}%
 \contentsline {subsection}{\numberline {9.1}Data Protection}{16}{subsection.9.1}%
 \contentsline {subsection}{\numberline {9.2}Compliance}{16}{subsection.9.2}%
-\contentsline {section}{\numberline {10}Market Positioning}{17}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Competitive Advantages}{17}{subsection.10.1}%
+\contentsline {section}{\numberline {10}Market Positioning}{16}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Competitive Advantages}{16}{subsection.10.1}%
 \contentsline {subsection}{\numberline {10.2}Target Markets}{17}{subsection.10.2}%
 \contentsline {subsection}{\numberline {10.3}Competitor Landscape}{17}{subsection.10.3}%
 \contentsline {section}{\numberline {11}Technology Roadmap}{18}{section.11}%
@@ -39,19 +39,19 @@
 \contentsline {subsection}{\numberline {11.2}Mid-Term (12-24 months)}{18}{subsection.11.2}%
 \contentsline {subsection}{\numberline {11.3}Long-Term (24+ months)}{18}{subsection.11.3}%
 \contentsline {section}{\numberline {12}Business Model}{18}{section.12}%
-\contentsline {subsection}{\numberline {12.1}Overview}{19}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.1}Overview}{18}{subsection.12.1}%
 \contentsline {subsection}{\numberline {12.2}Revenue Streams}{19}{subsection.12.2}%
 \contentsline {subsection}{\numberline {12.3}Strategic Business Model Advantages}{19}{subsection.12.3}%
 \contentsline {subsubsection}{\numberline {12.3.1}1. At-Cost Infrastructure Pass-Through}{19}{subsubsection.12.3.1}%
-\contentsline {subsubsection}{\numberline {12.3.2}2. Annual Commitments = Predictable Revenue}{20}{subsubsection.12.3.2}%
+\contentsline {subsubsection}{\numberline {12.3.2}2. Annual Commitments = Predictable Revenue}{19}{subsubsection.12.3.2}%
 \contentsline {subsubsection}{\numberline {12.3.3}3. Zero-Fee Scaling Flexibility}{20}{subsubsection.12.3.3}%
 \contentsline {subsubsection}{\numberline {12.3.4}4. Hybrid Pay-As-You-Go + Subscription Model}{20}{subsubsection.12.3.4}%
 \contentsline {subsubsection}{\numberline {12.3.5}5. Proprietary Ecosystem Lock-in}{21}{subsubsection.12.3.5}%
 \contentsline {subsubsection}{\numberline {12.3.6}6. Volume Expansion (The Jevons Paradox)}{21}{subsubsection.12.3.6}%
 \contentsline {subsection}{\numberline {12.4}COEM Model Pricing Tiers}{21}{subsection.12.4}%
 \contentsline {subsection}{\numberline {12.5}Customer Segmentation}{21}{subsection.12.5}%
-\contentsline {subsection}{\numberline {12.6}Unit Economics by Segment}{21}{subsection.12.6}%
-\contentsline {subsubsection}{\numberline {12.6.1}Individuals \& Hobbyists}{21}{subsubsection.12.6.1}%
+\contentsline {subsection}{\numberline {12.6}Unit Economics by Segment}{22}{subsection.12.6}%
+\contentsline {subsubsection}{\numberline {12.6.1}Individuals \& Hobbyists}{22}{subsubsection.12.6.1}%
 \contentsline {subsubsection}{\numberline {12.6.2}Small Startups}{22}{subsubsection.12.6.2}%
 \contentsline {subsubsection}{\numberline {12.6.3}Medium Companies}{23}{subsubsection.12.6.3}%
 \contentsline {subsubsection}{\numberline {12.6.4}Large Enterprises}{23}{subsubsection.12.6.4}%
@@ -96,6 +96,7 @@
 \contentsline {subsubsection}{\numberline {15.5.2}2. Competitive Immunity from At-Cost Pass-Through}{33}{subsubsection.15.5.2}%
 \contentsline {subsubsection}{\numberline {15.5.3}3. Expansion Revenue Built Into Architecture}{33}{subsubsection.15.5.3}%
 \contentsline {subsubsection}{\numberline {15.5.4}4. Technical Moat = Pricing Moat}{33}{subsubsection.15.5.4}%
+\contentsline {subsection}{\numberline {15.6}Post-Series A Vision (18-36 Months)}{34}{subsection.15.6}%
 \contentsline {section}{\numberline {A}Competitor Pricing Details}{35}{appendix.A}%
 \contentsline {subsection}{\numberline {A.1}Voyage AI Detailed Pricing}{35}{subsection.A.1}%
 \contentsline {subsubsection}{\numberline {A.1.1}Text Embedding Models}{35}{subsubsection.A.1.1}%

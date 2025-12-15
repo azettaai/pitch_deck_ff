@@ -9,7 +9,7 @@ Traditional vector databases rely on graph-based indexing (HNSW) or cluster-base
 \subsubsection*{What We Eliminated}
 
 \begin{itemize}
-    \item \textbf{No Graph Construction Overhead}: Competitors burn 30-50\% of CPU cycles just "wiring" the index graph during ingestion. CVD eliminates this step entirely, enabling instant-read availability.
+    \item \textbf{No Graph Construction Overhead}: Competitors burn 30-50\% of CPU cycles just "wiring" indices. CVD eliminates this step, enabling instant availability.
     \item \textbf{No "RAM Cliff"}: Graph indices must reside in memory to be performant, forcing customers to rent expensive high-RAM instances (e.g., AWS r6g.24xlarge). CVD is architected for Disk-Native Efficiency, running on standard commodity storage without latency degradation.
     \item \textbf{No Re-Indexing Lag}: CVD removes the need for background "build" or "warm-up" phases. Data is searchable the millisecond it is ingested.
 \end{itemize}
@@ -134,7 +134,7 @@ CVD employs a trade-secret Direct-Storage Traversal algorithm. By decoupling sem
 While HNSW (used by Pinecone, Weaviate) offers fast read speeds, it forces a "Trilemma" of compromises that Cosma eliminates:
 
 \begin{itemize}
-    \item \textbf{The Write Tax}: HNSW requires calculating distances to multiple neighbors and re-writing graph edges for every single insertion.
+    \item \textbf{The Write Tax}: HNSW requires calculating distances to multiple neighbors and rewriting graph edges for every insertion.
     \textit{Result}: Write throughput is capped, and CPUs spike during ingestion.
     
     \item \textbf{The Memory Tax}: The HNSW graph structure requires storing millions of edge pointers in RAM.

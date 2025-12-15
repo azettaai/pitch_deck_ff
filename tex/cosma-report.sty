@@ -3,7 +3,7 @@
 
 % Base Packages
 \RequirePackage[utf8]{inputenc}
-\RequirePackage[margin=1in,headheight=14pt]{geometry}
+\RequirePackage[margin=1in,headheight=22pt]{geometry}
 \RequirePackage{graphicx}
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
@@ -46,9 +46,9 @@
 
 % Headings Styling
 \RequirePackage{titlesec}
-\titleformat{\section}{\color{SectionColor}\Large\bfseries\sffamily\uppercase}{\thesection}{1em}{}
-\titleformat{\subsection}{\color{SectionColor}\large\bfseries\sffamily}{\thesubsection}{1em}{}
-\titleformat{\subsubsection}{\color{SectionColor}\normalsize\bfseries\sffamily}{\thesubsubsection}{1em}{}
+\titleformat{\section}{\color{SectionColor}\Large\bfseries\sffamily\raggedright\uppercase}{\thesection}{1em}{}
+\titleformat{\subsection}{\color{SectionColor}\large\bfseries\sffamily\raggedright}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\color{SectionColor}\normalsize\bfseries\sffamily\raggedright}{\thesubsubsection}{1em}{}
 
 % Semantic Box Environment (Professional Style)
 % Usage: \begin{cosmabox}[ColorName]{Title} ... \end{cosmabox}
@@ -72,7 +72,7 @@
   bottom=3mm,
   left=3mm,
   right=3mm,
-  drop lift shadow=black!15
+  drop lifted shadow=black!15
 }
 
 % Header and Footer
