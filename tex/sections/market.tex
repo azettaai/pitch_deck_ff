@@ -59,4 +59,24 @@ The semantic search market includes several key players. Cosma differentiates it
         \item \textit{Target Customers}: Existing PostgreSQL users and smaller-scale applications.
         \item \textit{Differentiation}: pgvector is excellent for simplicity but struggles with performance and latency at enterprise scale (100M+ vectors). Cosma's CVD is purpose-built for high-scale vector workloads.
     \end{itemize}
+
+    \item \textbf{Milvus / Zilliz}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Business Model}: Open-core (Open Source Milvus + Zilliz Cloud managed service).
+        \item \textit{Pricing Model}: Zilliz Cloud: Consumption-based (compute units + storage). Free tier available.
+        \item \textit{Focus}: Scalability-first vector database designed for billion-scale datasets.
+        \item \textit{Target Customers}: Large-scale AI applications, research institutions, enterprises with massive vector workloads.
+        \item \textit{Differentiation}: Milvus excels at raw scalability but is \textbf{complex to operate}—requires Kubernetes, etcd, Pulsar/Kafka. Cosma offers comparable scale with turnkey deployment. Additionally, Milvus is vector-agnostic with no native multilingual optimization; Cosma integrates model + database for cross-lingual search.
+    \end{itemize}
+
+    \item \textbf{Elasticsearch (with vector search)}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Business Model}: Open-core (Elasticsearch open source + Elastic Cloud).
+        \item \textit{Pricing Model}: Elastic Cloud: Tiered subscriptions (Standard, Gold, Platinum, Enterprise).
+        \item \textit{Focus}: The incumbent full-text search platform, now adding vector search capabilities.
+        \item \textit{Target Customers}: Enterprises with existing Elasticsearch deployments; observability and logging use cases.
+        \item \textit{Differentiation}: Elasticsearch is not \textbf{native vector}—it bolted on vector search to a document store. Performance degrades at high vector density. Cosma is vector-native from the ground up, optimized for semantic search workloads. Additionally, enterprises using Elastic often face \textbf{licensing complexity} (Elastic License 2.0 vs OpenSearch fork).
+    \end{itemize}
 \end{itemize}
+
+\textbf{Margin Note:} Our at-cost infrastructure pass-through creates competitive immunity on price. However, our real margin comes from \textbf{COEM model usage fees (80-90\% gross margin)}, not infrastructure. This is the inverse of competitors who mark up infrastructure but commoditize embeddings.
