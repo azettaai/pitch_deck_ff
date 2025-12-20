@@ -93,7 +93,7 @@
 \contentsline {subsection}{\numberline {15.5}Financial Risks}{34}{subsection.15.5}%
 \contentsline {subsubsection}{\numberline {15.5.1}Risk: Longer Runway Needed}{34}{subsubsection.15.5.1}%
 \contentsline {subsection}{\numberline {15.6}Risk Management Philosophy}{35}{subsection.15.6}%
-\contentsline {section}{\numberline {16}The Ask: \$1.5M Pre-Seed Round}{35}{section.16}%
+\contentsline {section}{\numberline {16}The Ask: \$1.59M Pre-Seed Round}{35}{section.16}%
 \contentsline {subsection}{\numberline {16.1}Funding Request}{35}{subsection.16.1}%
 \contentsline {subsection}{\numberline {16.2}Use of Funds}{35}{subsection.16.2}%
 \contentsline {subsection}{\numberline {16.3}Key Milestones with This Funding}{35}{subsection.16.3}%
