@@ -65,6 +65,12 @@ rerank-2.5-lite & \$0.02 & 200M tokens \\ \hline
         \item \textit{Storage Rate}: \$0.33 per GB/month.
         \item \textit{Includes}: Vector data (dense/sparse), metadata, and IDs.
         \item \textit{Note}: Separate costs for Read/Write units (\$8.25 per 1M units).
+    \item \textbf{Milvus / Zilliz Cloud (Serverless)}:
+    \begin{itemize}[noitemsep]
+        \item \textit{Scaling Model}: Consumption-based (Virtual Compute Units - vCUs).
+        \item \textit{Pricing}: Starts at $\approx$\$4 per 1M vCUs (Serverless).
+        \item \textit{Complexity}: Costs are opaque; vCUs are burned for both background storage maintenance and active compute/querying.
+        \item \textit{Storage}: Separate active storage fees apply, often requiring manual configuration of hot/cold tiering to optimize.
     \end{itemize}
 
     \item \textbf{pgvector (Self-Hosted/AWS RDS)}:
@@ -97,6 +103,11 @@ rerank-2.5-lite & \$0.02 & 200M tokens \\ \hline
         \item \textit{Query Cost}: Measured in Read Units (RUs).
         \item \textit{Scaling Behavior}: \textbf{Sublinear}. Querying a 4x larger index does \textit{not} cost 4x RUs (e.g., 50k vectors $\approx$ 5 RUs, 200k vectors $\approx$ 8 RUs).
         \item \textit{1B Vectors}: While per-query RU efficiency improves, the sheer volume of data requires dedicated read nodes or high shard counts to maintain latency, increasing base infrastructure costs.
+    \item \textbf{Milvus / Zilliz Cloud}:
+    \begin{itemize}[noitemsep]
+        \item \textit{1M Vectors}: Free tier covers basic dev/test usages (up to 2.5M vCU/mo).
+        \item \textit{100M Vectors}: \textbf{Complex Tiering}. Requires manual management of "Hot" (RAM/SSD) vs "Cold" (S3) collections to control costs. Active high-performance indexes burn vCUs continuously even when idle.
+        \item \textit{1B Vectors}: \textbf{High OpEx Volatility}. While cheaper than pure RAM (HNSW), the "Serverless" vCU burn creates unpredictable month-to-month bills compared to fixed provisioned capacity.
     \end{itemize}
 
     \item \textbf{pgvector (Self-Hosted)}:

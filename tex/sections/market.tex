@@ -66,7 +66,7 @@ The semantic search market includes several key players. Cosma differentiates it
         \item \textit{Pricing Model}: Zilliz Cloud: Consumption-based (compute units + storage). Free tier available.
         \item \textit{Focus}: Scalability-first vector database designed for billion-scale datasets.
         \item \textit{Target Customers}: Large-scale AI applications, research institutions, enterprises with massive vector workloads.
-        \item \textit{Differentiation}: Milvus excels at raw scalability but is \textbf{complex to operate}—requires Kubernetes, etcd, Pulsar/Kafka. Cosma offers comparable scale with turnkey deployment. Additionally, Milvus is vector-agnostic with no native multilingual optimization; Cosma integrates model + database for cross-lingual search.
+        \item \textit{Differentiation}: Milvus relies on \textbf{memory-heavy HNSW graphs} (requiring 2-3x RAM vs raw data) or complex disk-based graphs (DiskANN/Vamana) to function. Azetta's \textbf{"Structure-Free" architecture} eliminates the graph entirely, delivering comparable scale at \textbf{5\% of the infrastructure cost} by natively sorting data on disk without RAM-intensive indexes.
     \end{itemize}
 
     \item \textbf{Elasticsearch (with vector search)}:
