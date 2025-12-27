@@ -48,33 +48,34 @@
 \contentsline {subsubsection}{\numberline {12.3.4}4. Hybrid Pay-As-You-Go + Subscription Model}{21}{subsubsection.12.3.4}%
 \contentsline {subsubsection}{\numberline {12.3.5}5. Proprietary Ecosystem Lock-in}{21}{subsubsection.12.3.5}%
 \contentsline {subsubsection}{\numberline {12.3.6}6. Volume Expansion (The Jevons Paradox)}{21}{subsubsection.12.3.6}%
+\contentsline {subsubsection}{\numberline {12.3.7}7. The "Structure-Free" \& "Bridge" Model Moat}{22}{subsubsection.12.3.7}%
 \contentsline {subsection}{\numberline {12.4}COEM Model Pricing Tiers}{22}{subsection.12.4}%
 \contentsline {subsection}{\numberline {12.5}Customer Segmentation}{22}{subsection.12.5}%
 \contentsline {subsection}{\numberline {12.6}Unit Economics by Segment}{22}{subsection.12.6}%
 \contentsline {subsubsection}{\numberline {12.6.1}Individuals \& Hobbyists}{23}{subsubsection.12.6.1}%
 \contentsline {subsubsection}{\numberline {12.6.2}Small Startups}{23}{subsubsection.12.6.2}%
-\contentsline {subsubsection}{\numberline {12.6.3}Medium Companies}{23}{subsubsection.12.6.3}%
+\contentsline {subsubsection}{\numberline {12.6.3}Medium Companies}{24}{subsubsection.12.6.3}%
 \contentsline {subsubsection}{\numberline {12.6.4}Large Enterprises}{24}{subsubsection.12.6.4}%
-\contentsline {subsubsection}{\numberline {12.6.5}Technology Giants}{24}{subsubsection.12.6.5}%
+\contentsline {subsubsection}{\numberline {12.6.5}Technology Giants}{25}{subsubsection.12.6.5}%
 \contentsline {subsection}{\numberline {12.7}Revenue Stream Mix}{25}{subsection.12.7}%
-\contentsline {subsection}{\numberline {12.8}5-Year Revenue Projection}{25}{subsection.12.8}%
+\contentsline {subsection}{\numberline {12.8}5-Year Revenue Projection}{26}{subsection.12.8}%
 \contentsline {subsection}{\numberline {12.9}Key Growth Assumptions}{26}{subsection.12.9}%
 \contentsline {subsection}{\numberline {12.10}Lean Team Strategy: Capital-Efficient Scaling}{26}{subsection.12.10}%
 \contentsline {subsubsection}{\numberline {12.10.1}Headcount Projection}{26}{subsubsection.12.10.1}%
-\contentsline {subsubsection}{\numberline {12.10.2}How We Stay Lean}{26}{subsubsection.12.10.2}%
+\contentsline {subsubsection}{\numberline {12.10.2}How We Stay Lean}{27}{subsubsection.12.10.2}%
 \contentsline {subsubsection}{\numberline {12.10.3}Benchmark Comparison}{27}{subsubsection.12.10.3}%
 \contentsline {subsection}{\numberline {12.11}Path to Profitability}{27}{subsection.12.11}%
 \contentsline {section}{\numberline {13}Revenue Targets: What We Need to Sell}{28}{section.13}%
 \contentsline {subsection}{\numberline {13.1}Year-by-Year Sales Requirements}{28}{subsection.13.1}%
 \contentsline {subsubsection}{\numberline {13.1.1}Year 1: \$350K ARR Target (Design Partner Conversions)}{28}{subsubsection.13.1.1}%
-\contentsline {subsubsection}{\numberline {13.1.2}Year 2: \$5.0M ARR Target}{28}{subsubsection.13.1.2}%
+\contentsline {subsubsection}{\numberline {13.1.2}Year 2: \$5.0M ARR Target}{29}{subsubsection.13.1.2}%
 \contentsline {subsubsection}{\numberline {13.1.3}Year 3: \$18.7M ARR Target}{29}{subsubsection.13.1.3}%
-\contentsline {subsection}{\numberline {13.2}Embedding Volume Breakdown}{29}{subsection.13.2}%
-\contentsline {subsection}{\numberline {13.3}Monthly Sales Velocity Requirements}{29}{subsection.13.3}%
-\contentsline {subsection}{\numberline {13.4}Gross Margin by Revenue Stream}{29}{subsection.13.4}%
-\contentsline {subsection}{\numberline {13.5}Revenue Sensitivity Analysis}{29}{subsection.13.5}%
-\contentsline {section}{\numberline {14}Intellectual Property}{30}{section.14}%
-\contentsline {subsection}{\numberline {14.1}Proprietary Technology}{30}{subsection.14.1}%
+\contentsline {subsection}{\numberline {13.2}Embedding Volume Breakdown}{30}{subsection.13.2}%
+\contentsline {subsection}{\numberline {13.3}Monthly Sales Velocity Requirements}{30}{subsection.13.3}%
+\contentsline {subsection}{\numberline {13.4}Gross Margin by Revenue Stream}{30}{subsection.13.4}%
+\contentsline {subsection}{\numberline {13.5}Revenue Sensitivity Analysis}{31}{subsection.13.5}%
+\contentsline {section}{\numberline {14}Intellectual Property}{31}{section.14}%
+\contentsline {subsection}{\numberline {14.1}Proprietary Technology}{31}{subsection.14.1}%
 \contentsline {subsection}{\numberline {14.2}Licensing Strategy}{31}{subsection.14.2}%
 \contentsline {section}{\numberline {15}Risk Factors \& Mitigation}{31}{section.15}%
 \contentsline {subsection}{\numberline {15.1}Market \& Competitive Risks}{31}{subsection.15.1}%
@@ -91,20 +92,20 @@
 \contentsline {subsubsection}{\numberline {15.4.1}Risk: Data Privacy Regulations}{34}{subsubsection.15.4.1}%
 \contentsline {subsubsection}{\numberline {15.4.2}Risk: AI Liability \& Ethics}{34}{subsubsection.15.4.2}%
 \contentsline {subsection}{\numberline {15.5}Financial Risks}{34}{subsection.15.5}%
-\contentsline {subsubsection}{\numberline {15.5.1}Risk: Longer Runway Needed}{34}{subsubsection.15.5.1}%
+\contentsline {subsubsection}{\numberline {15.5.1}Risk: Longer Runway Needed}{35}{subsubsection.15.5.1}%
 \contentsline {subsection}{\numberline {15.6}Risk Management Philosophy}{35}{subsection.15.6}%
 \contentsline {section}{\numberline {16}The Ask: \$1.59M Pre-Seed Round}{35}{section.16}%
 \contentsline {subsection}{\numberline {16.1}Funding Request}{35}{subsection.16.1}%
 \contentsline {subsection}{\numberline {16.2}Use of Funds}{35}{subsection.16.2}%
-\contentsline {subsection}{\numberline {16.3}Key Milestones with This Funding}{35}{subsection.16.3}%
+\contentsline {subsection}{\numberline {16.3}Key Milestones with This Funding}{36}{subsection.16.3}%
 \contentsline {subsubsection}{\numberline {16.3.1}Technical Milestones (Months 1-9)}{36}{subsubsection.16.3.1}%
 \contentsline {subsubsection}{\numberline {16.3.2}Commercial Milestones (Months 6-18)}{36}{subsubsection.16.3.2}%
 \contentsline {subsection}{\numberline {16.4}Capital Efficiency Strategy}{36}{subsection.16.4}%
-\contentsline {subsection}{\numberline {16.5}Business Model Moats: Built-In Defensibility}{36}{subsection.16.5}%
+\contentsline {subsection}{\numberline {16.5}Business Model Moats: Built-In Defensibility}{37}{subsection.16.5}%
 \contentsline {subsubsection}{\numberline {16.5.1}1. Self-Funding Growth Engine}{37}{subsubsection.16.5.1}%
 \contentsline {subsubsection}{\numberline {16.5.2}2. Competitive Immunity from At-Cost Pass-Through}{37}{subsubsection.16.5.2}%
 \contentsline {subsubsection}{\numberline {16.5.3}3. Expansion Revenue Built Into Architecture}{37}{subsubsection.16.5.3}%
-\contentsline {subsubsection}{\numberline {16.5.4}4. Technical Moat = Pricing Moat}{37}{subsubsection.16.5.4}%
+\contentsline {subsubsection}{\numberline {16.5.4}4. Technical Moat = Pricing Moat}{38}{subsubsection.16.5.4}%
 \contentsline {subsection}{\numberline {16.6}Post-Series A Vision (18-36 Months)}{38}{subsection.16.6}%
 \contentsline {section}{\numberline {A}Competitor Pricing Details}{39}{appendix.A}%
 \contentsline {subsection}{\numberline {A.1}Voyage AI Detailed Pricing}{39}{subsection.A.1}%

@@ -109,6 +109,16 @@ Azetta.ai's pricing model is architected to create \textbf{sustainable competiti
     \item \textbf{Competitive Defensibility}: Pass-through pricing + decoupled architecture = nearly impossible for competitors to match without rebuilding their entire platform
 \end{itemize}
 
+\subsubsection{7. The "Structure-Free" \& "Bridge" Model Moat}
+
+\textbf{What it means:} Current vector databases require massive RAM because they must store complex graphs (HNSW) to understand similarity. Azetta has developed the world's first \textbf{"Structure-Free" Embedding Model}. Our proprietary model embeds data directly into a format that standard storage engines can sort natively.
+
+\textbf{Why this wins:}
+\begin{itemize}[noitemsep]
+    \item \textbf{5\% Cost Basis}: This eliminates the need for the graph entirely, allowing us to run at 5\% of the cost of Pinecone with mathematical guarantees on retrieval speed.
+    \item \textbf{The "Bridge" Model Monopoly}: You cannot use standard Postgres for this because standard embeddings (from OpenAI, Cohere, or Voyage) are mathematically incompatible with disk-based indexing. If you try to sort OpenAI vectors on a disk, you get garbage results.
+    \item \textbf{Zero-RAM Search}: Azetta is not just a database wrapper. We are the only provider of the necessary "bridge" model—the COEM—that translates human language into this high-efficiency format. Customers pay us because we own the only model in the world that makes "zero-RAM" search possible.
+\end{itemize}
 
 \subsection{COEM Model Pricing Tiers}
 \label{sec:coem-pricing}
@@ -317,9 +327,9 @@ Our revenue model evolves as the business scales, with infrastructure and servic
 \hline
 \textbf{Revenue Stream} & \textbf{Years 1-2} & \textbf{Years 3-5} \\
 \hline
-Model Usage Fees & 60\% & 55\% \\
-Managed Infrastructure & 30\% & 35\% \\
-Professional Services & 10\% & 10\% \\
+Model Usage Fees & 79\% & 55\% \\
+Managed Infrastructure & 8\% & 35\% \\
+Professional Services & 13\% & 10\% \\
 \hline
 \end{tabular}
 \caption{Projected Revenue Mix by Stream}
@@ -340,11 +350,11 @@ Infrastructure revenue grows as customers scale to larger deployment tiers, whil
 \hline
 Individuals (paid) & \$20K & \$100K & \$300K & \$600K & \$1.0M \\
 Small Startups & \$180K & \$800K & \$2.0M & \$4.0M & \$7.0M \\
-Medium Companies & \$120K & \$1.5M & \$5.0M & \$10M & \$18M \\
-Large Enterprises & \$30K & \$1.8M & \$7.2M & \$18M & \$35M \\
-Tech Giants & \$0 & \$800K & \$4.2M & \$12M & \$24M \\
+Medium Companies & \$120K & \$1.0M & \$5.0M & \$10M & \$18M \\
+Large Enterprises & \$30K & \$1.3M & \$7.2M & \$18M & \$35M \\
+Tech Giants & \$0 & \$600K & \$4.2M & \$12M & \$24M \\
 \hline
-\textbf{Total ARR} & \textbf{\$350K} & \textbf{\$5.0M} & \textbf{\$18.7M} & \textbf{\$44.6M} & \textbf{\$85M} \\
+\textbf{Total ARR} & \textbf{\$350K} & \textbf{\$3.8M} & \textbf{\$18.7M} & \textbf{\$44.6M} & \textbf{\$85M} \\
 \hline
 \end{tabular}
 \caption{Projected Annual Recurring Revenue by Segment (Conservative)}
@@ -435,25 +445,25 @@ Eng \% of Headcount & 43\% & 25-30\% & \textbf{Product focus} \\
 \hline
 \textbf{Metric} & \textbf{Year 1} & \textbf{Year 2} & \textbf{Year 3} & \textbf{Year 4} & \textbf{Year 5} \\
 \hline
-Total Revenue & \$350K & \$5.0M & \$18.7M & \$44.6M & \$85M \\
-COGS (45-30\%) & -\$158K & -\$1.75M & -\$5.99M & -\$13.4M & -\$25.5M \\
+Total Revenue & \$350K & \$3.8M & \$18.7M & \$44.6M & \$85M \\
+COGS (45-30\%) & -\$158K & -\$550K & -\$5.99M & -\$13.4M & -\$25.5M \\
 \hline
 \textbf{Gross Profit} & \textbf{\$192K} & \textbf{\$3.25M} & \textbf{\$12.71M} & \textbf{\$31.2M} & \textbf{\$59.5M} \\
-\textbf{Gross Margin} & \textbf{55\%} & \textbf{65\%} & \textbf{68\%} & \textbf{70\%} & \textbf{70\%} \\
+\textbf{Gross Margin} & \textbf{55\%} & \textbf{85\%} & \textbf{68\%} & \textbf{70\%} & \textbf{70\%} \\
 \hline
 \hline
 Sales \& Marketing & -\$245K & -\$2.5M & -\$6.55M & -\$11.15M & -\$17M \\
-(as \% revenue) & (70\%) & (50\%) & (35\%) & (25\%) & (20\%) \\
+(as \% revenue) & (70\%) & (65\%) & (35\%) & (25\%) & (20\%) \\
 \hline
 R\&D & -\$140K & -\$1.75M & -\$5.61M & -\$11.15M & -\$17M \\
-(as \% revenue) & (40\%) & (35\%) & (30\%) & (25\%) & (20\%) \\
+(as \% revenue) & (40\%) & (46\%) & (30\%) & (25\%) & (20\%) \\
 \hline
 G\&A & -\$53K & -\$600K & -\$2.24M & -\$5.35M & -\$10.2M \\
-(as \% revenue) & (15\%) & (12\%) & (12\%) & (12\%) & (12\%) \\
+(as \% revenue) & (15\%) & (16\%) & (12\%) & (12\%) & (12\%) \\
 \hline
 \hline
 \textbf{EBITDA} & \textbf{-\$246K} & \textbf{-\$1.6M} & \textbf{-\$1.69M} & \textbf{+\$3.55M} & \textbf{+\$15.3M} \\
-\textbf{EBITDA Margin} & \textbf{-70\%} & \textbf{-32\%} & \textbf{-9\%} & \textbf{+8\%} & \textbf{+18\%} \\
+\textbf{EBITDA Margin} & \textbf{-70\%} & \textbf{-42\%} & \textbf{-9\%} & \textbf{+8\%} & \textbf{+18\%} \\
 \hline
 \end{tabular}
 \caption{Projected Income Statement \& Path to Profitability}
