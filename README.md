@@ -1,151 +1,109 @@
-# OverTeX
+# Azetta.ai Technical Report
 
-> **A local LaTeX live preview web application**  
-> Real-time PDF rendering from your local LaTeX environment with a single-click refresh workflow.
+> **Investor whitepaper and interactive pitch deck for Cosma — the world's first omnilingual semantic search platform.**
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D18-green.svg)
-![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)
+![Status](https://img.shields.io/badge/status-Pre--Seed-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Web-green.svg)
 
 ---
 
-## 🚀 Quick Start
+## 📄 Overview
 
-```bash
-# Clone repository
-git clone https://github.com/mlnomadpy/overtex.git
-cd overtex
+This repository contains the technical documentation and investor materials for **Azetta.ai**, including:
 
-# Install dependencies
-cd frontend && npm install
-cd ../server && npm install
-cd ..
+- **LaTeX Whitepaper** — Comprehensive technical and financial analysis
+- **Interactive Pitch Deck** — Browser-based presentation with CRT terminal aesthetic
+- **Supporting Materials** — Market analysis, financial projections, and competitive landscape
 
-# Install LaTeX
-sudo bash scripts/install-texlive.sh
+---
 
-# Start servers (2 terminals needed)
-cd server && npm run dev      # Terminal 1
-cd frontend && npm run dev    # Terminal 2
+## 🎯 Cosma Platform
 
-# Open http://localhost:5173 in your browser
+**Cosma** is building the infrastructure for omnilingual AI search:
+
+| Component | Description | Complexity |
+|-----------|-------------|------------|
+| **CVD** (Cosma Vector Database) | Disk-native vector storage with O(1) indexing and O(log n) search | Trade Secret |
+| **COEM** (Cosma Omnilingual Embedding Models) | 100+ language unified embedding space | Proprietary |
+| **CSL** (Cosma Serverless Layer) | Fully managed API with automatic scaling | Managed Service |
+
+### Key Differentiators
+
+- **O(1) Indexing** — Data searchable instantly, no rebuild phases
+- **O(log n) Search** — Deterministic latency at any scale
+- **Disk-Native** — 10-20x cost reduction vs RAM-bound competitors
+- **100+ Languages** — True cross-lingual semantic search
+
+---
+
+## 📁 Repository Structure
+
+```
+technical_report/
+├── tex/                    # LaTeX whitepaper source
+│   ├── main.tex           # Main document
+│   └── sections/          # Chapter files
+├── website/               # Interactive pitch deck
+│   ├── index.html         # Slide content
+│   ├── styles.css         # CRT terminal styling
+│   ├── script.js          # Navigation & visualizations
+│   └── concepts.js        # Tooltip system
+└── README.md
 ```
 
 ---
 
-## 📚 Documentation
+## 🖥️ Interactive Pitch Deck
 
-### Getting Started
-- **[Installation Guide](./docs/installation.md)** - Complete setup instructions
-- **[Local Linux Installation](./docs/local-installation.md)** - For Ubuntu/Debian systems
-- **[GitHub Codespaces Setup](./docs/github-codespaces.md)** - Cloud development environment
-- **[Usage Guide](./docs/usage.md)** - How to use OverTeX
+The pitch deck features:
 
-### Reference
-- **[Architecture](./docs/architecture.md)** - System design and data flow
-- **[Troubleshooting](./docs/troubleshooting.md)** - Common issues and solutions
-- **[Configuration](./docs/configuration.md)** - Customization options
+- **CRT Terminal Aesthetic** — Retro-futuristic green phosphor design
+- **Interactive Tooltips** — Click any highlighted term for detailed explanation
+- **Animated Visualizations** — Canvas-based complexity graphs and platform diagrams
+- **Keyboard Navigation** — Arrow keys, Home/End, F for fullscreen
 
----
+### Running Locally
 
-## 🎯 Overview
+```bash
+# Simply open in browser
+open website/index.html
 
-**OverTeX** is a lightweight, local-first web application designed for LaTeX users who want instant visual feedback on their document changes. Instead of manually running `pdflatex` or `latexmk` in a terminal and opening the PDF in an external viewer, OverTeX provides:
-
-- **Browser-based PDF viewer** with embedded rendering (no external PDF apps needed)
-- **One-click build trigger** from the UI to compile your LaTeX source
-- **Live reload** capability to instantly see changes after compilation
-- **Clean, modern interface** built with Vue 3 and shadcn/vue components
-- **Local execution** - all processing happens on your machine, no cloud services
-
-This tool is perfect for:
-- Writing academic papers, theses, or technical documentation
-- Iterating quickly on LaTeX designs and layouts
-- Working in environments where you prefer browser-based previews
-- Learning LaTeX with immediate visual feedback
+# Or serve with any HTTP server
+cd website && python -m http.server 8000
+```
 
 ---
 
-## ✨ Features
+## 📊 Financial Summary
 
-### Core Functionality
-- ✅ **Real-time PDF Preview**: View compiled LaTeX documents directly in your browser
-- ✅ **Instant Refresh**: Trigger LaTeX compilation with a single button click
-- ✅ **Automatic Reload**: PDF viewer updates automatically after successful compilation
-- ✅ **Build Status Indicators**: Visual feedback on compilation progress and errors
-- ✅ **Compilation Logs**: View LaTeX compiler output for debugging
+| Metric | Year 1 | Year 3 | Year 5 |
+|--------|--------|--------|--------|
+| ARR | $350K | $10.4M | $44.6M |
+| Customers | 5 | 75 | 200 |
+| Team Size | 4 | 12 | 19 |
+| EBITDA | -$1.1M | -$0.9M | +$8.0M |
 
-### Technical Features
-- 🚀 **Fast Development Server**: Vite-powered hot module replacement
-- 🎨 **Modern UI**: shadcn/vue components with Tailwind CSS styling
-- 📱 **Responsive Design**: Works on desktop and tablet screens
-- �� **Local-Only**: No external API calls, all data stays on your machine
-- ⚙️ **Configurable**: Support for custom LaTeX commands and output paths
-- 🛠️ **Developer-Friendly**: Simple setup with `npm run dev`
+**Funding Ask:** $1.59M Pre-Seed (18-month runway)
 
 ---
 
-## 📦 Technical Stack
+## 🔧 Building the Whitepaper
 
-### Frontend
-- **Vue 3.5+** - Composition API
-- **Vite 7.2+** - Build tool
-- **TypeScript 5.9+** - Type safety
-- **@vue-pdf-viewer/viewer 3.3+** - PDF rendering
-- **Tailwind CSS 3.4+** - Styling
-- **shadcn/vue** - UI components
+Requires TeX Live or similar LaTeX distribution:
 
-### Backend
-- **Node.js 18+** - Runtime
-- **Express 5.1+** - API server
-- **TypeScript 5.9+** - Type safety
-- **child_process** - LaTeX execution
-
-### LaTeX
-- **TeX Live** - LaTeX distribution
-- **latexmk** - Build automation
-- **pdflatex/xelatex/lualatex** - Compilers
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
-
-### Quick Steps
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Run tests: `npm run test`
-5. Commit: `git commit -m 'Add amazing feature'`
-6. Push: `git push origin feature/amazing-feature`
-7. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- [Vue.js](https://vuejs.org/) - The progressive JavaScript framework
-- [Vite](https://vitejs.dev/) - Next generation frontend tooling
-- [shadcn/vue](https://www.shadcn-vue.com/) - Beautifully designed components
-- [@vue-pdf-viewer/viewer](https://github.com/hrynko/vue-pdf-viewer) - Vue 3 PDF viewer
-- [TeX Live](https://www.tug.org/texlive/) - Comprehensive TeX system
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+```bash
+cd tex
+latexmk -pdf main.tex
+```
 
 ---
 
 ## 📬 Contact
 
-- **GitHub**: [@mlnomadpy](https://github.com/mlnomadpy)
-- **Project Link**: [https://github.com/mlnomadpy/overtex](https://github.com/mlnomadpy/overtex)
-- **Issues**: [https://github.com/mlnomadpy/overtex/issues](https://github.com/mlnomadpy/overtex/issues)
+- **Company**: Azetta.ai
+- **Email**: investors@azetta.ai
+- **Website**: https://azetta.ai
 
 ---
 
-**Made with ❤️ for the LaTeX community**
+**Confidential — For Investor Review Only**
