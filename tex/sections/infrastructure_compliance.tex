@@ -1,0 +1,184 @@
+\section{Operational Infrastructure \& Compliance}
+
+For enterprise buyers, deployment and security are a single procurement hurdle. This section details Cosma's infrastructure options and compliance posture.
+
+\subsection{Deployment Models}
+
+Cosma supports three deployment tiers designed for different organizational needs.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    node distance=2.2cm,
+    every node/.style={font=\small},
+    tier_free/.style={
+        rectangle, rounded corners=8pt, 
+        minimum width=4.5cm, minimum height=3.5cm, 
+        align=center, 
+        draw=cosmaBlue!50, line width=1pt,
+        top color=white, bottom color=cosmaBlue!8,
+        drop shadow={shadow xshift=0.15cm, shadow yshift=-0.15cm, opacity=0.15}
+    },
+    tier_premium/.style={
+        rectangle, rounded corners=8pt, 
+        minimum width=4.5cm, minimum height=3.5cm, 
+        align=center, 
+        draw=cosmaGreen!60, line width=1.5pt,
+        top color=cosmaGreen!3, bottom color=cosmaGreen!18,
+        drop shadow={shadow xshift=0.2cm, shadow yshift=-0.2cm, opacity=0.25}
+    },
+    tier_enterprise/.style={
+        rectangle, rounded corners=8pt, 
+        minimum width=4.5cm, minimum height=3.5cm, 
+        align=center, 
+        draw=cosmaOrange!70, line width=2pt,
+        top color=cosmaOrange!5, bottom color=cosmaOrange!25,
+        drop shadow={shadow xshift=0.25cm, shadow yshift=-0.25cm, opacity=0.35}
+    },
+    tier_header/.style={
+        rectangle, rounded corners=5pt,
+        minimum width=3.8cm, minimum height=1.2cm,
+        align=center, font=\bfseries\small
+    },
+    upgrade_arrow/.style={
+        ->, >=stealth, thick, dotted, color=gray!50
+    }
+]
+
+% Free Tier
+\node (free_header) [tier_header, draw=cosmaBlue!70, top color=cosmaBlue!15, bottom color=cosmaBlue!30] {
+    \textcolor{cosmaBlue!90}{Free Tier} \\ 
+    {\scriptsize\textit{Multi-tenant shared}}
+};
+\node (free_details) [below=0.3cm of free_header, text width=3.8cm, font=\scriptsize, align=left] {
+    {\color{cosmaBlue}$\checkmark$} 1,000 searches/month \\[2pt]
+    {\color{cosmaBlue}$\checkmark$} 10,000 embeddings/month \\[2pt]
+    {\color{cosmaBlue}$\checkmark$} Shared CVD cluster
+};
+\begin{scope}[on background layer]
+    \node (free_box) [tier_free, fit=(free_header)(free_details), inner sep=0.5cm] {};
+\end{scope}
+
+% Premium Tier
+\node (premium_header) [tier_header, below=1.5cm of free_details, draw=cosmaGreen!70, top color=cosmaGreen!20, bottom color=cosmaGreen!40] {
+    \textcolor{cosmaGreen!90}{Premium Tier} \\ 
+    {\scriptsize\textit{Dedicated compute}}
+};
+\node (premium_details) [below=0.3cm of premium_header, text width=3.8cm, font=\scriptsize, align=left] {
+    {\color{cosmaGreen}$\checkmark$} Unlimited usage \\[2pt]
+    {\color{cosmaGreen}$\checkmark$} Private CVD instance \\[2pt]
+    {\color{cosmaGreen}$\checkmark$} 99.9\% SLA guarantee
+};
+\begin{scope}[on background layer]
+    \node (premium_box) [tier_premium, fit=(premium_header)(premium_details), inner sep=0.5cm] {};
+\end{scope}
+
+% Enterprise Tier
+\node (enterprise_header) [tier_header, below=1.5cm of premium_details, draw=cosmaOrange!70, top color=cosmaOrange!25, bottom color=cosmaOrange!50] {
+    \textcolor{cosmaOrange!90}{Enterprise} \\ 
+    {\scriptsize\textit{Dedicated Cloud}}
+};
+\node (enterprise_details) [below=0.3cm of enterprise_header, text width=3.8cm, font=\scriptsize, align=left] {
+    {\color{cosmaOrange}$\checkmark$} Single-tenant cluster \\[2pt]
+    {\color{cosmaOrange}$\checkmark$} Custom VPC peering \\[2pt]
+    {\color{cosmaOrange}$\checkmark$} Advanced compliance
+};
+\begin{scope}[on background layer]
+    \node (enterprise_box) [tier_enterprise, fit=(enterprise_header)(enterprise_details), inner sep=0.5cm] {};
+\end{scope}
+
+% Upgrade path arrows
+\draw [upgrade_arrow] (free_box.south) -- node[right, font=\tiny, text=gray, xshift=2pt] {upgrade} (premium_box.north);
+\draw [upgrade_arrow] (premium_box.south) -- node[right, font=\tiny, text=gray, xshift=2pt] {upgrade} (enterprise_box.north);
+
+\end{tikzpicture}
+\caption{Cosma Deployment Tiers - Progressive Service Levels}
+\label{fig:deployment-tiers}
+\end{figure}
+
+\subsection{Enterprise Tier: Single-Tenant Isolation}
+
+The Enterprise tier provides complete isolation for organizations with strict security requirements:
+
+\subsubsection{VPC Peering Specifications}
+
+% TODO: Add detailed VPC peering technical specifications
+% Include: AWS PrivateLink configuration, IP range requirements, routing table setup
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Private Connectivity}: AWS PrivateLink / GCP Private Service Connect
+    \item \textbf{Network Isolation}: Dedicated VPC with customer-controlled CIDR blocks
+    \item \textbf{No Internet Exposure}: All traffic remains within cloud provider backbone
+    \item \textbf{IP Whitelisting}: Customer-defined ingress/egress rules
+\end{itemize}
+
+\subsubsection{Single-Tenant Architecture}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Dedicated Compute}: Isolated VM instances (not shared with other customers)
+    \item \textbf{Dedicated Storage}: Separate PostgreSQL cluster with customer-specific encryption keys
+    \item \textbf{Dedicated GPU Pool}: Reserved inference capacity for predictable latency
+    \item \textbf{Custom Scaling}: Customer-defined auto-scaling policies
+\end{itemize}
+
+\subsection{Security \& Data Protection}
+
+\subsubsection{Encryption Standards}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{In Transit}: TLS 1.3 for all API communications
+    \item \textbf{At Rest}: AES-256 encryption with customer-managed keys (BYOK) available
+    \item \textbf{Key Management}: AWS KMS / GCP Cloud KMS integration
+\end{itemize}
+
+\subsubsection{Data Isolation}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Namespace Separation}: Logical isolation at application layer (Free/Premium tiers)
+    \item \textbf{Physical Isolation}: Dedicated infrastructure (Enterprise tier)
+    \item \textbf{Privacy Guarantee}: Customer data is \textbf{never} used for model training
+    \item \textbf{Audit Logging}: Anonymized access logs with configurable retention
+\end{itemize}
+
+\subsection{Compliance Certifications}
+
+Cosma meets enterprise compliance requirements:
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Certification} & \textbf{Status} & \textbf{Tier Availability} \\
+\hline
+SOC 2 Type II & In Progress (Q2 target) & All tiers \\
+GDPR & Compliant & All tiers \\
+HIPAA & Ready (BAA available) & Enterprise tier \\
+ISO 27001 & Data centers certified & All tiers \\
+\hline
+\end{tabular}
+\caption{Compliance Certification Status}
+\end{table}
+
+\subsection{Omnilingual Data Residency}
+
+The ``Omnilingual'' nature of Cosma introduces unique data residency considerations. A single unified index may contain text from multiple jurisdictions.
+
+\subsubsection{GDPR-Compliant Sharding}
+
+% TODO: Add specifics on how omnilingual indexes handle EU data residency requirements
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Regional Deployment}: EU-only CVD instances for GDPR-regulated data
+    \item \textbf{Data Locality Tags}: Metadata tagging to enforce regional query routing
+    \item \textbf{Cross-Region Search}: Federated queries across regional indexes (Enterprise tier)
+    \item \textbf{Right to Deletion}: Efficient per-document deletion without index rebuild
+\end{itemize}
+
+\subsubsection{Supported Regions}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{US}: AWS us-east-1, us-west-2; GCP us-central1
+    \item \textbf{EU}: AWS eu-west-1, eu-central-1; GCP europe-west1
+    \item \textbf{APAC}: AWS ap-southeast-1; GCP asia-east1 (roadmap)
+\end{itemize}

@@ -479,3 +479,65 @@ G\&A & -\$53K & -\$600K & -\$2.24M & -\$5.35M & -\$10.2M \\
 \end{itemize}
 
 \textbf{Note:} This trajectory balances growth and profitability. More aggressive growth scenario (maintaining 30\% S\&M spend through Year 5) could achieve \$200M+ ARR but delay profitability to Year 6.
+
+\subsection{Consolidated Unit Economics}
+
+\subsubsection{CAC/LTV Density by Segment}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+\textbf{Segment} & \textbf{CAC} & \textbf{Annual LTV} & \textbf{LTV:CAC} & \textbf{Payback} & \textbf{Gross Margin} \\
+\hline
+Hobbyist/Starter & \$50-100 & \$200-350 & 3-4x & 2-4 mo & 0-70\% \\
+Small Startups & \$500-1K & \$1.8K-3K & 3-4x & 4-6 mo & 60-75\% \\
+Medium Companies & \$5K-10K & \$30K-50K & 5-6x & 4-6 mo & 65-75\% \\
+Large Enterprises & \$30K-60K & \$200K-450K & 6-8x & 6-12 mo & 50-70\% \\
+Tech Giants & \$100K-250K & \$2M-5M+ & 15-20x & 12-18 mo & 35-55\% \\
+\hline
+\end{tabular}
+\caption{Consolidated CAC/LTV Analysis by Customer Segment}
+\end{table}
+
+\subsubsection{Margin Analysis: The Inverse Model}
+
+Our margin structure is fundamentally different from competitors:
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{|l|r|r|p{5cm}|}
+\hline
+\textbf{Revenue Stream} & \textbf{Gross Margin} & \textbf{Y3 Revenue} & \textbf{Rationale} \\
+\hline
+COEM Model Usage & \textbf{80-90\%} & \$10.3M & GPU inference cost is \$0.01-0.02/1M tokens; we charge \$0.04-0.30 \\
+\hline
+Managed Infrastructure & \textbf{0\%} & \$6.55M & At-cost pass-through (competitive moat) \\
+\hline
+Professional Services & \textbf{40-50\%} & \$1.87M & Labor-intensive but high-ACV \\
+\hline
+\textbf{Blended Gross Margin} & \textbf{68\%} & \$18.7M & Model revenue dominates margin \\
+\hline
+\end{tabular}
+\caption{Margin Analysis by Revenue Stream (Year 3)}
+\end{table}
+
+\textbf{How 80-90\% COEM margin offsets 0\% infrastructure margin:}
+
+Despite zero-margin infrastructure pass-through, our blended gross margin is 68\% because high-margin COEM model usage (80-90\% margin) represents 55\% of revenue by Year 3. This is the \textbf{inverse} of competitors who mark up infrastructure but commoditize embeddings.
+
+% TODO: Add H100/A100 TPS benchmarks to justify COEM pricing tiers
+% Provide the benchmarked tokens-per-second (TPS) on standard NVIDIA H100/A100 clusters
+
+\subsubsection{COEM Inference Cost Basis}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{GPU Cost Basis}: \$0.01-0.02 per 1M tokens (batched inference)
+    \item \textbf{Our Pricing}: \$0.04-0.30 per 1M tokens (4-15x markup)
+    \item \textbf{Result}: 80-90\% gross margin on every embedding operation
+\end{itemize}
+
+The at-cost infrastructure strategy creates \textbf{competitive immunity}—competitors cannot undercut our infrastructure pricing without destroying their own margins. Meanwhile, we capture value through proprietary model intelligence that they cannot replicate.
+

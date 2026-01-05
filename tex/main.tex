@@ -12,29 +12,52 @@
 \tableofcontents
 \newpage
 
-\input{sections/team}
-\input{sections/problem_statement}
-\input{sections/introduction}
-\input{sections/system_architecture}
+%% ============================================================================
+%% MODULE 1: EXECUTIVE SUMMARY & MARKET THESIS
+%% Merges: problem_statement, introduction, market (competitive positioning)
+%% ============================================================================
+\input{sections/market_thesis}
 
+%% ============================================================================
+%% MODULE 2: TECHNICAL CORE ("STRUCTURE-FREE" STACK)
+%% Merges: system_architecture, cvd, coem, csl, ip
+%% ============================================================================
 \newpage
-\input{sections/cvd}
-\input{sections/coem}
-\input{sections/csl}
-\input{sections/deployment}
-\input{sections/security}
-\input{sections/performance}
-\input{sections/market}
-\input{sections/roadmap}
+\input{sections/technical_core}
+
+%% ============================================================================
+%% MODULE 3: COMMERCIAL STRATEGY & UNIT ECONOMICS
+%% Merges: business_model, revenue_targets
+%% ============================================================================
+\newpage
 \input{sections/business_model}
-\input{sections/revenue_targets}
-\input{sections/ip}
-\input{sections/risk_factors}
-\input{sections/funding_ask}
+
+%% ============================================================================
+%% MODULE 4: OPERATIONAL INFRASTRUCTURE & COMPLIANCE
+%% Merges: deployment, security
+%% ============================================================================
+\newpage
+\input{sections/infrastructure_compliance}
+
+%% ============================================================================
+%% MODULE 5: EXECUTION ROADMAP & RISK MITIGATION
+%% Merges: roadmap, risk_factors
+%% ============================================================================
+\newpage
+\input{sections/roadmap_risks}
+
+%% ============================================================================
+%% MODULE 6: THE TEAM & THE ASK
+%% Merges: team, funding_ask
+%% ============================================================================
+\newpage
+\input{sections/team}
+
 \input{sections/conclusion}
 
 \newpage
 \appendix
+\input{sections/revenue_targets}
 \input{sections/appendix_pricing}
 
 \end{document}
