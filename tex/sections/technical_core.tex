@@ -354,9 +354,23 @@ COEM models achieve cross-lingual alignment through:
     \item \textbf{Domain-Specific Augmentation}: Fine-tuning for search-optimized representations
 \end{enumerate}
 
-\subsubsection{Trade Secret: Novel Mercer Kernel}
+\subsubsection{Trade Secret: Novel Mercer Kernel \& YAT Product}
 
-The core innovation enabling COEM's ``Structure-Free'' property is a \textbf{novel Mercer kernel} that eliminates the need for activation functions and layer normalizations in neural networks.
+The core innovation enabling COEM's ``Structure-Free'' property is built upon a \textbf{groundbreaking mathematical discovery} by Taha Bouhsine: the \textbf{YAT (Yet Another Transformer) product} and its associated \textbf{Aether Architecture}.
+
+\textbf{The Aether Architecture Breakthrough:}
+
+In collaboration with Google DeepMind and Columbia University (submitted to ICML), Taha Bouhsine discovered that replacing traditional LayerNorm operations with a novel \textbf{Normalized Matrix Norm (NMN)} block dramatically improves transformer efficiency while reducing computational overhead. The Aether architecture achieves:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{+2.68\% accuracy} on CIFAR-100 (ResNet-18: 74.83\% vs 72.15\%)
+    \item \textbf{+2.49\% accuracy} on STL-10 (ResNet-18: 80.91\% vs 78.42\%)
+    \item \textbf{+2.45\% accuracy} on Tiny-ImageNet (ResNet-18: 59.34\% vs 56.89\%)
+    \item \textbf{+1.11\% accuracy} on ImageNet-1K (ResNet-50: 75.24\% vs 74.13\%)
+    \item \textbf{Consistent improvements} across both ResNet and Vision Transformer (ViT) architectures
+\end{itemize}
+
+The YAT product's \textbf{novel Mercer kernel} eliminates the need for traditional activation functions and layer normalizations in neural networks, enabling COEM's unique geometric properties that make disk-native vector search mathematically possible.
 
 % TODO: Provide the primal-form equation for the Mercer kernel
 % Explain how this specific kernel enables the "Structure-Free" property
@@ -364,11 +378,12 @@ The core innovation enabling COEM's ``Structure-Free'' property is a \textbf{nov
 \textbf{Key Properties:}
 \begin{itemize}
     \item \textbf{Primal-Form Kernels}: First method to use Mercer kernels in their primal form for neural networks, bypassing traditional dual-form limitations.
+    \item \textbf{Aether NMN Architecture}: Replaces expensive LayerNorm with efficient $d \rightarrow 4d$ dimension expansion, reducing computational overhead while improving convergence.
     \item \textbf{Anchor-Free Contrastive Learning}: Removes the need for negative mining, simplifying training dynamics.
     \item \textbf{Disk-Compatible Embeddings}: Vectors produced by COEM are mathematically compatible with disk-based indexing—a property that standard embeddings (OpenAI, Cohere, Voyage) do not possess.
 \end{itemize}
 
-\textbf{IP Protection:} The kernel formulation, training pipeline, and loss functions are maintained as trade secrets and are never published or patented.
+\textbf{IP Protection:} The YAT product, Aether architecture, kernel formulation, training pipeline, and loss functions are maintained as public open-source packages. The implementation of these components in Cosma, Omnilingual Embedding Models, and Periodica Interpretibality forms the core of our competitive moat, as the mathematical foundation cannot be reverse-engineered from our API.
 
 \subsubsection{Embedding Space Visualization}
 
