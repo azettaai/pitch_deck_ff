@@ -1,19 +1,21 @@
-# Azetta.ai Technical Report
+# Azetta.ai Investor Pitch Deck
 
-> **Investor materials for Azetta.ai — Foundational AI Research Lab pioneering interpretable and efficient intelligence through YAT-Product mathematics.**
+> **Interactive pitch deck for Azetta.ai — Foundational AI Research Lab pioneering interpretable and efficient intelligence through YAT-Product mathematics.**
 
 ![Status](https://img.shields.io/badge/status-Pre--Seed-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Web-green.svg)
+![Platform](https://img.shields.io/badge/platform-GitHub%20Pages-green.svg)
+![Live](https://img.shields.io/badge/demo-live-brightgreen.svg)
 
 ---
 
 ## 📄 Overview
 
-This repository contains the technical documentation and investor materials for **Azetta.ai**, including:
+This repository contains the **interactive investor pitch deck** for **Azetta.ai**, featuring:
 
-- **LaTeX Whitepaper** — YAT-Product mathematical foundation and research roadmap
-- **Interactive Pitch Deck** — Research approach, go-to-market products, and funding requirements
-- **Supporting Materials** — Benchmark projections, financial modeling, and team background
+- **YAT-Product Mathematical Foundation** — Research approach and validation results
+- **Go-to-Market Products** — Omnilingual, Cosma DB, and Periodica
+- **Business Model & Unit Economics** — Projected revenue, EBITDA targets, and funding requirements
+- **Interactive Technical Explanations** — Hover tooltips for deep dives into key concepts
 
 ---
 
@@ -47,21 +49,19 @@ YAT-Product research enables three product applications:
 ## 📁 Repository Structure
 
 ```
-technical_report/
-├── tex/                    # LaTeX whitepaper source
-│   ├── main.tex           # Main document
-│   └── sections/          # Chapter files
-├── website/               # Interactive pitch deck
-│   ├── index.html         # Slide content
-│   ├── styles.css         # CRT terminal styling
-│   ├── script.js          # Navigation & visualizations
-│   └── concepts.js        # Tooltip system
+azetta_pitch_deck/
+├── index.html             # Interactive pitch deck
+├── styles.css             # CRT terminal styling
+├── script.js              # Navigation & visualizations
+├── concepts.js            # Tooltip system
 └── README.md
 ```
 
 ---
 
 ## 🖥️ Interactive Pitch Deck
+
+**🌐 Live Demo:** [https://azettaai.github.io/azetta_pitch_deck/](https://azettaai.github.io/azetta_pitch_deck/)
 
 The pitch deck features:
 
@@ -74,10 +74,11 @@ The pitch deck features:
 
 ```bash
 # Simply open in browser
-open website/index.html
+open index.html
 
 # Or serve with any HTTP server
-cd website && python -m http.server 8000
+python -m http.server 8000
+# Then open http://localhost:8000
 ```
 
 ---
