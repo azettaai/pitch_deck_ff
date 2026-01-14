@@ -163,18 +163,22 @@
                 <h1>The YAT Kernel</h1>
                 <h2>A First-Principles Approach to Neural Computation</h2>
 
-                <div class="feature-grid" style="margin-top: 40px;">
-                    <div class="feature-card">
-                        <h4>What is the YAT Kernel?</h4>
-                        <p>The Taha Bouhsine Yat-Product (ⵟ) is a gravitational Mercer kernel that replaces traditional dot-product operations in neural networks. Unlike standard approaches, it unifies directional alignment and spatial proximity into a single, self-regulating operator.</p>
+                <div class="split-col" style="margin-top: 24px; gap: 20px;">
+                    <div class="feature-card" style="padding: 16px;">
+                        <h4 style="font-size: 1rem; margin-bottom: 8px;">Standard Deep Learning</h4>
+                        <p style="font-size: 0.85rem; margin-bottom: 8px;">Traditional networks rely on:</p>
+                        <div class="latex-equation" style="font-size: 1.1rem; margin: 12px 0; padding: 16px; background: rgba(14, 165, 233, 0.05); border: 1px solid var(--border); border-radius: 4px; text-align: center;">
+                            \( y = \sigma(w \cdot x + b) \)
+                        </div>
+                        <p style="font-size: 0.8rem; line-height: 1.4;">Anti-parallel vectors punished (-1), orthogonal vectors 0. ReLU clips negative values, leading to <strong>uninterpretable entanglement</strong>.</p>
                     </div>
-                    <div class="feature-card">
-                        <h4>Key Innovation</h4>
-                        <p>The kernel provides <strong>intrinsic non-linearity</strong> without requiring activation functions like ReLU. This eliminates the need for clipping operations that cause information loss and create uninterpretable entanglement in traditional networks.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>Why It Matters</h4>
-                        <p>Standard dot-products punish anti-parallel vectors (-1) and treat orthogonal vectors as neutral (0). The YAT kernel's geometric formulation captures both angle <em>and</em> distance relationships, enabling richer semantic representations.</p>
+                    <div class="feature-card" style="padding: 16px;">
+                        <h4 style="font-size: 1rem; margin-bottom: 8px;">The YAT-Product Approach</h4>
+                        <p style="font-size: 0.85rem; margin-bottom: 8px;">Unifies directional alignment and spatial proximity:</p>
+                        <div class="latex-equation" style="font-size: 1.1rem; margin: 12px 0; padding: 16px; background: rgba(14, 165, 233, 0.05); border: 1px solid var(--border); border-radius: 4px; text-align: center;">
+                            \( K_{\text{ⵟ}}(w, x) = \frac{\langle w, x \rangle}{\|w - x\|^2 + \epsilon} \)
+                        </div>
+                        <p style="font-size: 0.8rem; line-height: 1.4;"><strong>Intrinsic non-linearity</strong> without clipping. Fully interpretable latent space.</p>
                     </div>
                 </div>
 
@@ -183,11 +187,7 @@
                 </div>
 
                 <div class="highlight-box" style="margin-top: 16px;">
-                    <strong>Foundation:</strong> The YAT-Product forms the mathematical basis for all Azetta.ai products: Omnilingual embeddings, Cosma DB structure-free indexing, and Periodica interpretability auditing.
-                </div>
-
-                <div style="margin-top: 20px; text-align: center; font-size: clamp(0.7rem, 1vw, 0.85rem); color: var(--text-muted); font-style: italic; line-height: 1.5;">
-                    <span style="opacity: 0.7;">Note: Anthropic's pioneering position in AI stems from their foundational commitment to interpretability—a core value that aligns with YAT-Product's white-box design philosophy.</span>
+                    <strong>Foundation:</strong> The YAT-Product forms the mathematical basis for all Azetta.ai components: Omnilingual embeddings, Cosma DB structure-free indexing, and Periodica interpretability auditing. These components work in conjunction to build out the full Azetta model with first principles in a fully YAT-native architecture.
                 </div>
             </div>
             <div class="footer">
@@ -203,48 +203,57 @@
                 <h1>Results</h1>
                 <h2>Benchmarked Performance and Efficiency Gains</h2>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; align-items: start;">
-                    <!-- Left Column: Stacked Cards -->
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <div class="feature-card" style="padding: 16px; cursor: pointer;" onclick="openModal('resultsModal')">
-                            <h4 style="font-size: 1rem; margin-bottom: 8px;">Standard Deep Learning</h4>
-                            <p style="font-size: 0.85rem; margin-bottom: 8px;">Traditional networks rely on:</p>
-                            <div class="latex-equation" style="font-size: 1.1rem; margin: 12px 0; padding: 16px; background: rgba(14, 165, 233, 0.05); border: 1px solid var(--border); border-radius: 4px; text-align: center;">
-                                \( y = \sigma(w \cdot x + b) \)
+                <div style="margin-top: 24px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <div class="feature-card" style="padding: 24px; cursor: pointer;" onclick="openModal('aethergptModal')">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 20px; text-align: center;">AetherGPT Language Model Results</h4>
+                        
+                        <div class="summary-grid" style="margin-bottom: 20px;">
+                            <div class="summary-item">
+                                <div class="summary-icon">⚡</div>
+                                <div class="summary-content">
+                                    <strong>Competitive Performance</strong>
+                                    <p>AetherGPT achieves comparable results to GPT-2 with fewer parameters</p>
+                                </div>
                             </div>
-                            <p style="font-size: 0.8rem; line-height: 1.4;">Anti-parallel vectors punished (-1), orthogonal vectors 0. ReLU clips negative values, leading to <strong>uninterpretable entanglement</strong>.</p>
-                        </div>
-                        <div class="feature-card" style="padding: 16px; cursor: pointer;" onclick="openModal('resultsModal')">
-                            <h4 style="font-size: 1rem; margin-bottom: 8px;">The YAT-Product Approach</h4>
-                            <p style="font-size: 0.85rem; margin-bottom: 8px;">Unifies directional alignment and spatial proximity:</p>
-                            <div class="latex-equation" style="font-size: 1.1rem; margin: 12px 0; padding: 16px; background: rgba(14, 165, 233, 0.05); border: 1px solid var(--border); border-radius: 4px; text-align: center;">
-                                \( K_{\text{ⵟ}}(w, x) = \frac{\langle w, x \rangle}{\|w - x\|^2 + \epsilon} \)
+                            <div class="summary-item">
+                                <div class="summary-icon">📈</div>
+                                <div class="summary-content">
+                                    <strong>Efficient Training</strong>
+                                    <p>Smooth convergence without instability common in traditional architectures</p>
+                                </div>
                             </div>
-                            <p style="font-size: 0.8rem; line-height: 1.4;"><strong>Intrinsic non-linearity</strong> without clipping. Fully interpretable latent space.</p>
+                            <div class="summary-item">
+                                <div class="summary-icon">✅</div>
+                                <div class="summary-content">
+                                    <strong>Validated Approach</strong>
+                                    <p>Multiple independent benchmarks confirm effectiveness</p>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-icon">🚀</div>
+                                <div class="summary-content">
+                                    <strong>Scalability Potential</strong>
+                                    <p>100M parameter model could match 500M+ traditional architectures</p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Right Column: Results -->
-                    <div>
-                        <div class="feature-card" style="padding: 20px; cursor: pointer;" onclick="openModal('aethergptModal')">
-                            <h4 style="font-size: 1.1rem; margin-bottom: 16px; text-align: center;">Language Model Results</h4>
-                            <div style="font-size: 0.9rem; line-height: 1.6;">
-                                <p style="margin: 8px 0;"><strong>AetherGPT:</strong> Competitive vs GPT-2</p>
-                                <p style="margin: 8px 0;"><strong>Projected:</strong> 100M params = 500M+ performance</p>
-                                <p style="margin: 8px 0;"><strong>Efficiency:</strong> 90% more efficient (projected)</p>
-                                <p style="margin: 8px 0;"><strong>Interpretable:</strong> White-box design</p>
-                                <p style="margin: 12px 0 4px 0; color: var(--accent); text-align: center;"><strong>STATUS:</strong> Small-scale validated. Requires GPU for large-scale.</p>
-                            </div>
-                            <p style="margin-top: 16px; text-align: center; font-size: 0.75rem; color: var(--secondary);">👁️ Click to view benchmarks & architecture</p>
+                        <div style="font-size: 0.9rem; line-height: 1.6; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                            <p style="margin: 8px 0;"><strong>AetherGPT:</strong> Competitive vs GPT-2</p>
+                            <p style="margin: 8px 0;"><strong>Projected:</strong> 100M params = 500M+ performance</p>
+                            <p style="margin: 8px 0;"><strong>Efficiency:</strong> 90% more efficient (projected)</p>
+                            <p style="margin: 8px 0;"><strong>Interpretable:</strong> White-box design</p>
+                            <p style="margin: 12px 0 4px 0; color: var(--accent); text-align: center;"><strong>STATUS:</strong> Small-scale validated. Requires GPU for large-scale.</p>
                         </div>
+                        <p style="margin-top: 16px; text-align: center; font-size: 0.75rem; color: var(--secondary);">👁️ Click to view benchmarks & architecture</p>
                     </div>
                 </div>
 
-                <div class="highlight-box" style="margin-top: 16px; padding: 10px 14px; font-size: 0.8rem; line-height: 1.4;">
+                <div class="highlight-box" style="margin-top: 20px; padding: 12px; font-size: 0.85rem; line-height: 1.5;">
                     <strong>Research Advisory:</strong> Research advisory from Professor Krzysztof Choromanski (Google DeepMind & Columbia University). ICML submission. YAT-Product enables: Omnilingual embeddings, Cosma DB vector search, Periodica interpretability suite.
                 </div>
 
-                <div class="highlight-box" style="margin-top: 8px; padding: 10px 14px; font-size: 0.8rem; line-height: 1.4;">
+                <div class="highlight-box" style="margin-top: 12px; padding: 12px; font-size: 0.85rem; line-height: 1.5;">
                     <strong>Aether Framework:</strong> AetherGPT (YatFormer) with Yat-Attention and NMN layers achieves competitive performance vs GPT-2 with fewer parameters. Code on <a href="https://pypi.org/project/nmn/" target="_blank" style="color: var(--primary); text-decoration: underline;">pypi.org</a> and <a href="https://arxiv.org/search/cs?searchtype=author&query=Bouhsine%2C+T" target="_blank" style="color: var(--primary); text-decoration: underline;">arXiv</a>.
                 </div>
             </div>
@@ -395,10 +404,10 @@
             </div>
         </div>
 
-        <!-- Slide 5: Application 1 - Cosma DB -->
+        <!-- Slide 5: Component 1 - Cosma DB -->
         <div class="slide" id="cvdInnovationSlide">
             <div class="content-wrapper">
-                <h3>Application 1</h3>
+                <h3>Component 1</h3>
                 <h1>Cosma DB</h1>
                 <h2>High-performance vector database <strong class="accent">enabled by YAT-Product embeddings</strong></h2>
 
@@ -446,10 +455,10 @@
             </div>
         </div>
 
-        <!-- Slide 6: Application 2 - Omnilingual -->
+        <!-- Slide 6: Component 2 - Omnilingual -->
         <div class="slide" id="coemInnovationSlide">
             <div class="content-wrapper">
-                <h3>Application 2</h3>
+                <h3>Component 2</h3>
                 <h1>Omnilingual</h1>
                 <h2>Multilingual embedding models within <strong>unified YAT-Product latent space</strong></h2>
 
@@ -473,7 +482,7 @@
 
                 <div class="highlight-box" style="margin-top: 32px;">
                     <strong>Integrated Architecture:</strong>
-                    YAT-Product is the foundation that enables both Omnilingual's efficient embeddings AND Cosma DB's structure-free search. All products stem from the same mathematical approach—creating technical barriers to replication. <strong>Strict <span class="concept" data-concept="trade-secret-ip">trade
+                    YAT-Product is the foundation that enables both Omnilingual's efficient embeddings AND Cosma DB's structure-free search. All components work in conjunction to build out the full Azetta model with first principles in a fully YAT-native architecture—creating technical barriers to replication. <strong>Strict <span class="concept" data-concept="trade-secret-ip">trade
                             secrets</span>, no patents, no public disclosure.</strong>
                 </div>
 
@@ -487,38 +496,22 @@
             </div>
         </div>
 
-        <!-- Slide 7: Application 3 - Periodica -->
+        <!-- Slide 7: Component 3 - Periodica -->
         <div class="slide" id="periodicaInnovationSlide">
             <div class="content-wrapper">
-                <h3>Application 3</h3>
+                <h3>Component 3</h3>
                 <h1>Periodica</h1>
                 <h2>Full-interpretability suite for <strong>monitoring, explaining, and auditing</strong> Azetta AI deployments in safety-critical industries</h2>
 
-                <div class="highlight-box" style="margin-bottom: 32px;">
-                    <strong>Goal:</strong> Enable white-box interpretability for YAT-Product-based models through <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> geometric analysis native to the YAT-kernel architecture.
-                </div>
-
-                <div class="feature-grid" style="margin-top: 40px;">
-                    <div class="feature-card">
-                        <h4>Theoretical Hypothesis</h4>
-                        <p>The YAT-Product's geometric properties enable <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> mapping of continuous representations to discrete, inspectable states—providing a <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> framework for model auditing.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>YAT-Kernel Native Approach</h4>
-                        <p>Leverages intrinsic geometric structure of YAT-Product embeddings—<span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> analysis methods that operate directly on kernel space without <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> post-processing.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>Safety-Critical Applications</h4>
-                        <p>Designed for industries requiring full model auditability: healthcare, finance, autonomous systems. Provides <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> interpretability framework for regulatory compliance.</p>
+                <div style="display: flex; justify-content: center; margin-top: 60px;">
+                    <div class="feature-card" style="max-width: 800px; width: 100%; padding: 48px; margin: 0 auto;">
+                        <h4 style="font-size: 0.85rem; margin-bottom: 24px;">Safety-Critical Applications</h4>
+                        <p style="font-size: 1.1rem; line-height: 1.8;">Designed for industries requiring full model auditability: healthcare, finance, autonomous systems. Provides interpretability framework for regulatory compliance.</p>
                     </div>
                 </div>
 
-                <div class="highlight-box" style="margin-top: 32px;">
-                    <strong>Key Innovation:</strong> Unlike post-hoc interpretability tools (SHAP, LIME), Periodica provides <em>structural interpretability</em>—the geometric framework exists independent of model weights, enabling true white-box auditing of YAT-Product architectures.
-                </div>
-
-                <div class="highlight-box" style="margin-top: 16px;">
-                    <strong>Status:</strong> Early theoretical research. Framework under development. <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> validation in progress.
+                <div class="highlight-box" style="margin-top: 48px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <strong>Key Innovation:</strong> Unlike post-hoc interpretability tools (SHAP, LIME), Periodica provides <em>structural interpretability</em> for YAT-Product architectures.
                 </div>
             </div>
             <div class="footer">
@@ -543,7 +536,7 @@
                     </div>
                     <div class="feature-card">
                         <h4>Integrated Architecture</h4>
-                        <p>All products (Omnilingual, Cosma DB, Periodica) stem from YAT-Product mathematics. Requires understanding the entire system, not individual components.</p>
+                        <p>All components (Omnilingual, Cosma DB, Periodica) work in conjunction to build out the full Azetta model with first principles in a fully YAT-native architecture. Requires understanding the entire system, not individual components.</p>
                     </div>
                     <div class="feature-card">
                         <h4><span class="concept" data-concept="api-only">API-Only Access</span></h4>
