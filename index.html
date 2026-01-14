@@ -435,6 +435,10 @@
                 <div class="highlight-box" style="margin-top: 32px;">
                     <strong>Status:</strong> Architecture designed. Theoretical complexity validated. Requires production-scale benchmarking.
                 </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="view-more-btn" onclick="openModal('competitiveLandscapeModal')">View Competitive Landscape</button>
+                </div>
             </div>
             <div class="footer">
                 <span class="logo">AZETTA.AI</span>
@@ -449,7 +453,7 @@
                 <h1>Omnilingual</h1>
                 <h2>Multilingual embedding models within <strong>unified YAT-Product latent space</strong></h2>
 
-                <div class="feature-grid" style="margin-top: 40px;">
+                <div class="feature-grid" style="margin-top: 40px; grid-template-columns: 1fr 1fr; gap: 48px; max-width: 1000px; margin-left: auto; margin-right: auto;">
                     <div class="feature-card" style="position: relative; padding-top: 110px;">
                         <canvas id="coemProblemCanvas" width="280" height="90"
                             style="position: absolute; top: 16px; left: 50%; transform: translateX(-50%);"></canvas>
@@ -491,32 +495,30 @@
                 <h2>Full-interpretability suite for <strong>monitoring, explaining, and auditing</strong> Azetta AI deployments in safety-critical industries</h2>
 
                 <div class="highlight-box" style="margin-bottom: 32px;">
-                    <strong>Foundation:</strong> Leverages the white-box properties of YAT-Product to provide geometric auditing—mapping continuous neural representations to discrete, inspectable signatures.
+                    <strong>Goal:</strong> Enable white-box interpretability for YAT-Product-based models through <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> geometric analysis native to the YAT-kernel architecture.
                 </div>
 
                 <div class="feature-grid" style="margin-top: 40px;">
                     <div class="feature-card">
-                        <h4>Geometric State Mapping</h4>
-                        <p>Maps continuous vector representations to <strong>discrete signatures</strong> via orthant analysis. Provides a finite "periodic table" of <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> possible states for any n-dimensional embedding space.</p>
+                        <h4>Theoretical Hypothesis</h4>
+                        <p>The YAT-Product's geometric properties enable <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> mapping of continuous representations to discrete, inspectable states—providing a <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> framework for model auditing.</p>
                     </div>
                     <div class="feature-card">
-                        <h4>Diagnostic Metrics</h4>
-                        <p><strong>Effective Sparsity:</strong> Measures active dimensionality and feature selection.<br>
-                        <strong>Subspace Saturation:</strong> Identifies "dead zones" in representation space.<br>
-                        <strong>Boundary Stability:</strong> Quantifies robustness to adversarial perturbations.</p>
+                        <h4>YAT-Kernel Native Approach</h4>
+                        <p>Leverages intrinsic geometric structure of YAT-Product embeddings—<span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> analysis methods that operate directly on kernel space without <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> post-processing.</p>
                     </div>
                     <div class="feature-card">
-                        <h4>Safety-Critical Compliance</h4>
-                        <p>Designed for industries requiring full model auditability: healthcare, finance, autonomous systems. Provides <strong>a priori coordinate systems</strong> for state space analysis without empirical probing.</p>
+                        <h4>Safety-Critical Applications</h4>
+                        <p>Designed for industries requiring full model auditability: healthcare, finance, autonomous systems. Provides <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> interpretability framework for regulatory compliance.</p>
                     </div>
                 </div>
 
                 <div class="highlight-box" style="margin-top: 32px;">
-                    <strong>Key Innovation:</strong> Unlike post-hoc interpretability tools (SHAP, LIME), Periodica provides <em>structural interpretability</em>—the geometric framework exists independent of model weights, enabling true white-box auditing of activation-free architectures.
+                    <strong>Key Innovation:</strong> Unlike post-hoc interpretability tools (SHAP, LIME), Periodica provides <em>structural interpretability</em>—the geometric framework exists independent of model weights, enabling true white-box auditing of YAT-Product architectures.
                 </div>
 
                 <div class="highlight-box" style="margin-top: 16px;">
-                    <strong>Status:</strong> Framework formalized and validated on MNIST (3-layer NMN). Paper in preparation. Requires scaling to production architectures.
+                    <strong>Status:</strong> Early theoretical research. Framework under development. <span style="background: #000; color: #f00; padding: 2px 6px; border: 1px solid #333; font-family: monospace;">[REDACTED]</span> validation in progress.
                 </div>
             </div>
             <div class="footer">
@@ -686,14 +688,14 @@
             </div>
         </div>
 
-        <!-- Slide 8: Competitive Landscape -->
-        <div class="slide">
-            <div class="content-wrapper">
-                <h3>Competitive Landscape</h3>
-                <h1>The Category Definition</h1>
-                <h2>Creating the <strong class="accent">Disk-Native</strong> category to kill the
-                    <strong>RAM-Bound</strong> legacy.
-                </h2>
+        <!-- Competitive Landscape Modal -->
+        <div id="competitiveLandscapeModal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 1000px;">
+                <button class="modal-close" onclick="closeModal('competitiveLandscapeModal')">&times;</button>
+
+                <h3 style="margin-bottom: 16px;">Competitive Landscape</h3>
+                <h4 style="margin-bottom: 24px;">The Category Definition</h4>
+                <p style="margin-bottom: 32px; font-size: 0.9rem; color: var(--text-secondary);">Creating the <strong class="accent">Disk-Native</strong> category to kill the <strong>RAM-Bound</strong> legacy.</p>
 
                 <div class="table-container">
                     <table>
@@ -740,10 +742,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="footer">
-                <span class="logo">AZETTA.AI</span>
-                <span>Confidential</span>
             </div>
         </div>
 
