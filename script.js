@@ -1,3 +1,123 @@
+// ============================================
+// Mobile Landscape Lock & Scroll Prevention
+// ============================================
+
+// Prevent scrolling on mobile
+function preventScrolling() {
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    
+    // Prevent touch scrolling
+    document.addEventListener('touchmove', (e) => {
+        // Allow touch events on interactive elements
+        if (e.target.closest('.modal-overlay') || 
+            e.target.closest('.modal-content') ||
+            e.target.closest('.concept-tooltip')) {
+            return;
+        }
+        e.preventDefault();
+    }, { passive: false });
+    
+    // Prevent wheel scrolling
+    document.addEventListener('wheel', (e) => {
+        if (!e.target.closest('.modal-content') && 
+            !e.target.closest('.tooltip-body')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+}
+
+// Lock orientation to landscape (if supported)
+function lockOrientation() {
+    if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch((err) => {
+            console.log('Orientation lock not supported:', err);
+        });
+    } else if (screen.lockOrientation) {
+        screen.lockOrientation('landscape');
+    } else if (screen.mozLockOrientation) {
+        screen.mozLockOrientation('landscape');
+    } else if (screen.msLockOrientation) {
+        screen.msLockOrientation('landscape');
+    }
+}
+
+// Handle orientation changes
+function handleOrientationChange() {
+    const isPortrait = window.innerHeight > window.innerWidth;
+    if (isPortrait && window.innerWidth < 768) {
+        // Show message or force landscape
+        let message = document.getElementById('orientation-message');
+        if (!message) {
+            message = document.createElement('div');
+            message.id = 'orientation-message';
+            const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#050505';
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#4ff975';
+            const primaryGlow = getComputedStyle(document.documentElement).getPropertyValue('--primary-glow').trim() || 'rgba(79, 249, 117, 0.4)';
+            
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: ${bgColor};
+                border: 2px solid ${primaryColor};
+                padding: 40px;
+                z-index: 99999;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.7rem;
+                color: ${primaryColor};
+                text-align: center;
+                box-shadow: 0 0 40px ${primaryGlow};
+                max-width: 90vw;
+            `;
+            message.textContent = 'Please rotate your device to landscape mode';
+            document.body.appendChild(message);
+        }
+    } else {
+        const message = document.getElementById('orientation-message');
+        if (message) {
+            message.remove();
+        }
+    }
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+    preventScrolling();
+    lockOrientation();
+    handleOrientationChange();
+    
+    // Re-check on orientation change
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            handleOrientationChange();
+            lockOrientation();
+        }, 100);
+    });
+    
+    // Re-check on resize
+    window.addEventListener('resize', () => {
+        handleOrientationChange();
+    });
+});
+
+// Prevent zoom on double tap
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+// ============================================
+// Slide Navigation
+// ============================================
+
 let currentSlide = 0;
 const slides = document.querySelectorAll('.slide');
 const totalSlides = slides.length;
@@ -86,6 +206,33 @@ function handleSwipe() {
 
 // Initialize
 updateProgress();
+
+// Render LaTeX equations with KaTeX
+function renderLatexEquations() {
+    if (typeof katex !== 'undefined') {
+        document.querySelectorAll('.latex-equation').forEach(el => {
+            const latex = el.textContent.trim();
+            // Remove the \( and \) delimiters if present
+            const cleanedLatex = latex.replace(/^\\\(/, '').replace(/\\\)$/, '').trim();
+            try {
+                katex.render(cleanedLatex, el, {
+                    displayMode: true,
+                    throwOnError: false
+                });
+            } catch (e) {
+                console.error('KaTeX rendering error:', e, 'for:', cleanedLatex);
+            }
+        });
+    } else {
+        // If KaTeX not loaded yet, try again in 100ms
+        setTimeout(renderLatexEquations, 100);
+    }
+}
+
+// Call rendering after DOM and KaTeX load
+document.addEventListener('DOMContentLoaded', () => {
+    renderLatexEquations();
+});
 
 // ============================================
 // Physics-Inspired Visualizations for Cosma Platform Slide
@@ -838,4 +985,40 @@ const observer = new MutationObserver((mutations) => {
 
 document.querySelectorAll('.slide').forEach(slide => {
     observer.observe(slide, { attributes: true, attributeFilter: ['class'] });
+});
+
+// ============================================
+// Modal System
+// ============================================
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// ESC key to close modal
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+            closeModal(modal.id);
+        });
+    }
+});
+
+// Click outside to close
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+        closeModal(e.target.id);
+    }
 });

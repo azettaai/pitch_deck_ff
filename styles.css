@@ -882,6 +882,35 @@ tr.highlight-row td:first-child::before {
     margin-top: 32px;
 }
 
+/* Tagline Container */
+.tagline-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.tagline-primary {
+    color: var(--accent);
+    text-shadow: 0 0 15px var(--accent-glow);
+}
+
+.tagline-secondary {
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--secondary-glow);
+    font-weight: 400;
+}
+
+.tagline-tertiary {
+    color: var(--text-secondary);
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem) !important;
+    letter-spacing: 1px;
+}
+
+.tagline-tertiary span {
+    display: inline-block;
+}
+
 /* Canvas visualizations */
 canvas {
     background: transparent;
@@ -1176,9 +1205,772 @@ canvas {
     outline-offset: 2px;
 }
 
-/* Mobile/Touch adjustments */
+/* ==================== MODAL SYSTEM ==================== */
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 100000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* Modal Content */
+.modal-content {
+    background: var(--bg);
+    border: 2px solid var(--primary);
+    max-width: 900px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 40px;
+    position: relative;
+    box-shadow: 0 0 40px var(--primary-glow), 0 0 80px rgba(79, 249, 117, 0.2);
+    margin: 20px;
+}
+
+/* Modal corner decorations */
+.modal-content::before,
+.modal-content::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--secondary);
+}
+
+.modal-content::before {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.modal-content::after {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Modal scrollbar */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
+
+/* Modal Close Button */
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+.modal-close:hover {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* View More Button */
+.view-more-btn {
+    margin-top: 24px;
+    padding: 12px 24px;
+    background: var(--panel-bg);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-block;
+    letter-spacing: 1px;
+}
+
+.view-more-btn:hover {
+    background: var(--primary);
+    color: var(--bg);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+/* Modal Typography */
+.modal-content h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.7rem;
+    color: var(--primary);
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+}
+
+.modal-content h4 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    color: var(--secondary);
+    margin-top: 24px;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.modal-content p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 16px;
+}
+
+/* Modal Images */
+.modal-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+}
+
+.modal-content img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+/* AetherGPT Modal Gallery Styles */
+.aethergpt-modal-content {
+    max-width: 1200px !important;
+}
+
+.aethergpt-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.gallery-item {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    padding: 20px;
+    transition: var(--transition);
+    position: relative;
+}
+
+.gallery-item:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 25px var(--primary-glow);
+}
+
+.gallery-item-wide {
+    grid-column: 1 / -1;
+}
+
+.gallery-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px dotted var(--border);
+}
+
+.gallery-item-header h4 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    color: var(--secondary);
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.gallery-badge {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.4rem;
+    padding: 4px 8px;
+    background: rgba(79, 249, 117, 0.1);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.gallery-image-container {
+    background: var(--bg-secondary);
+    padding: 16px;
+    border: 1px solid var(--border-dim);
+    margin-bottom: 12px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.gallery-image {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    transition: transform 0.3s ease;
+    display: block;
+    margin: 0 auto;
+}
+
+.gallery-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.gallery-caption {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    text-align: center;
+}
+
+.aethergpt-summary {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-top: 32px;
+}
+
+.aethergpt-summary h4 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    color: var(--secondary);
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.summary-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-dim);
+    transition: var(--transition);
+}
+
+.summary-item:hover {
+    border-color: var(--primary);
+    background: rgba(79, 249, 117, 0.05);
+}
+
+.summary-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.summary-content {
+    flex: 1;
+}
+
+.summary-content strong {
+    display: block;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.5rem;
+    color: var(--primary);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+
+.summary-content p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Responsive adjustments for gallery */
 @media (max-width: 768px) {
+    .aethergpt-gallery-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .gallery-item-wide {
+        grid-column: 1;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== CONTACT US SLIDE ==================== */
+
+/* Contact Grid */
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+}
+
+.contact-card {
+    background: var(--panel-bg);
+    padding: 32px;
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: var(--transition);
+    position: relative;
+}
+
+.contact-card::before,
+.contact-card::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--secondary);
+}
+
+.contact-card::before {
+    top: -1px;
+    left: -1px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.contact-card::after {
+    bottom: -1px;
+    right: -1px;
+    border-left: none;
+    border-top: none;
+}
+
+.contact-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 30px var(--primary-glow);
+}
+
+.contact-icon {
+    font-size: 2rem;
+    color: var(--secondary);
+    margin-bottom: 16px;
+}
+
+.contact-card h4 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    color: var(--secondary);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.contact-card a {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.contact-card a:hover {
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--secondary-glow);
+}
+
+/* CTA Buttons */
+.cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 48px;
+}
+
+.cta-btn {
+    padding: 16px 32px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: var(--transition);
+    letter-spacing: 1px;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.cta-btn.primary {
+    background: var(--primary);
+    color: var(--bg);
+    border: 2px solid var(--primary);
+}
+
+.cta-btn.primary:hover {
+    background: var(--secondary);
+    border-color: var(--secondary);
+    box-shadow: 0 0 30px var(--secondary-glow);
+}
+
+.cta-btn.secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.cta-btn.secondary:hover {
+    background: var(--primary);
+    color: var(--bg);
+    box-shadow: 0 0 30px var(--primary-glow);
+}
+
+/* Mobile Landscape - Locked Orientation & No Scroll */
+@media (max-width: 1024px) and (orientation: landscape), 
+       (max-height: 600px) and (orientation: landscape) {
+    
+    /* Force landscape orientation */
+    html, body {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        position: fixed;
+    }
+    
+    /* Deck container adjustments */
+    .deck-container {
+        max-width: 100vw;
+        max-height: 100vh;
+        width: 100vw;
+        height: 100vh;
+    }
+    
+    /* Slide padding reduction */
+    .slide {
+        padding: 20px 30px 60px 30px;
+        overflow: hidden;
+    }
+    
+    /* Typography scaling for mobile landscape */
+    h1 {
+        font-size: clamp(1rem, 4vw, 1.5rem) !important;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
+    
+    h2 {
+        font-size: clamp(0.7rem, 2vw, 0.9rem) !important;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+    
+    h3 {
+        font-size: 0.45rem !important;
+        margin-bottom: 0.75rem;
+    }
+    
+    p, li {
+        font-size: clamp(0.65rem, 1.5vw, 0.8rem) !important;
+        line-height: 1.5;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Content wrapper */
+    .content-wrapper {
+        max-width: 100%;
+        padding: 0;
+        overflow: hidden;
+    }
+    
+    /* Feature grid - stack or reduce columns */
+    .feature-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .feature-card {
+        padding: 16px;
+    }
+    
+    .feature-card h4 {
+        font-size: 0.5rem !important;
+        margin-bottom: 8px;
+    }
+    
+    .feature-card p {
+        font-size: 0.65rem !important;
+        line-height: 1.4;
+    }
+    
+    /* Metric cards */
+    .metric-row {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .metric-card {
+        padding: 16px 12px;
+    }
+    
+    .metric-card h4 {
+        font-size: clamp(1rem, 3vw, 1.3rem) !important;
+        margin-bottom: 6px;
+    }
+    
+    .metric-card .label {
+        font-size: 0.4rem !important;
+        margin-bottom: 4px;
+    }
+    
+    .metric-card .sublabel {
+        font-size: 0.6rem !important;
+    }
+    
+    /* Highlight boxes */
+    .highlight-box {
+        padding: 12px 16px;
+        margin-top: 16px;
+        font-size: 0.7rem !important;
+        line-height: 1.5;
+    }
+    
+    /* Footer */
+    .footer {
+        bottom: 12px;
+        left: 30px;
+        right: 30px;
+        font-size: 0.4rem !important;
+    }
+    
+    /* Controls */
+    .controls {
+        bottom: 12px;
+        right: 12px;
+        gap: 6px;
+    }
+    
+    .btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+    }
+    
+    /* Slide counter */
+    .slide-counter {
+        bottom: 12px;
+        padding: 6px 12px;
+        font-size: 0.5rem !important;
+    }
+    
+    /* Team grid */
+    .team-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .team-card {
+        padding: 16px;
+    }
+    
+    .team-card .avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 0.7rem;
+        margin-bottom: 12px;
+    }
+    
+    .team-card h4 {
+        font-size: 0.55rem !important;
+        margin-bottom: 4px;
+    }
+    
+    .team-card .role {
+        font-size: 0.4rem !important;
+        margin-bottom: 8px;
+    }
+    
+    .team-card p {
+        font-size: 0.65rem !important;
+        margin-bottom: 6px;
+    }
+    
+    .team-card .highlight {
+        font-size: 0.6rem !important;
+    }
+    
+    /* Table adjustments */
+    .table-container {
+        margin-top: 16px;
+        font-size: 0.7rem;
+    }
+    
+    th {
+        padding: 10px 12px;
+        font-size: 0.4rem !important;
+    }
+    
+    td {
+        padding: 8px 12px;
+        font-size: 0.65rem !important;
+    }
+    
+    /* Contact grid */
+    .contact-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .contact-card {
+        padding: 16px;
+    }
+    
+    .contact-icon {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+    
+    .contact-card h4 {
+        font-size: 0.5rem !important;
+        margin-bottom: 8px;
+    }
+    
+    .contact-card a {
+        font-size: 0.7rem !important;
+    }
+    
+    /* CTA buttons */
+    .cta-buttons {
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .cta-btn {
+        padding: 10px 20px;
+        font-size: 0.55rem !important;
+    }
+    
+    /* Tagline adjustments */
+    .tagline {
+        font-size: 0.6rem !important;
+        margin-top: 16px;
+    }
+    
+    .tagline-primary {
+        font-size: clamp(0.7rem, 2vw, 0.9rem) !important;
+    }
+    
+    .tagline-secondary {
+        font-size: clamp(0.6rem, 1.5vw, 0.75rem) !important;
+    }
+    
+    .tagline-tertiary {
+        font-size: clamp(0.55rem, 1.2vw, 0.65rem) !important;
+    }
+    
+    /* Modal adjustments */
+    .modal-content {
+        padding: 20px;
+        margin: 10px;
+        max-height: 95vh;
+        max-width: 95vw;
+    }
+    
     .concept-tooltip {
-        width: 300px;
+        width: 280px;
+        max-width: 85vw;
+    }
+    
+    /* Title slide specific adjustments */
+    .slide.invert .content-wrapper {
+        padding: 0;
+    }
+    
+    .slide.invert svg {
+        width: 100px !important;
+        height: 100px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    /* Results slide grid */
+    #resultsSlide .content-wrapper > div[style*="grid"] {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+        margin-top: 12px !important;
+    }
+    
+    /* Prevent any scrolling */
+    body {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+    
+    .deck-container {
+        overflow: hidden !important;
+    }
+    
+    .slide {
+        overflow: hidden !important;
+    }
+    
+    .content-wrapper {
+        overflow: hidden !important;
+        max-height: calc(100vh - 80px);
+    }
+}
+
+/* Orientation message styling */
+#orientation-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg);
+    border: 2px solid var(--primary);
+    padding: 40px;
+    z-index: 99999;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.7rem;
+    color: var(--primary);
+    text-align: center;
+    box-shadow: 0 0 40px var(--primary-glow);
+    max-width: 90vw;
+}
+
+/* Additional mobile portrait prevention */
+@media (orientation: portrait) and (max-width: 768px) {
+    body {
+        overflow: hidden !important;
+    }
+    
+    .deck-container {
+        display: none;
     }
 }
