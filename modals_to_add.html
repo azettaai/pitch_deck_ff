@@ -1,0 +1,96 @@
+    <!-- Cosma DB Modal -->
+    <div id="cosmaDBModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 900px;">
+            <button class="modal-close" onclick="closeModal('cosmaDBModal')">&times;</button>
+
+            <h3 style="margin-bottom: 16px;">Cosma DB</h3>
+            <h4 style="color: var(--text-secondary); margin-bottom: 32px;">High-performance vector database enabled by YAT-Product embeddings</h4>
+
+            <div class="highlight-box" style="margin-bottom: 32px;">
+                <strong>Foundation:</strong> Cosma DB's architecture is possible because YAT-Product embeddings have specific geometric properties that enable structure-free indexing.
+            </div>
+
+            <h4 style="margin-top: 32px; margin-bottom: 16px;">Key Features</h4>
+
+            <div class="feature-grid" style="grid-template-columns: 1fr; gap: 16px;">
+                <div class="feature-card">
+                    <h4><span class="concept" data-concept="structure-free">Structure-Free Indexing</span></h4>
+                    <p>YAT-Product's mathematical properties enable <em><span class="concept" data-concept="direct-storage">Direct-Storage Traversal</span></em>, decoupling semantic precision from RAM-heavy graph structures.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="concept" data-concept="deterministic-latency">Deterministic Latency</span></h4>
+                    <p>Eliminates the "jitter" and probabilistic variance inherent in <span class="concept" data-concept="hnsw">HNSW</span> algorithms.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="concept" data-concept="zero-build">O(1) Indexing</span></h4>
+                    <p>Data is searchable in <strong>milliseconds</strong>, not hours. No <span class="concept" data-concept="hnsw">HNSW</span> rebuild phases. Critical for real-time RAG applications.</p>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 32px;">
+                <strong>Status:</strong> Architecture designed. Theoretical complexity validated. Requires production-scale benchmarking.
+            </div>
+
+            <h4 style="margin-top: 32px; margin-bottom: 16px;">Technical Advantages</h4>
+            <ul style="margin-left: 20px;">
+                <li style="margin-bottom: 12px;"><strong>O(1) Memory Complexity:</strong> Constant memory overhead regardless of dataset size</li>
+                <li style="margin-bottom: 12px;"><strong>10-100x Cost Reduction:</strong> Compared to RAM-bound competitors like Pinecone, Milvus, Weaviate</li>
+                <li style="margin-bottom: 12px;"><strong>Real-time Indexing:</strong> No rebuild phases or indexing downtime</li>
+                <li style="margin-bottom: 12px;"><strong>Disk-Native:</strong> Runs on cheap disk storage instead of expensive RAM</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Periodica Modal -->
+    <div id="periodicaModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 900px;">
+            <button class="modal-close" onclick="closeModal('periodicaModal')">&times;</button>
+
+            <h3 style="margin-bottom: 16px;">Periodica</h3>
+            <h4 style="color: var(--text-secondary); margin-bottom: 32px;">Full-interpretability suite for monitoring, explaining, and auditing Azetta AI deployments</h4>
+
+            <div class="highlight-box" style="margin-bottom: 32px;">
+                <strong>Key Innovation:</strong> Unlike post-hoc interpretability tools (SHAP, LIME), Periodica provides <em>structural interpretability</em> for YAT-Product architectures.
+            </div>
+
+            <h4 style="margin-top: 32px; margin-bottom: 16px;">Safety-Critical Applications</h4>
+            <p style="margin-bottom: 24px;">Designed for industries requiring full model auditability: healthcare, finance, autonomous systems. Provides interpretability framework for regulatory compliance.</p>
+
+            <h4 style="margin-top: 32px; margin-bottom: 16px;">Core Capabilities</h4>
+            <div class="feature-grid" style="grid-template-columns: 1fr; gap: 16px;">
+                <div class="feature-card">
+                    <h4>Weight Tracing</h4>
+                    <p>Every parameter maps to physical principles. Track how specific weights influence model decisions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Gradient Inspection</h4>
+                    <p>Understand why the model changed its prediction. Full visibility into gradient flow and learning dynamics.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Decision Auditing</h4>
+                    <p>Trace predictions back through interpretable latent space. Generate human-readable explanations for model outputs.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Real-time Monitoring</h4>
+                    <p>Detect anomalous behavior patterns. Continuous auditing for production deployments.</p>
+                </div>
+            </div>
+
+            <h4 style="margin-top: 32px; margin-bottom: 16px;">Target Industries</h4>
+            <ul style="margin-left: 20px;">
+                <li style="margin-bottom: 12px;"><strong>Healthcare:</strong> FDA-compliant model explainability for medical AI systems</li>
+                <li style="margin-bottom: 12px;"><strong>Finance:</strong> Audit-ready decision systems for regulatory compliance</li>
+                <li style="margin-bottom: 12px;"><strong>Autonomous Systems:</strong> Safety certification support for critical infrastructure</li>
+                <li style="margin-bottom: 12px;"><strong>Government:</strong> Transparency requirements for public sector AI deployments</li>
+            </ul>
+
+            <div class="highlight-box" style="margin-top: 32px;">
+                <strong>Status:</strong> Planned product based on YAT-Product's white-box interpretability properties. Development roadmap aligned with Omnilingual and Cosma DB maturity.
+            </div>
+        </div>
+    </div>
