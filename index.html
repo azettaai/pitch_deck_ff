@@ -5,13 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
     <title>Azetta.ai Investor Deck</title>
+
+    <!-- Performance: Preconnect to external resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+    <!-- Performance: Preload critical fonts -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRBEqV98dVQztYldFc7pAsEIc3Xew.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nVivM.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Press+Start+2P&family=Share+Tech+Mono&display=swap"
         rel="stylesheet">
+
     <!-- KaTeX CSS for LaTeX math rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+    <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -96,7 +109,7 @@
                         <canvas id="scalingProblemCanvas" width="280" height="200" style="width: 100%; height: auto; display: block; margin: 0 auto 16px;"></canvas>
                         <h4>Bloated Architectures</h4>
                         <p style="font-size: 0.85rem; margin-bottom: 8px;">Exponential scaling requires exponentially more compute and memory.</p>
-                        <p style="font-size: 0.75rem; color: var(--secondary); text-align: center; margin-top: 12px;">👁️ Click to expand</p>
+                        <p style="font-size: 0.75rem; color: var(--secondary); text-align: center; margin-top: 12px;"> Click to expand</p>
                     </div>
 
                     <!-- Card 2: Black Box Visualization -->
@@ -104,7 +117,7 @@
                         <canvas id="blackBoxCanvas" width="280" height="200" style="width: 100%; height: auto; display: block; margin: 0 auto 16px;"></canvas>
                         <h4>The "Black Box" Effect</h4>
                         <p style="font-size: 0.85rem; margin-bottom: 8px;">Uninterpretable model behavior necessitates costly human intervention.</p>
-                        <p style="font-size: 0.75rem; color: var(--secondary); text-align: center; margin-top: 12px;">👁️ Click to expand</p>
+                        <p style="font-size: 0.75rem; color: var(--secondary); text-align: center; margin-top: 12px;"> Click to expand</p>
                     </div>
 
                     <!-- Card 3: Non-Determinism Visualization -->
@@ -112,7 +125,7 @@
                         <canvas id="nonDeterminismCanvas" width="280" height="200" style="width: 100%; height: auto; display: block; margin: 0 auto 16px;"></canvas>
                         <h4>Non-Determinism</h4>
                         <p style="font-size: 0.85rem; margin-bottom: 8px;">Unpredictable outputs that lack a rigorous causal framework.</p>
-                        <p style="font-size: 0.75rem; color: var(--secondary); text-align: center; margin-top: 12px;">👁️ Click to expand</p>
+                        <p style="font-size: 0.75rem; color: var(--secondary); text-align: center; margin-top: 12px;"> Click to expand</p>
                     </div>
                 </div>
 
@@ -175,34 +188,30 @@
                 <h2>A First-Principles Approach to Neural Computation</h2>
 
                 <div class="split-col" style="margin-top: 24px; gap: 20px;">
-                    <div class="feature-card clickable-visual-card" style="padding: 12px; cursor: pointer;" onclick="openModal('yatKernelModal')">
-                        <canvas id="standardDLCanvas" width="240" height="120" style="width: 100%; height: auto; max-height: 120px; display: block; margin: 0 auto 12px;"></canvas>
+                    <div class="feature-card clickable-visual-card" style="padding: 16px; cursor: pointer; overflow: hidden;" onclick="openModal('yatKernelModal')">
+                        <canvas id="standardDLCanvas" width="320" height="180" style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto 16px;"></canvas>
                         <h4 style="font-size: 0.9rem; margin-bottom: 6px;">Standard Deep Learning</h4>
                         <p style="font-size: 0.75rem; margin-bottom: 6px;">Traditional networks rely on:</p>
                         <div class="latex-equation" style="font-size: 0.95rem; margin: 8px 0; padding: 12px; background: rgba(14, 165, 233, 0.05); border: 1px solid var(--border); border-radius: 4px; text-align: center;">
                             \( y = \sigma(w \cdot x + b) \)
                         </div>
                         <p style="font-size: 0.7rem; line-height: 1.3; margin-bottom: 8px;">Anti-parallel vectors punished (-1), orthogonal vectors 0. ReLU clips negative values, leading to <strong>uninterpretable entanglement</strong>.</p>
-                        <p style="font-size: 0.65rem; color: var(--secondary); text-align: center;">👁️ Click to expand</p>
+                        <p style="font-size: 0.65rem; color: var(--secondary); text-align: center;"> Click to expand</p>
                     </div>
-                    <div class="feature-card clickable-visual-card" style="padding: 12px; cursor: pointer;" onclick="openModal('yatKernelModal')">
-                        <canvas id="yatProductCanvas" width="240" height="120" style="width: 100%; height: auto; max-height: 120px; display: block; margin: 0 auto 12px;"></canvas>
+                    <div class="feature-card clickable-visual-card" style="padding: 16px; cursor: pointer; overflow: hidden;" onclick="openModal('yatKernelModal')">
+                        <canvas id="yatProductCanvas" width="320" height="180" style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto 16px;"></canvas>
                         <h4 style="font-size: 0.9rem; margin-bottom: 6px;">The YAT-Product Approach</h4>
                         <p style="font-size: 0.75rem; margin-bottom: 6px;">Unifies directional alignment and spatial proximity:</p>
                         <div class="latex-equation" style="font-size: 0.95rem; margin: 8px 0; padding: 12px; background: rgba(14, 165, 233, 0.05); border: 1px solid var(--border); border-radius: 4px; text-align: center;">
                             \( K_{\text{ⵟ}}(w, x) = \frac{\langle w, x \rangle^2}{\|w - x\|^2 + \epsilon} \)
                         </div>
                         <p style="font-size: 0.7rem; line-height: 1.3; margin-bottom: 8px;"><strong>Intrinsic non-linearity</strong> without clipping. Fully interpretable latent space.</p>
-                        <p style="font-size: 0.65rem; color: var(--secondary); text-align: center;">👁️ Click to expand</p>
+                        <p style="font-size: 0.65rem; color: var(--secondary); text-align: center;"> Click to expand</p>
                     </div>
                 </div>
 
                 <div class="highlight-box" style="margin-top: 32px;">
                     <strong>Properties:</strong> White-box interpretability by design · Efficient computation with reduced parameters · Mathematical rigor from first-principles physics · Every weight and gradient traces back to physical principles
-                </div>
-
-                <div class="highlight-box" style="margin-top: 16px;">
-                    <strong>Foundation:</strong> The YAT-Product forms the mathematical basis for all Azetta.ai components: Omnilingual embeddings, Cosma DB structure-free indexing, and Periodica interpretability auditing. These components work in conjunction to build out the full Azetta model with first principles in a fully YAT-native architecture.
                 </div>
             </div>
             <div class="footer">
@@ -454,7 +463,7 @@
                         <div style="font-size: 3rem; margin-bottom: 16px; color: var(--primary);">⚙️</div>
                         <h4 style="color: var(--primary); margin-bottom: 12px;">Infrastructure Components</h4>
                         <p style="font-size: 0.85rem; margin-bottom: 16px;">Cosma DB & Periodica complete the full YAT-native architecture</p>
-                        <p style="font-size: 0.75rem; color: var(--secondary); margin-top: auto;">👁️ Click to explore</p>
+                        <p style="font-size: 0.75rem; color: var(--secondary); margin-top: auto;"> Click to explore</p>
                     </div>
                 </div>
 
@@ -484,8 +493,8 @@
                     <div class="feature-card clickable-visual-card" style="padding: 32px; cursor: pointer; max-width: 900px; width: 100%;" onclick="openModal('competitiveBarriersModal')">
                         <canvas id="complexityCanvas" width="800" height="400" style="width: 100%; height: auto; border: 1px solid var(--border); background: var(--panel-bg); display: block; margin: 0 auto;"></canvas>
                         <div style="margin-top: 20px; text-align: center;">
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">O(1) complexity advantage creates technical barriers</p>
-                            <p style="font-size: 0.75rem; color: var(--secondary);">👁️ Click to explore competitive barriers in detail</p>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">Trade secrets and years of private research ahead of public open source</p>
+                            <p style="font-size: 0.75rem; color: var(--secondary);"> Click to explore technical replication challenges</p>
                         </div>
                     </div>
                 </div>
@@ -509,7 +518,7 @@
                         <canvas id="revenuePathCanvas" width="200" height="150" style="width: 100%; height: auto; margin: 0 auto 16px; display: block;"></canvas>
                         <h4 style="color: var(--primary); margin-bottom: 12px;">Revenue Path</h4>
                         <p style="font-size: 0.85rem; margin-bottom: 12px;">Design Partners → Enterprise → API Marketplace → EBITDA Positive</p>
-                        <p style="font-size: 0.75rem; color: var(--secondary); margin-top: auto;">👁️ Click for financial details</p>
+                        <p style="font-size: 0.75rem; color: var(--secondary); margin-top: auto;"> Click for financial details</p>
                     </div>
 
                     <!-- Card 2: Efficiency Metrics -->
@@ -518,7 +527,7 @@
                         <div style="font-size: 1.2rem; margin-bottom: 8px; color: var(--accent);">Smaller Models</div>
                         <div style="font-size: 3.5rem; margin: 20px 0 16px; color: var(--primary); line-height: 1;">90%</div>
                         <div style="font-size: 1.2rem; margin-bottom: 12px; color: var(--accent);">More Efficient</div>
-                        <p style="font-size: 0.75rem; color: var(--secondary); margin-top: auto;">👁️ Click for efficiency analysis</p>
+                        <p style="font-size: 0.75rem; color: var(--secondary); margin-top: auto;"> Click for efficiency analysis</p>
                     </div>
 
                     <!-- Card 3: Acquisition Appeal -->
@@ -532,7 +541,7 @@
                             <li style="margin-bottom: 6px;">10-100x Cost Efficiency</li>
                             <li>Compliance & Trust</li>
                         </ul>
-                        <p style="font-size: 0.75rem; color: var(--secondary); margin-top: auto;">👁️ Click for strategic value</p>
+                        <p style="font-size: 0.75rem; color: var(--secondary); margin-top: auto;"> Click for strategic value</p>
                     </div>
                 </div>
             </div>

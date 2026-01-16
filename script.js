@@ -2,27 +2,50 @@
 // Mobile Landscape Lock & Scroll Prevention
 // ============================================
 
-// Prevent scrolling on mobile
+// Prevent scrolling on mobile with smart vertical scroll detection
 function preventScrolling() {
     document.body.style.overflow = 'hidden';
     document.body.style.position = 'fixed';
     document.body.style.width = '100%';
     document.body.style.height = '100%';
-    
-    // Prevent touch scrolling
+
+    let touchStartY = 0;
+    let touchStartX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    // Prevent touch scrolling with vertical scroll detection
     document.addEventListener('touchmove', (e) => {
         // Allow touch events on interactive elements
-        if (e.target.closest('.modal-overlay') || 
+        if (e.target.closest('.modal-overlay') ||
             e.target.closest('.modal-content') ||
             e.target.closest('.concept-tooltip')) {
             return;
         }
+
+        // Allow vertical scroll within .slide
+        const slideElement = e.target.closest('.slide');
+        if (slideElement) {
+            const touchMoveY = e.touches[0].clientY;
+            const touchMoveX = e.touches[0].clientX;
+            const deltaY = Math.abs(touchMoveY - touchStartY);
+            const deltaX = Math.abs(touchMoveX - touchStartX);
+
+            // If predominantly vertical movement, allow scroll
+            if (deltaY > deltaX * 1.5) {
+                return; // Allow vertical scroll
+            }
+        }
+
         e.preventDefault();
     }, { passive: false });
-    
+
     // Prevent wheel scrolling
     document.addEventListener('wheel', (e) => {
-        if (!e.target.closest('.modal-content') && 
+        if (!e.target.closest('.modal-content') &&
             !e.target.closest('.tooltip-body')) {
             e.preventDefault();
         }
@@ -89,7 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
     preventScrolling();
     lockOrientation();
     handleOrientationChange();
-    
+
+    // Initial overflow check
+    setTimeout(checkSlideOverflow, 500);
+
     // Re-check on orientation change
     window.addEventListener('orientationchange', () => {
         setTimeout(() => {
@@ -97,10 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
             lockOrientation();
         }, 100);
     });
-    
+
     // Re-check on resize
     window.addEventListener('resize', () => {
         handleOrientationChange();
+        checkSlideOverflow(); // Re-check overflow on resize
     });
 });
 
@@ -135,9 +162,13 @@ function showSlide(index) {
         slide.classList.remove('active');
         if (i === index) {
             slide.classList.add('active');
+            slide.scrollTop = 0; // Reset scroll position
         }
     });
     updateProgress();
+
+    // Check for overflow after slide becomes active
+    setTimeout(checkSlideOverflow, 100);
 }
 
 function nextSlide() {
@@ -182,26 +213,81 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Touch Navigation (Swipe)
+// Touch Navigation (Swipe) - Enhanced for vertical scroll
 let touchStartX = 0;
 let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
+let touchStartTime = 0;
 
 document.addEventListener('touchstart', (e) => {
     touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+    touchStartTime = Date.now();
 });
 
 document.addEventListener('touchend', (e) => {
     touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
     handleSwipe();
 });
 
 function handleSwipe() {
     const swipeThreshold = 50;
-    if (touchEndX < touchStartX - swipeThreshold) {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+    const swipeTime = Date.now() - touchStartTime;
+
+    // Only trigger swipe if:
+    // 1. Horizontal movement exceeds threshold
+    // 2. Horizontal movement > vertical movement (predominantly horizontal)
+    // 3. Swipe completed in < 500ms (quick gesture)
+    if (absDeltaX < swipeThreshold || absDeltaY > absDeltaX || swipeTime > 500) {
+        return; // Not a valid horizontal swipe
+    }
+
+    if (deltaX < -swipeThreshold) {
         nextSlide();
-    } else if (touchEndX > touchStartX + swipeThreshold) {
+    } else if (deltaX > swipeThreshold) {
         prevSlide();
     }
+}
+
+// ============================================
+// Scroll Indicator Management
+// ============================================
+
+function checkSlideOverflow() {
+    const activeSlide = document.querySelector('.slide.active');
+    if (!activeSlide) return;
+
+    const contentHeight = activeSlide.scrollHeight;
+    const viewportHeight = activeSlide.clientHeight;
+
+    if (contentHeight > viewportHeight + 30) {
+        activeSlide.classList.add('has-overflow');
+    } else {
+        activeSlide.classList.remove('has-overflow');
+    }
+
+    // Hide indicator when scrolled to bottom
+    let hideTimeout;
+    activeSlide.addEventListener('scroll', () => {
+        clearTimeout(hideTimeout);
+        const scrollTop = activeSlide.scrollTop;
+        const scrollHeight = activeSlide.scrollHeight;
+        const clientHeight = activeSlide.clientHeight;
+
+        if (scrollTop + clientHeight >= scrollHeight - 15) {
+            hideTimeout = setTimeout(() => {
+                activeSlide.classList.remove('has-overflow');
+            }, 1000);
+        } else if (contentHeight > viewportHeight + 30) {
+            activeSlide.classList.add('has-overflow');
+        }
+    });
 }
 
 // Initialize
@@ -649,6 +735,41 @@ function initBlackBoxVisualization() {
     const ctx = canvas.getContext('2d');
     let time = 0;
 
+    // Calculate point on quadratic Bezier curve at parameter t (0 to 1)
+    function getQuadraticBezierPoint(t, p0, p1, p2) {
+        const oneMinusT = 1 - t;
+        return {
+            x: oneMinusT * oneMinusT * p0.x + 2 * oneMinusT * t * p1.x + t * t * p2.x,
+            y: oneMinusT * oneMinusT * p0.y + 2 * oneMinusT * t * p1.y + t * t * p2.y
+        };
+    }
+
+    // Pre-calculate waypoints along Bezier curve + optional straight segment
+    function calculatePathWaypoints(p0, p1, p2, straightEndPoint = null, numPoints = 100) {
+        const waypoints = [];
+
+        // Sample points along the Bezier curve
+        const curvePoints = Math.floor(numPoints * 0.7); // 70% of points for curve
+        for (let i = 0; i <= curvePoints; i++) {
+            const t = i / curvePoints;
+            waypoints.push(getQuadraticBezierPoint(t, p0, p1, p2));
+        }
+
+        // If there's a straight segment, add those points
+        if (straightEndPoint) {
+            const straightPoints = numPoints - curvePoints;
+            for (let i = 1; i <= straightPoints; i++) {
+                const t = i / straightPoints;
+                waypoints.push({
+                    x: p2.x + (straightEndPoint.x - p2.x) * t,
+                    y: p2.y + (straightEndPoint.y - p2.y) * t
+                });
+            }
+        }
+
+        return waypoints;
+    }
+
     const inputNodes = 5;
     const outputNodes = 3;
     const inputX = 40;
@@ -658,18 +779,48 @@ function initBlackBoxVisualization() {
     const blackBoxY = 20;
     const outputX = canvas.width - 40;
 
+    // Calculate positions
+    const inputSpacing = (canvas.height - 60) / (inputNodes - 1);
+    const inputNodeY = 30;
+    const outputSpacing = (canvas.height - 60) / (outputNodes - 1);
+    const outputNodeY = 30;
+
+    // Pre-calculate waypoints for input paths
+    const inputWaypoints = [];
+    for (let i = 0; i < inputNodes; i++) {
+        const y = inputNodeY + i * inputSpacing;
+        const targetY = blackBoxY + blackBoxHeight / 2 + (i - inputNodes / 2) * 10;
+
+        const startPoint = { x: inputX + 6, y: y };
+        const midX = (inputX + 6 + blackBoxX - blackBoxWidth / 2) / 2;
+        const controlPoint = { x: (midX + blackBoxX - blackBoxWidth / 2) / 2, y: (y + targetY) / 2 };
+        const endPoint = { x: blackBoxX - blackBoxWidth / 2, y: targetY };
+
+        inputWaypoints[i] = calculatePathWaypoints(startPoint, controlPoint, endPoint);
+    }
+
+    // Pre-calculate waypoints for output paths
+    const outputWaypoints = [];
+    for (let i = 0; i < outputNodes; i++) {
+        const y = outputNodeY + i * outputSpacing;
+        const sourceY = blackBoxY + blackBoxHeight / 2 + (i - outputNodes / 2) * 15;
+
+        const startPoint = { x: blackBoxX + blackBoxWidth / 2, y: sourceY };
+        const midX = (blackBoxX + blackBoxWidth / 2 + outputX) / 2;
+        const controlPoint = { x: (blackBoxX + blackBoxWidth / 2 + midX) / 2, y: (sourceY + y) / 2 };
+        const curveEndPoint = { x: midX, y: y };
+        const finalPoint = { x: outputX - 6, y: y };
+
+        outputWaypoints[i] = calculatePathWaypoints(startPoint, controlPoint, curveEndPoint, finalPoint);
+    }
+
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         time += 0.03;
 
         // Draw input layer nodes
-        const inputSpacing = (canvas.height - 60) / (inputNodes - 1);
-        const inputNodeY = 30;
-        const inputPositions = [];
-        
         for (let i = 0; i < inputNodes; i++) {
             const y = inputNodeY + i * inputSpacing;
-            inputPositions.push(y);
             
             // Input node (visible/interpretable)
             const pulse = 1 + Math.sin(time * 2 + i * 0.5) * 0.2;
@@ -705,8 +856,8 @@ function initBlackBoxVisualization() {
 
         // Draw connections from input to black box (fading out)
         for (let i = 0; i < inputNodes; i++) {
-            const y = inputPositions[i];
-            const targetY = blackBoxY + blackBoxHeight / 2 + (i - inputNodes / 2) * 15;
+            const y = inputNodeY + i * inputSpacing;
+            const targetY = blackBoxY + blackBoxHeight / 2 + (i - inputNodes / 2) * 10;
             
             // Connection line that fades into black box
             ctx.strokeStyle = `rgba(77, 238, 234, ${0.4 + Math.sin(time * 2 + i) * 0.2})`;
@@ -726,24 +877,21 @@ function initBlackBoxVisualization() {
             // Animated data packet flowing
             const progress = (time * 30 + i * 10) % 100;
             if (progress < 90) {
-                const packetX = inputX + 6 + (blackBoxX - blackBoxWidth / 2 - inputX - 6) * (progress / 90);
-                const packetY = y + (targetY - y) * (progress / 90);
-                
-                ctx.fillStyle = '#4deeea';
+                const waypointIndex = Math.floor((progress / 90) * (inputWaypoints[i].length - 1));
+                const packet = inputWaypoints[i][waypointIndex];
+
+                // Fade out as approaching black box
+                const opacity = 1 - (progress / 90) * 0.5;
+                ctx.fillStyle = `rgba(77, 238, 234, ${opacity})`;
                 ctx.beginPath();
-                ctx.arc(packetX, packetY, 3, 0, Math.PI * 2);
+                ctx.arc(packet.x, packet.y, 3, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
 
         // Draw output layer nodes
-        const outputSpacing = (canvas.height - 60) / (outputNodes - 1);
-        const outputNodeY = 30;
-        const outputPositions = [];
-        
         for (let i = 0; i < outputNodes; i++) {
             const y = outputNodeY + i * outputSpacing;
-            outputPositions.push(y);
             
             // Output node (visible but disconnected from reasoning)
             const pulse = 1 + Math.sin(time * 2 + i * 0.7) * 0.2;
@@ -764,7 +912,7 @@ function initBlackBoxVisualization() {
 
         // Draw connections from black box to output (emerging from opacity)
         for (let i = 0; i < outputNodes; i++) {
-            const y = outputPositions[i];
+            const y = outputNodeY + i * outputSpacing;
             const sourceY = blackBoxY + blackBoxHeight / 2 + (i - outputNodes / 2) * 15;
             
             // Connection line emerging from black box
@@ -783,12 +931,12 @@ function initBlackBoxVisualization() {
             // Animated data packet emerging
             const progress = (time * 30 + i * 10 + 50) % 100;
             if (progress < 90) {
-                const packetX = blackBoxX + blackBoxWidth / 2 + (outputX - 6 - blackBoxX - blackBoxWidth / 2) * (progress / 90);
-                const packetY = sourceY + (y - sourceY) * (progress / 90);
-                
+                const waypointIndex = Math.floor((progress / 90) * (outputWaypoints[i].length - 1));
+                const packet = outputWaypoints[i][waypointIndex];
+
                 ctx.fillStyle = '#f59e0b';
                 ctx.beginPath();
-                ctx.arc(packetX, packetY, 3, 0, Math.PI * 2);
+                ctx.arc(packet.x, packet.y, 3, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
@@ -884,76 +1032,114 @@ function initStandardDLVisualization() {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const angle = time * 0.5;
-        const vectorLength = 35; // Reduced for smaller canvas
+        const vectorLength = 40;
 
-        // Vector 1 (weight)
+        // Vector 1 (weight) - rotating
         const v1x = Math.cos(angle) * vectorLength;
         const v1y = Math.sin(angle) * vectorLength;
 
-        // Vector 2 (input)
-        const v2x = Math.cos(angle + Math.PI / 3) * vectorLength;
-        const v2y = Math.sin(angle + Math.PI / 3) * vectorLength;
+        // Vector 2 (input) - fixed at 60 degrees offset
+        const v2Angle = angle + Math.PI / 3;
+        const v2x = Math.cos(v2Angle) * vectorLength;
+        const v2y = Math.sin(v2Angle) * vectorLength;
 
-        // Dot product result (projection)
+        // Calculate dot product (directional alignment only)
         const dot = (v1x * v2x + v1y * v2y) / (vectorLength * vectorLength);
-        const projectionX = v2x * dot;
-        const projectionY = v2y * dot;
-
-        // Draw vectors
-        ctx.strokeStyle = '#0ea5e9';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX + v1x, centerY + v1y);
-        ctx.stroke();
-
-        ctx.strokeStyle = '#4deeea';
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX + v2x, centerY + v2y);
-        ctx.stroke();
-
-        // Draw dot product projection (with clipping)
+        const isNegative = dot < 0;
         const clipped = Math.max(0, dot); // ReLU clipping
+
+        // Show clipping effect with visual fade
         const clippedX = v2x * clipped;
         const clippedY = v2y * clipped;
 
-        ctx.strokeStyle = dot < 0 ? 'rgba(239, 68, 68, 0.5)' : '#22c55e';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
+        // Background glow for alignment visualization
+        const alignmentColor = isNegative ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)';
+        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, vectorLength * 1.5);
+        gradient.addColorStop(0, alignmentColor);
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw projection line (dot product visualization)
+        ctx.strokeStyle = isNegative ? 'rgba(239, 68, 68, 0.4)' : 'rgba(34, 197, 94, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 3]);
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX + clippedX, centerY + clippedY);
+        ctx.lineTo(centerX + v2x * dot, centerY + v2y * dot);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Draw arrowheads
-        const drawArrow = (x1, y1, x2, y2, color) => {
-            ctx.strokeStyle = color;
-            ctx.fillStyle = color;
-            const angle = Math.atan2(y2 - y1, x2 - x1);
+        // Draw clipped result (ReLU activation)
+        if (clipped > 0) {
+            ctx.strokeStyle = '#22c55e';
+            ctx.lineWidth = 3;
+            ctx.shadowColor = '#22c55e';
+            ctx.shadowBlur = 10;
             ctx.beginPath();
-            ctx.moveTo(x2, y2);
-            ctx.lineTo(x2 - 6 * Math.cos(angle - Math.PI / 6), y2 - 6 * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(x2 - 6 * Math.cos(angle + Math.PI / 6), y2 - 6 * Math.sin(angle + Math.PI / 6));
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX + clippedX, centerY + clippedY);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        // Draw vectors
+        const drawVector = (x, y, color, label) => {
+            // Vector line
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX + x, centerY + y);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Arrowhead
+            const angle = Math.atan2(y, x);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(centerX + x, centerY + y);
+            ctx.lineTo(centerX + x - 8 * Math.cos(angle - Math.PI / 6), centerY + y - 8 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(centerX + x - 8 * Math.cos(angle + Math.PI / 6), centerY + y - 8 * Math.sin(angle + Math.PI / 6));
             ctx.closePath();
             ctx.fill();
+
+            // Label
+            ctx.font = '7px monospace';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.fillText(label, centerX + x * 1.3, centerY + y * 1.3);
         };
 
-        drawArrow(centerX, centerY, centerX + v1x, centerY + v1y, '#0ea5e9');
-        drawArrow(centerX, centerY, centerX + v2x, centerY + v2y, '#4deeea');
+        drawVector(v1x, v1y, '#0ea5e9', 'w');
+        drawVector(v2x, v2y, '#4deeea', 'x');
 
         // Center point
         ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = 5;
         ctx.beginPath();
         ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
         ctx.fill();
+        ctx.shadowBlur = 0;
 
-        // Label
-        ctx.font = '6px monospace';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        // Show dot product value and clipping indicator
+        ctx.font = '7px monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         ctx.textAlign = 'center';
-        ctx.fillText('Dot Product → ReLU', centerX, canvas.height - 5);
+        ctx.fillText(`dot: ${dot.toFixed(2)}`, centerX, 15);
+
+        if (isNegative) {
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+            ctx.fillText('CLIPPED!', centerX, canvas.height - 8);
+        } else {
+            ctx.fillStyle = 'rgba(34, 197, 94, 0.9)';
+            ctx.fillText('ReLU: ' + clipped.toFixed(2), centerX, canvas.height - 8);
+        }
+
+        requestAnimationFrame(animate);
     }
 
     animate();
@@ -965,25 +1151,29 @@ function initYATProductVisualization() {
     const ctx = canvas.getContext('2d');
     let time = 0;
 
-    // Initialize vector positions (not from center, but as independent particles)
+    // Initialize vector positions as independent particles with trails
     let v1 = {
-        x: canvas.width * 0.3,
-        y: canvas.height * 0.3,
-        vx: 0,
-        vy: 0,
-        mass: 1
+        x: canvas.width * 0.25,
+        y: canvas.height * 0.4,
+        vx: 0.3,
+        vy: 0.2,
+        mass: 1,
+        trail: []
     };
 
     let v2 = {
-        x: canvas.width * 0.7,
-        y: canvas.height * 0.7,
-        vx: 0,
-        vy: 0,
-        mass: 1
+        x: canvas.width * 0.75,
+        y: canvas.height * 0.6,
+        vx: -0.2,
+        vy: -0.3,
+        mass: 1,
+        trail: []
     };
 
     function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Fade previous frame for trail effect
+        ctx.fillStyle = 'rgba(5, 5, 5, 0.15)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         time += 0.02;
 
         // Calculate distance and direction between vectors
@@ -992,48 +1182,49 @@ function initYATProductVisualization() {
         const dist = Math.sqrt(dx * dx + dy * dy);
         const distSq = dist * dist;
 
-        // Calculate dot product (directional alignment)
-        // Normalize vectors for dot product calculation
-        const v1Len = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
-        const v2Len = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
-        const v1NormX = v1.x / (v1Len || 1);
-        const v1NormY = v1.y / (v1Len || 1);
-        const v2NormX = v2.x / (v2Len || 1);
-        const v2NormY = v2.y / (v2Len || 1);
-        const dot = (v1NormX * v2NormX + v1NormY * v2NormY);
+        // Calculate directional alignment (dot product)
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const v1DirX = v1.x - centerX;
+        const v1DirY = v1.y - centerY;
+        const v2DirX = v2.x - centerX;
+        const v2DirY = v2.y - centerY;
+        const v1Len = Math.sqrt(v1DirX * v1DirX + v1DirY * v1DirY);
+        const v2Len = Math.sqrt(v2DirX * v2DirX + v2DirY * v2DirY);
+        const dot = (v1DirX * v2DirX + v1DirY * v2DirY) / (v1Len * v2Len || 1);
         const dotSq = dot * dot;
 
-        // YAT-Product gravitational force: (dot^2) / (dist^2 + epsilon)
-        const epsilon = 10;
-        const gravitationalStrength = dotSq / (distSq / 100 + epsilon);
-        const force = gravitationalStrength * 0.15; // Scaling factor
+        // YAT-Product gravitational force: (dot²) / (dist² / scale + ε)
+        const epsilon = 5;
+        const gravitationalStrength = dotSq / (distSq / 150 + epsilon);
+        const force = gravitationalStrength * 0.2;
 
-        // Apply gravitational pull
-        if (dist > 5) { // Prevent division by zero
+        // Apply gravitational attraction
+        if (dist > 5) {
             const forceX = (dx / dist) * force;
             const forceY = (dy / dist) * force;
 
-            // Apply force to both vectors (mutual attraction)
-            v1.vx += forceX / v1.mass;
-            v1.vy += forceY / v1.mass;
-            v2.vx -= forceX / v2.mass;
-            v2.vy -= forceY / v2.mass;
+            // Mutual attraction (Newton's 3rd law)
+            v1.vx += forceX;
+            v1.vy += forceY;
+            v2.vx -= forceX;
+            v2.vy -= forceY;
 
-            // Add orbital motion based on alignment (perpendicular force)
+            // Add orbital component for visual interest
             const perpX = -dy / dist;
             const perpY = dx / dist;
-            const orbitalStrength = dot * 0.05;
+            const orbitalStrength = dotSq * 0.08;
             v1.vx += perpX * orbitalStrength;
             v1.vy += perpY * orbitalStrength;
             v2.vx -= perpX * orbitalStrength;
             v2.vy -= perpY * orbitalStrength;
         }
 
-        // Damping
-        v1.vx *= 0.95;
-        v1.vy *= 0.95;
-        v2.vx *= 0.95;
-        v2.vy *= 0.95;
+        // Velocity damping
+        v1.vx *= 0.96;
+        v1.vy *= 0.96;
+        v2.vx *= 0.96;
+        v2.vy *= 0.96;
 
         // Update positions
         v1.x += v1.vx;
@@ -1041,109 +1232,202 @@ function initYATProductVisualization() {
         v2.x += v2.vx;
         v2.y += v2.vy;
 
-        // Boundary constraints
-        const margin = 15;
+        // Boundary constraints with soft bounce
+        const margin = 20;
         if (v1.x < margin || v1.x > canvas.width - margin) {
-            v1.vx *= -0.5;
+            v1.vx *= -0.7;
             v1.x = Math.max(margin, Math.min(canvas.width - margin, v1.x));
         }
         if (v1.y < margin || v1.y > canvas.height - margin) {
-            v1.vy *= -0.5;
+            v1.vy *= -0.7;
             v1.y = Math.max(margin, Math.min(canvas.height - margin, v1.y));
         }
         if (v2.x < margin || v2.x > canvas.width - margin) {
-            v2.vx *= -0.5;
+            v2.vx *= -0.7;
             v2.x = Math.max(margin, Math.min(canvas.width - margin, v2.x));
         }
         if (v2.y < margin || v2.y > canvas.height - margin) {
-            v2.vy *= -0.5;
+            v2.vy *= -0.7;
             v2.y = Math.max(margin, Math.min(canvas.height - margin, v2.y));
         }
 
-        // Draw gravitational field (gradient showing attraction)
-        if (dist < 150) {
-            const gradient = ctx.createRadialGradient(
-                (v1.x + v2.x) / 2, (v1.y + v2.y) / 2, 0,
-                (v1.x + v2.x) / 2, (v1.y + v2.y) / 2, dist * 0.8
-            );
-            gradient.addColorStop(0, `rgba(79, 249, 117, ${gravitationalStrength * 0.3})`);
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc((v1.x + v2.x) / 2, (v1.y + v2.y) / 2, dist * 0.8, 0, Math.PI * 2);
-            ctx.fill();
-        }
+        // Update trails
+        v1.trail.push({ x: v1.x, y: v1.y });
+        v2.trail.push({ x: v2.x, y: v2.y });
+        if (v1.trail.length > 20) v1.trail.shift();
+        if (v2.trail.length > 20) v2.trail.shift();
 
-        // Draw connection line showing distance (dotted)
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.3)';
+        // Draw gravitational field (intensity based on force strength)
+        const midX = (v1.x + v2.x) / 2;
+        const midY = (v1.y + v2.y) / 2;
+        const fieldRadius = dist * 0.7;
+        const gradient = ctx.createRadialGradient(midX, midY, 0, midX, midY, fieldRadius);
+        gradient.addColorStop(0, `rgba(79, 249, 117, ${Math.min(gravitationalStrength * 0.4, 0.3)})`);
+        gradient.addColorStop(0.5, `rgba(79, 249, 117, ${Math.min(gravitationalStrength * 0.2, 0.15)})`);
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(midX, midY, fieldRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw distance relationship line
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.25)';
         ctx.lineWidth = 1;
-        ctx.setLineDash([3, 3]);
+        ctx.setLineDash([4, 4]);
         ctx.beginPath();
         ctx.moveTo(v1.x, v1.y);
         ctx.lineTo(v2.x, v2.y);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Draw force vector (gravitational pull)
-        const forceVisualX = (dx / dist) * gravitationalStrength * 10;
-        const forceVisualY = (dy / dist) * gravitationalStrength * 10;
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.6)';
-        ctx.lineWidth = 1.5;
+        // Draw force vectors showing gravitational pull
+        const forceScale = gravitationalStrength * 15;
+        const f1x = (dx / dist) * forceScale;
+        const f1y = (dy / dist) * forceScale;
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.7)';
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(v1.x, v1.y);
-        ctx.lineTo(v1.x + forceVisualX, v1.y + forceVisualY);
+        ctx.lineTo(v1.x + f1x, v1.y + f1y);
         ctx.stroke();
-
         ctx.beginPath();
         ctx.moveTo(v2.x, v2.y);
-        ctx.lineTo(v2.x - forceVisualX, v2.y - forceVisualY);
+        ctx.lineTo(v2.x - f1x, v2.y - f1y);
         ctx.stroke();
 
-        // Draw vectors as particles with glow
-        const drawVector = (x, y, color) => {
-            // Glow
-            const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 12);
-            glowGradient.addColorStop(0, color.replace(')', ', 0.6)').replace('rgb', 'rgba'));
+        // Draw motion trails
+        const drawTrail = (trail, color) => {
+            for (let i = 1; i < trail.length; i++) {
+                const alpha = i / trail.length * 0.3;
+                ctx.strokeStyle = color.replace('1)', `${alpha})`);
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
+                ctx.lineTo(trail[i].x, trail[i].y);
+                ctx.stroke();
+            }
+        };
+        drawTrail(v1.trail, 'rgba(14, 165, 233, 1)');
+        drawTrail(v2.trail, 'rgba(77, 238, 234, 1)');
+
+        // Draw particles with glow
+        const drawParticle = (x, y, color, label) => {
+            const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 15);
+            glowGradient.addColorStop(0, color);
+            glowGradient.addColorStop(0.3, color.replace('1)', '0.4)'));
             glowGradient.addColorStop(1, 'transparent');
             ctx.fillStyle = glowGradient;
             ctx.beginPath();
-            ctx.arc(x, y, 12, 0, Math.PI * 2);
+            ctx.arc(x, y, 15, 0, Math.PI * 2);
             ctx.fill();
 
-            // Vector point
             ctx.fillStyle = color;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 10;
             ctx.beginPath();
-            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.font = '8px monospace';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y - 12);
         };
 
-        drawVector(v1.x, v1.y, '#0ea5e9');
-        drawVector(v2.x, v2.y, '#4deeea');
+        drawParticle(v1.x, v1.y, 'rgba(14, 165, 233, 1)', 'w');
+        drawParticle(v2.x, v2.y, 'rgba(77, 238, 234, 1)', 'x');
 
-        // Label
-        ctx.font = '6px monospace';
+        // Display force equation
+        ctx.font = '7px monospace';
         ctx.fillStyle = 'rgba(79, 249, 117, 0.9)';
         ctx.textAlign = 'center';
-        ctx.fillText('YAT-Product', canvas.width / 2, canvas.height - 5);
+        ctx.fillText(`F ∝ dot²/dist²`, canvas.width / 2, 12);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillText(`dist: ${dist.toFixed(0)}px`, canvas.width / 2, canvas.height - 8);
+
+        requestAnimationFrame(animate);
     }
 
     animate();
 }
 
 // Initialize visualizations when page loads
+// ============================================
+// Canvas Lazy Loading System
+// ============================================
+
+const canvasInitializers = {
+    'coemCanvas': initCOEMVisualization,
+    'cvdCanvas': initCVDVisualization,
+    'cslCanvas': initCSLVisualization,
+    'complexityCanvas': initComplexityVisualization,
+    'complexityCanvasModal': initComplexityCanvasModalVisualization,
+    'revenuePathCanvas': initRevenuePathVisualization,
+    'scalingProblemCanvas': initScalingProblemVisualization,
+    'blackBoxCanvas': initBlackBoxVisualization,
+    'nonDeterminismCanvas': initNonDeterminismVisualization,
+    'standardDLCanvas': initStandardDLVisualization,
+    'yatProductCanvas': initYATProductVisualization,
+    'cvdStructureFreeCanvas': () => initCVDInnovationVisualizations(),
+    'cvdDeterministicCanvas': () => initCVDInnovationVisualizations(),
+    'cvdZeroBuildCanvas': () => initCVDInnovationVisualizations(),
+    'coemProblemCanvas': () => initCOEMInnovationVisualizations(),
+    'coemSolutionCanvas': () => initCOEMInnovationVisualizations()
+};
+
+const initializedCanvases = new Set();
+
+function lazyInitCanvas(canvasId) {
+    if (initializedCanvases.has(canvasId)) return;
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+
+    // Responsive canvas sizing for mobile
+    if (window.matchMedia('(max-height: 600px) and (orientation: landscape)').matches) {
+        const parentWidth = canvas.parentElement.clientWidth;
+        canvas.width = Math.min(parentWidth - 20, canvas.width);
+        canvas.height = Math.round(canvas.width * 0.6);
+    }
+
+    const initFn = canvasInitializers[canvasId];
+    if (initFn) {
+        try {
+            initFn();
+            initializedCanvases.add(canvasId);
+            console.log(`✓ Lazy initialized: ${canvasId}`);
+        } catch (error) {
+            console.error(`✗ Failed to init ${canvasId}:`, error);
+        }
+    }
+}
+
+// Intersection Observer for slide visibility
+const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const slide = entry.target;
+            const canvases = slide.querySelectorAll('canvas');
+            canvases.forEach(canvas => {
+                lazyInitCanvas(canvas.id);
+            });
+        }
+    });
+}, { threshold: 0.1 });
+
 document.addEventListener('DOMContentLoaded', () => {
-    initCOEMVisualization();
-    initCVDVisualization();
-    initCSLVisualization();
-    initCVDInnovationVisualizations();
-    initCOEMInnovationVisualizations();
-    initComplexityVisualization();
-    initRevenuePathVisualization();
-    initScalingProblemVisualization();
-    initBlackBoxVisualization();
-    initNonDeterminismVisualization();
-    initStandardDLVisualization();
-    initYATProductVisualization();
+    // Initialize only first slide canvases immediately
+    const firstSlide = document.querySelector('.slide.active');
+    if (firstSlide) {
+        const canvases = firstSlide.querySelectorAll('canvas');
+        canvases.forEach(canvas => lazyInitCanvas(canvas.id));
+    }
+
+    // Observe all slides for lazy loading
+    document.querySelectorAll('.slide').forEach(slide => {
+        slideObserver.observe(slide);
+    });
 });
 
 // ============================================
@@ -1436,7 +1720,7 @@ function initCOEMInnovationVisualizations() {
 }
 
 // ============================================
-// Complexity Visualization
+// Trade Secrets & Research Advancement Visualization (Slide 8)
 // ============================================
 
 let complexityAnimationId = null;
@@ -1446,128 +1730,118 @@ function initComplexityVisualization() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    const padding = { top: 40, right: 40, bottom: 60, left: 80 };
+    const padding = { top: 60, right: 50, bottom: 80, left: 100 };
     const width = canvas.width - padding.left - padding.right;
     const height = canvas.height - padding.top - padding.bottom;
 
-    let animatedN = 1;
-    const maxN = 100;
+    let time = 0;
 
-    // Color palette matching CSS variables
-    const colors = {
-        o1: '#4ff975',      // primary (green)
-        logn: '#4deeea',    // secondary (cyan)
-        n: '#f9d71c',       // accent (yellow)
-        nlogn: '#ff6b6b',   // red
-        n2: '#cc5de8'       // purple
-    };
+    // Timeline years
+    const startYear = 2022;
+    const currentYear = 2026;
+    const futureYear = 2030;
+    const totalYears = futureYear - startYear;
 
-    // Mathematically accurate complexity curves
-    // Each function returns a value from 0 to 1 for visualization
-    // The curves are scaled to spread across the graph while maintaining accurate shapes
+    function drawBackground() {
+        // Gradient background
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, 'rgba(5, 5, 5, 1)');
+        gradient.addColorStop(1, 'rgba(10, 10, 15, 1)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const maxLogN = Math.log2(maxN + 1);  // ~6.66 for n=100
-
-    const complexities = {
-        // O(1) - Constant time: always the same regardless of input size
-        o1: (n) => 0.08,
-
-        // O(log n) - Logarithmic: grows very slowly, ideal for search
-        // At n=100, log2(100) ≈ 6.6, normalized to reach ~0.25
-        logn: (n) => n === 0 ? 0 : (Math.log2(n + 1) / maxLogN) * 0.25,
-
-        // O(n) - Linear: time grows proportionally with data
-        // At n=100, reaches 0.5
-        n: (n) => (n / maxN) * 0.5,
-
-        // O(n log n) - Linearithmic: common for efficient sorting
-        // At n=100, n*log(n) ≈ 660, normalized to reach ~0.75
-        nlogn: (n) => n === 0 ? 0 : ((n * Math.log2(n + 1)) / (maxN * maxLogN)) * 0.75,
-
-        // O(n²) - Quadratic: time grows with square of input - expensive!
-        // At n=100, n² = 10000, normalized to reach 1.0
-        n2: (n) => (n * n) / (maxN * maxN)
-    };
-
-    function drawGrid() {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        // Grid lines for years
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.lineWidth = 1;
-
-        for (let i = 0; i <= 10; i++) {
-            const x = padding.left + (width / 10) * i;
+        for (let i = 0; i <= totalYears; i++) {
+            const x = padding.left + (i / totalYears) * width;
             ctx.beginPath();
             ctx.moveTo(x, padding.top);
             ctx.lineTo(x, padding.top + height);
             ctx.stroke();
         }
-
-        for (let i = 0; i <= 5; i++) {
-            const y = padding.top + (height / 5) * i;
-            ctx.beginPath();
-            ctx.moveTo(padding.left, y);
-            ctx.lineTo(padding.left + width, y);
-            ctx.stroke();
-        }
     }
 
     function drawAxes() {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.lineWidth = 2;
 
-        ctx.beginPath();
-        ctx.moveTo(padding.left, padding.top);
-        ctx.lineTo(padding.left, padding.top + height);
-        ctx.stroke();
-
+        // Timeline axis
         ctx.beginPath();
         ctx.moveTo(padding.left, padding.top + height);
         ctx.lineTo(padding.left + width, padding.top + height);
         ctx.stroke();
 
+        // Year labels
+        ctx.font = '10px "Share Tech Mono", monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.textAlign = 'center';
+        for (let i = 0; i <= totalYears; i += 2) {
+            const year = startYear + i;
+            const x = padding.left + (i / totalYears) * width;
+            ctx.fillText(year.toString(), x, padding.top + height + 20);
+        }
+
+        // Y-axis label
+        ctx.save();
+        ctx.translate(30, padding.top + height / 2);
+        ctx.rotate(-Math.PI / 2);
         ctx.font = '12px "Share Tech Mono", monospace';
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
         ctx.textAlign = 'center';
-
-        ctx.fillText('Data Size (n)', padding.left + width / 2, canvas.height - 15);
-
-        ctx.save();
-        ctx.translate(20, padding.top + height / 2);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillText('Time', 0, 0);
+        ctx.fillText('Research Advancement', 0, 0);
         ctx.restore();
-
-        ctx.textAlign = 'center';
-        for (let i = 0; i <= 5; i++) {
-            const n = (maxN / 5) * i;
-            const x = padding.left + (width / 5) * i;
-            ctx.fillText(n === 0 ? '0' : `${n}M`, x, padding.top + height + 25);
-        }
-
-        ctx.textAlign = 'right';
-        const yLabels = ['0', 'Low', '', 'Med', '', 'High'];
-        for (let i = 0; i <= 5; i++) {
-            const y = padding.top + height - (height / 5) * i;
-            if (yLabels[i]) {
-                ctx.fillText(yLabels[i], padding.left - 10, y + 4);
-            }
-        }
     }
 
-    function drawCurve(fn, color, lineWidth = 2, glow = false) {
+    function drawOpenSourceLine() {
+        // Open source research line (slower advancement, public)
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([8, 4]);
+
         ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lineWidth;
-
-        if (glow) {
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 10;
+        for (let i = 0; i <= totalYears; i++) {
+            const year = startYear + i;
+            const x = padding.left + (i / totalYears) * width;
+            // Open source grows linearly but slower
+            const progress = i / totalYears;
+            const y = padding.top + height - (progress * 0.35) * height;
+            
+            if (i === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
         }
+        ctx.stroke();
+        ctx.setLineDash([]);
 
-        for (let n = 0; n <= maxN; n++) {
-            const x = padding.left + (n / maxN) * width;
-            const y = padding.top + height - fn(n) * height;
+        // Label
+        ctx.font = '9px "Share Tech Mono", monospace';
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.8)';
+        ctx.textAlign = 'left';
+        const labelY = padding.top + height - (0.35) * height;
+        ctx.fillText('Public Open Source', padding.left + width * 0.1, labelY - 8);
+    }
 
-            if (n === 0) {
+    function drawPrivateResearchLine() {
+        // Azetta private research line (years ahead)
+        const privateAdvantage = 2.5; // years ahead
+        
+        ctx.strokeStyle = '#4ff975';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#4ff975';
+        ctx.shadowBlur = 15;
+
+        ctx.beginPath();
+        for (let i = 0; i <= totalYears; i++) {
+            const year = startYear + i;
+            const x = padding.left + (i / totalYears) * width;
+            // Private research is ahead - uses future progress
+            const effectiveProgress = Math.min(1, (i + privateAdvantage) / totalYears);
+            const y = padding.top + height - (effectiveProgress * 0.85) * height;
+            
+            if (i === 0) {
                 ctx.moveTo(x, y);
             } else {
                 ctx.lineTo(x, y);
@@ -1575,60 +1849,95 @@ function initComplexityVisualization() {
         }
         ctx.stroke();
         ctx.shadowBlur = 0;
+
+        // Animated glow effect
+        time += 0.02;
+        const currentX = padding.left + ((currentYear - startYear) / totalYears) * width;
+        const currentY = padding.top + height - (((currentYear - startYear + privateAdvantage) / totalYears) * 0.85) * height;
+        
+        const glowGradient = ctx.createRadialGradient(currentX, currentY, 0, currentX, currentY, 40);
+        glowGradient.addColorStop(0, `rgba(79, 249, 117, ${0.3 + Math.sin(time * 2) * 0.2})`);
+        glowGradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = glowGradient;
+        ctx.beginPath();
+        ctx.arc(currentX, currentY, 40, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Current position marker
+        ctx.fillStyle = '#4ff975';
+        ctx.beginPath();
+        ctx.arc(currentX, currentY, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label
+        ctx.font = 'bold 10px "Share Tech Mono", monospace';
+        ctx.fillStyle = '#4ff975';
+        ctx.textAlign = 'right';
+        const labelY = padding.top + height - (((currentYear - startYear + privateAdvantage) / totalYears) * 0.85) * height;
+        ctx.fillText('Azetta Private Research', padding.left + width - 20, labelY - 8);
     }
 
-    function drawAnimatedPoint() {
-        const x = padding.left + (animatedN / maxN) * width;
+    function drawGapIndicator() {
+        // Visual gap showing years ahead
+        const gapYears = 2.5;
+        const currentYearX = padding.left + ((currentYear - startYear) / totalYears) * width;
+        const openSourceY = padding.top + height - (((currentYear - startYear) / totalYears) * 0.35) * height;
+        const privateY = padding.top + height - (((currentYear - startYear + gapYears) / totalYears) * 0.85) * height;
 
-        ctx.setLineDash([5, 5]);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = 1;
+        // Arrow showing gap
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
         ctx.beginPath();
-        ctx.moveTo(x, padding.top);
-        ctx.lineTo(x, padding.top + height);
+        ctx.moveTo(currentYearX + 30, openSourceY);
+        ctx.lineTo(currentYearX + 30, privateY);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        Object.entries(complexities).forEach(([key, fn]) => {
-            const y = padding.top + height - fn(animatedN) * height;
-            const color = colors[key];
+        // Arrow head
+        ctx.fillStyle = 'rgba(79, 249, 117, 0.7)';
+        ctx.beginPath();
+        ctx.moveTo(currentYearX + 30, privateY);
+        ctx.lineTo(currentYearX + 25, privateY - 5);
+        ctx.lineTo(currentYearX + 35, privateY - 5);
+        ctx.closePath();
+        ctx.fill();
 
-            const gradient = ctx.createRadialGradient(x, y, 0, x, y, 12);
-            gradient.addColorStop(0, color);
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(x, y, 12, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        ctx.font = 'bold 11px "Press Start 2P", monospace';
+        // Gap label
+        ctx.font = '9px "Share Tech Mono", monospace';
         ctx.fillStyle = '#4ff975';
         ctx.textAlign = 'center';
-        ctx.fillText(`${Math.round(animatedN)}M vectors`, x, padding.top - 15);
+        ctx.fillText(`${gapYears} Years Ahead`, currentYearX + 30, (openSourceY + privateY) / 2);
+    }
+
+    function drawTradeSecrets() {
+        // Lock icons and "TRADE SECRETS" text
+        ctx.font = 'bold 14px "Press Start 2P", monospace';
+        ctx.fillStyle = '#4ff975';
+        ctx.textAlign = 'center';
+        ctx.fillText('TRADE SECRETS', canvas.width / 2, padding.top - 25);
+
+        // Lock icons floating
+        time += 0.015;
+        for (let i = 0; i < 3; i++) {
+            const x = padding.left + (width / 4) * (i + 1);
+            const y = padding.top + 10 + Math.sin(time + i * 2) * 8;
+            
+            ctx.font = '16px monospace';
+            ctx.fillStyle = `rgba(79, 249, 117, ${0.6 + Math.sin(time * 2 + i) * 0.3})`;
+            ctx.fillText('🔒', x, y);
+        }
     }
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        drawGrid();
+        drawBackground();
         drawAxes();
-
-        drawCurve(complexities.n2, colors.n2, 2);
-        drawCurve(complexities.nlogn, colors.nlogn, 2);
-        drawCurve(complexities.n, colors.n, 3);
-        drawCurve(complexities.logn, colors.logn, 3);
-        drawCurve(complexities.o1, colors.o1, 4, true);
-
-        drawAnimatedPoint();
-
-        animatedN += 0.3;
-        if (animatedN > maxN) animatedN = 1;
+        drawOpenSourceLine();
+        drawPrivateResearchLine();
+        drawGapIndicator();
+        drawTradeSecrets();
 
         complexityAnimationId = requestAnimationFrame(animate);
     }
@@ -1636,6 +1945,206 @@ function initComplexityVisualization() {
     // Cancel any existing animation
     if (complexityAnimationId) {
         cancelAnimationFrame(complexityAnimationId);
+    }
+
+    animate();
+}
+
+// ============================================
+// Technical Replication Challenges Visualization (Modal)
+// ============================================
+
+let complexityModalAnimationId = null;
+
+function initComplexityCanvasModalVisualization() {
+    const canvas = document.getElementById('complexityCanvasModal');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    let time = 0;
+
+    // Components that need to be replicated
+    const components = [
+        { name: 'YAT-Product Kernel', angle: 0, distance: 120, color: '#4ff975', locked: true },
+        { name: 'Training Pipeline', angle: Math.PI / 3, distance: 140, color: '#4deeea', locked: true },
+        { name: 'Cosma DB Algorithm', angle: (Math.PI * 2) / 3, distance: 130, color: '#0ea5e9', locked: true },
+        { name: 'Omnilingual Manifold', angle: Math.PI, distance: 125, color: '#6366f1', locked: true },
+        { name: 'Integration Layer', angle: (Math.PI * 4) / 3, distance: 135, color: '#f59e0b', locked: true },
+        { name: 'Production Scaling', angle: (Math.PI * 5) / 3, distance: 145, color: '#ef4444', locked: true }
+    ];
+
+    function drawBackground() {
+        // Dark gradient background
+        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(canvas.width, canvas.height));
+        gradient.addColorStop(0, 'rgba(10, 10, 15, 1)');
+        gradient.addColorStop(1, 'rgba(5, 5, 5, 1)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawCenter() {
+        // Central "Azetta" core - protected
+        const pulse = 15 + Math.sin(time * 3) * 3;
+        
+        // Outer glow
+        const outerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulse * 3);
+        outerGradient.addColorStop(0, 'rgba(79, 249, 117, 0.2)');
+        outerGradient.addColorStop(0.5, 'rgba(79, 249, 117, 0.1)');
+        outerGradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = outerGradient;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, pulse * 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Inner core
+        const innerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulse);
+        innerGradient.addColorStop(0, '#4ff975');
+        innerGradient.addColorStop(0.7, 'rgba(79, 249, 117, 0.6)');
+        innerGradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = innerGradient;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, pulse, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Lock symbol
+        ctx.font = '24px monospace';
+        ctx.fillStyle = '#4ff975';
+        ctx.textAlign = 'center';
+        ctx.fillText('🔒', centerX, centerY + 8);
+
+        // Label
+        ctx.font = 'bold 11px "Press Start 2P", monospace';
+        ctx.fillStyle = '#4ff975';
+        ctx.fillText('AZETTA IP', centerX, centerY + 35);
+    }
+
+    function drawComponents() {
+        components.forEach((comp, i) => {
+            time += 0.01;
+            const x = centerX + Math.cos(comp.angle + time * 0.2) * comp.distance;
+            const y = centerY + Math.sin(comp.angle + time * 0.2) * comp.distance;
+
+            // Component connection line (fading)
+            ctx.strokeStyle = `rgba(79, 249, 117, ${0.15 + Math.sin(time * 2 + i) * 0.1})`;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Component circle with lock
+            if (comp.locked) {
+                // Locked component - pulsing red
+                const lockPulse = 1 + Math.sin(time * 4 + i) * 0.2;
+                const lockGradient = ctx.createRadialGradient(x, y, 0, x, y, 25 * lockPulse);
+                lockGradient.addColorStop(0, `rgba(239, 68, 68, ${0.6 + Math.sin(time * 4) * 0.3})`);
+                lockGradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = lockGradient;
+                ctx.beginPath();
+                ctx.arc(x, y, 25 * lockPulse, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Lock icon
+                ctx.font = '18px monospace';
+                ctx.fillStyle = '#ef4444';
+                ctx.textAlign = 'center';
+                ctx.fillText('🔒', x, y + 6);
+            }
+
+            // Component border
+            ctx.strokeStyle = comp.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Component label
+            ctx.font = '8px "Share Tech Mono", monospace';
+            ctx.fillStyle = comp.color;
+            ctx.textAlign = 'center';
+            ctx.fillText(comp.name, x, y + 45);
+        });
+    }
+
+    function drawReplicationBarriers(padding) {
+        // Barrier lines preventing replication
+        const barrierCount = 8;
+        for (let i = 0; i < barrierCount; i++) {
+            const angle = (Math.PI * 2 / barrierCount) * i + time * 0.1;
+            const innerRadius = 180;
+            const outerRadius = 250;
+            
+            const x1 = centerX + Math.cos(angle) * innerRadius;
+            const y1 = centerY + Math.sin(angle) * innerRadius;
+            const x2 = centerX + Math.cos(angle) * outerRadius;
+            const y2 = centerY + Math.sin(angle) * outerRadius;
+
+            // Barrier line with warning effect
+            const alpha = 0.2 + Math.sin(time * 3 + i) * 0.15;
+            ctx.strokeStyle = `rgba(255, 107, 107, ${alpha})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            // Warning symbol at end
+            const warningAlpha = 0.4 + Math.sin(time * 4 + i) * 0.3;
+            ctx.fillStyle = `rgba(255, 107, 107, ${warningAlpha})`;
+            ctx.font = '14px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('⚠', x2, y2);
+        }
+
+        // Barrier label
+        ctx.font = '10px "Share Tech Mono", monospace';
+        ctx.fillStyle = 'rgba(255, 107, 107, 0.7)';
+        ctx.textAlign = 'center';
+        ctx.fillText('Replication Barriers', centerX, padding);
+    }
+
+    function drawChallengeText() {
+        // Animated challenge indicators
+        const challenges = [
+            'Specialized Expertise Required',
+            'Integrated Architecture Complexity',
+            'Production-Scale Validation Needed',
+            'Trade Secret Protection'
+        ];
+
+        ctx.font = '9px "Share Tech Mono", monospace';
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
+        ctx.textAlign = 'center';
+        
+        challenges.forEach((challenge, i) => {
+            const y = canvas.height - 60 + i * 12;
+            const alpha = 0.4 + Math.sin(time * 2 + i * 0.5) * 0.3;
+            ctx.fillStyle = `rgba(148, 163, 184, ${alpha})`;
+            ctx.fillText(challenge, centerX, y);
+        });
+    }
+
+    const padding = 40;
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawBackground();
+        drawReplicationBarriers(padding);
+        drawComponents();
+        drawCenter();
+        drawChallengeText();
+
+        complexityModalAnimationId = requestAnimationFrame(animate);
+    }
+
+    // Cancel any existing animation
+    if (complexityModalAnimationId) {
+        cancelAnimationFrame(complexityModalAnimationId);
     }
 
     animate();
@@ -1682,6 +2191,16 @@ function openModal(modalId) {
     if (modal) {
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
+        
+        // Initialize modal canvas when modal is opened
+        if (modalId === 'competitiveBarriersModal') {
+            setTimeout(() => {
+                const modalCanvas = document.getElementById('complexityCanvasModal');
+                if (modalCanvas && !initializedCanvases.has('complexityCanvasModal')) {
+                    lazyInitCanvas('complexityCanvasModal');
+                }
+            }, 100);
+        }
     }
 }
 
@@ -1690,6 +2209,16 @@ function closeModal(modalId) {
     if (modal) {
         modal.classList.remove('active');
         document.body.style.overflow = '';
+    }
+    
+    // Initialize modal canvas when modal is opened
+    if (modalId === 'competitiveBarriersModal') {
+        setTimeout(() => {
+            const modalCanvas = document.getElementById('complexityCanvasModal');
+            if (modalCanvas && !initializedCanvases.has('complexityCanvasModal')) {
+                lazyInitCanvas('complexityCanvasModal');
+            }
+        }, 100);
     }
 }
 
