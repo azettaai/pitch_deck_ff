@@ -459,6 +459,610 @@ function initCSLVisualization() {
     animate();
 }
 
+// ============================================
+// Revenue Path Visualization
+// ============================================
+
+function initRevenuePathVisualization() {
+    const canvas = document.getElementById('revenuePathCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let time = 0;
+
+    const stages = [
+        { label: 'Design Partners', value: 0.15, color: '#4ff975' },
+        { label: 'Enterprise', value: 0.5, color: '#4deeea' },
+        { label: 'API Marketplace', value: 0.75, color: '#f9d71c' },
+        { label: 'EBITDA+', value: 1.0, color: '#4ff975' }
+    ];
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.01;
+
+        const padding = 30;
+        const width = canvas.width - padding * 2;
+        const height = canvas.height - padding * 2;
+
+        // Draw grid lines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+            const y = padding + (height / 4) * i;
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(padding + width, y);
+            ctx.stroke();
+        }
+
+        // Draw revenue path
+        ctx.strokeStyle = '#4ff975';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        
+        stages.forEach((stage, i) => {
+            const x = padding + (width / 3) * i;
+            const y = padding + height - stage.value * height;
+            
+            if (i === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        ctx.stroke();
+
+        // Draw animated point
+        const progress = (time * 0.3) % 1;
+        const stageIndex = Math.floor(progress * 3);
+        const stageProgress = (progress * 3) % 1;
+        const currentStage = stages[stageIndex];
+        const nextStage = stages[Math.min(stageIndex + 1, stages.length - 1)];
+        
+        const x = padding + (width / 3) * (stageIndex + stageProgress);
+        const y = padding + height - (currentStage.value + (nextStage.value - currentStage.value) * stageProgress) * height;
+
+        // Glow effect
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 12);
+        gradient.addColorStop(0, 'rgba(79, 249, 117, 0.6)');
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, 12, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Point
+        ctx.fillStyle = '#4ff975';
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw stage markers
+        stages.forEach((stage, i) => {
+            const x = padding + (width / 3) * i;
+            const y = padding + height - stage.value * height;
+            
+            ctx.fillStyle = stage.color;
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Labels
+        ctx.font = '8px "Press Start 2P", monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.textAlign = 'center';
+        stages.forEach((stage, i) => {
+            const x = padding + (width / 3) * i;
+            ctx.fillText(stage.label.substring(0, 8), x, canvas.height - 8);
+        });
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+// ============================================
+// Scaling Impasse Visualizations (Slide 2)
+// ============================================
+
+function initScalingProblemVisualization() {
+    const canvas = document.getElementById('scalingProblemCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let time = 0;
+
+    const padding = { top: 30, right: 20, bottom: 40, left: 50 };
+    const width = canvas.width - padding.left - padding.right;
+    const height = canvas.height - padding.top - padding.bottom;
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.02;
+
+        // Draw axes
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, padding.top);
+        ctx.lineTo(padding.left, padding.top + height);
+        ctx.lineTo(padding.left + width, padding.top + height);
+        ctx.stroke();
+
+        // Draw exponential curve (O(N²) problem)
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        
+        for (let n = 0; n <= 100; n++) {
+            const x = padding.left + (n / 100) * width;
+            const y = padding.top + height - Math.pow(n / 100, 2) * height * 0.9;
+            
+            if (n === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        }
+        ctx.stroke();
+
+        // Animated point
+        const progress = (time * 20) % 100;
+        const x = padding.left + (progress / 100) * width;
+        const y = padding.top + height - Math.pow(progress / 100, 2) * height * 0.9;
+
+        // Glow
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 15);
+        gradient.addColorStop(0, 'rgba(239, 68, 68, 0.6)');
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, 15, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Point
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Labels
+        ctx.font = '8px "Press Start 2P", monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        // ctx.fillText('O(N²)', padding.left + width - 30, padding.top + 15);
+        ctx.font = '7px monospace';
+        ctx.fillText('Compute', padding.left + width / 2, canvas.height - 8);
+        ctx.save();
+        ctx.translate(15, padding.top + height / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Cost', 0, 0);
+        ctx.restore();
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+function initBlackBoxVisualization() {
+    const canvas = document.getElementById('blackBoxCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let time = 0;
+
+    const inputNodes = 5;
+    const outputNodes = 3;
+    const inputX = 40;
+    const blackBoxX = canvas.width / 2;
+    const blackBoxWidth = 80;
+    const blackBoxHeight = canvas.height - 40;
+    const blackBoxY = 20;
+    const outputX = canvas.width - 40;
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.03;
+
+        // Draw input layer nodes
+        const inputSpacing = (canvas.height - 60) / (inputNodes - 1);
+        const inputNodeY = 30;
+        const inputPositions = [];
+        
+        for (let i = 0; i < inputNodes; i++) {
+            const y = inputNodeY + i * inputSpacing;
+            inputPositions.push(y);
+            
+            // Input node (visible/interpretable)
+            const pulse = 1 + Math.sin(time * 2 + i * 0.5) * 0.2;
+            ctx.fillStyle = '#4deeea';
+            ctx.beginPath();
+            ctx.arc(inputX, y, 6 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Glow
+            const gradient = ctx.createRadialGradient(inputX, y, 0, inputX, y, 12 * pulse);
+            gradient.addColorStop(0, 'rgba(77, 238, 234, 0.6)');
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(inputX, y, 12 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw black box (uninterpretable hidden layers)
+        ctx.fillStyle = `rgba(0, 0, 0, ${0.85 + Math.sin(time * 1.5) * 0.1})`;
+        ctx.fillRect(blackBoxX - blackBoxWidth / 2, blackBoxY, blackBoxWidth, blackBoxHeight);
+        
+        // Black box border (pulsing)
+        ctx.strokeStyle = `rgba(100, 100, 100, ${0.6 + Math.sin(time * 2) * 0.3})`;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(blackBoxX - blackBoxWidth / 2, blackBoxY, blackBoxWidth, blackBoxHeight);
+        
+        // "?" symbol inside black box (uninterpretable)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.font = 'bold 24px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('?', blackBoxX, canvas.height / 2 + 8);
+
+        // Draw connections from input to black box (fading out)
+        for (let i = 0; i < inputNodes; i++) {
+            const y = inputPositions[i];
+            const targetY = blackBoxY + blackBoxHeight / 2 + (i - inputNodes / 2) * 15;
+            
+            // Connection line that fades into black box
+            ctx.strokeStyle = `rgba(77, 238, 234, ${0.4 + Math.sin(time * 2 + i) * 0.2})`;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(inputX + 6, y);
+            
+            // Line fades as it approaches black box
+            const midX = (inputX + blackBoxX - blackBoxWidth / 2) / 2;
+            ctx.lineTo(midX, y);
+            
+            // Curve into black box (fading)
+            const controlX = (midX + blackBoxX - blackBoxWidth / 2) / 2;
+            ctx.quadraticCurveTo(controlX, (y + targetY) / 2, blackBoxX - blackBoxWidth / 2, targetY);
+            ctx.stroke();
+            
+            // Animated data packet flowing
+            const progress = (time * 30 + i * 10) % 100;
+            if (progress < 90) {
+                const packetX = inputX + 6 + (blackBoxX - blackBoxWidth / 2 - inputX - 6) * (progress / 90);
+                const packetY = y + (targetY - y) * (progress / 90);
+                
+                ctx.fillStyle = '#4deeea';
+                ctx.beginPath();
+                ctx.arc(packetX, packetY, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Draw output layer nodes
+        const outputSpacing = (canvas.height - 60) / (outputNodes - 1);
+        const outputNodeY = 30;
+        const outputPositions = [];
+        
+        for (let i = 0; i < outputNodes; i++) {
+            const y = outputNodeY + i * outputSpacing;
+            outputPositions.push(y);
+            
+            // Output node (visible but disconnected from reasoning)
+            const pulse = 1 + Math.sin(time * 2 + i * 0.7) * 0.2;
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(outputX, y, 6 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Glow
+            const gradient = ctx.createRadialGradient(outputX, y, 0, outputX, y, 12 * pulse);
+            gradient.addColorStop(0, 'rgba(245, 158, 11, 0.6)');
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(outputX, y, 12 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw connections from black box to output (emerging from opacity)
+        for (let i = 0; i < outputNodes; i++) {
+            const y = outputPositions[i];
+            const sourceY = blackBoxY + blackBoxHeight / 2 + (i - outputNodes / 2) * 15;
+            
+            // Connection line emerging from black box
+            ctx.strokeStyle = `rgba(245, 158, 11, ${0.4 + Math.sin(time * 2 + i) * 0.2})`;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(blackBoxX + blackBoxWidth / 2, sourceY);
+            
+            // Curve out of black box (fading in)
+            const midX = (blackBoxX + blackBoxWidth / 2 + outputX) / 2;
+            const controlX = (blackBoxX + blackBoxWidth / 2 + midX) / 2;
+            ctx.quadraticCurveTo(controlX, (sourceY + y) / 2, midX, y);
+            ctx.lineTo(outputX - 6, y);
+            ctx.stroke();
+            
+            // Animated data packet emerging
+            const progress = (time * 30 + i * 10 + 50) % 100;
+            if (progress < 90) {
+                const packetX = blackBoxX + blackBoxWidth / 2 + (outputX - 6 - blackBoxX - blackBoxWidth / 2) * (progress / 90);
+                const packetY = sourceY + (y - sourceY) * (progress / 90);
+                
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(packetX, packetY, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Labels
+        ctx.font = '8px "Press Start 2P", monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.textAlign = 'left';
+        ctx.fillText('INPUT', 10, 15);
+        
+        ctx.textAlign = 'center';
+        ctx.fillText('BLACK BOX', blackBoxX, 12);
+        
+        ctx.textAlign = 'right';
+        ctx.fillText('OUTPUT', canvas.width - 10, 15);
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+function initNonDeterminismVisualization() {
+    const canvas = document.getElementById('nonDeterminismCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+    const colors = ['#ef4444', '#f59e0b', '#94a3b8', '#6366f1'];
+
+    // Initialize particles
+    for (let i = 0; i < 20; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 3,
+            vy: (Math.random() - 0.5) * 3,
+            radius: 3 + Math.random() * 3,
+            color: colors[Math.floor(Math.random() * colors.length)]
+        });
+    }
+
+    function animate() {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+            // Random velocity changes (non-deterministic)
+            p.vx += (Math.random() - 0.5) * 0.5;
+            p.vy += (Math.random() - 0.5) * 0.5;
+            
+            // Damping
+            p.vx *= 0.98;
+            p.vy *= 0.98;
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Bounce off walls
+            if (p.x < p.radius || p.x > canvas.width - p.radius) {
+                p.vx *= -1;
+                p.x = Math.max(p.radius, Math.min(canvas.width - p.radius, p.x));
+            }
+            if (p.y < p.radius || p.y > canvas.height - p.radius) {
+                p.vy *= -1;
+                p.y = Math.max(p.radius, Math.min(canvas.height - p.radius, p.y));
+            }
+
+            // Draw particle
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+        });
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+// ============================================
+// YAT Kernel Visualizations (Slide 4)
+// ============================================
+
+function initStandardDLVisualization() {
+    const canvas = document.getElementById('standardDLCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let time = 0;
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.02;
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const angle = time * 0.5;
+
+        // Vector 1 (weight)
+        const v1x = Math.cos(angle) * 50;
+        const v1y = Math.sin(angle) * 50;
+
+        // Vector 2 (input)
+        const v2x = Math.cos(angle + Math.PI / 3) * 50;
+        const v2y = Math.sin(angle + Math.PI / 3) * 50;
+
+        // Dot product result (projection)
+        const dot = (v1x * v2x + v1y * v2y) / (50 * 50);
+        const projectionX = v2x * dot;
+        const projectionY = v2y * dot;
+
+        // Draw vectors
+        ctx.strokeStyle = '#0ea5e9';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + v1x, centerY + v1y);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#4deeea';
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + v2x, centerY + v2y);
+        ctx.stroke();
+
+        // Draw dot product projection (with clipping)
+        const clipped = Math.max(0, dot); // ReLU clipping
+        const clippedX = v2x * clipped;
+        const clippedY = v2y * clipped;
+
+        ctx.strokeStyle = dot < 0 ? 'rgba(239, 68, 68, 0.5)' : '#22c55e';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + clippedX, centerY + clippedY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw arrowheads
+        const drawArrow = (x1, y1, x2, y2, color) => {
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - 8 * Math.cos(angle - Math.PI / 6), y2 - 8 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - 8 * Math.cos(angle + Math.PI / 6), y2 - 8 * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        };
+
+        drawArrow(centerX, centerY, centerX + v1x, centerY + v1y, '#0ea5e9');
+        drawArrow(centerX, centerY, centerX + v2x, centerY + v2y, '#4deeea');
+
+        // Center point
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label
+        ctx.font = '7px monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillText('Dot Product → ReLU', centerX - 35, canvas.height - 10);
+    }
+
+    animate();
+}
+
+function initYATProductVisualization() {
+    const canvas = document.getElementById('yatProductCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let time = 0;
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.02;
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const angle = time * 0.5;
+
+        // Vector 1 (weight)
+        const v1x = Math.cos(angle) * 50;
+        const v1y = Math.sin(angle) * 50;
+
+        // Vector 2 (input)
+        const v2x = Math.cos(angle + Math.PI / 3) * 50;
+        const v2y = Math.sin(angle + Math.PI / 3) * 50;
+
+        // YAT-Product combines direction and distance
+        const dot = (v1x * v2x + v1y * v2y) / (50 * 50);
+        const dist = Math.sqrt((v2x - v1x) ** 2 + (v2y - v1y) ** 2);
+        const yatValue = (dot * dot) / ((dist / 50) ** 2 + 0.1);
+
+        // Draw unified transformation (smooth curve)
+        const steps = 30;
+        ctx.strokeStyle = '#4ff975';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        for (let i = 0; i <= steps; i++) {
+            const t = i / steps;
+            const interpX = v1x + (v2x - v1x) * t;
+            const interpY = v1y + (v2y - v1y) * t;
+            
+            // YAT transformation creates smooth manifold
+            const scale = 1 + Math.sin(t * Math.PI) * yatValue * 0.3;
+            const x = centerX + interpX * scale;
+            const y = centerY + interpY * scale;
+
+            if (i === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        }
+        ctx.stroke();
+
+        // Draw vectors
+        ctx.strokeStyle = '#0ea5e9';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + v1x, centerY + v1y);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#4deeea';
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + v2x, centerY + v2y);
+        ctx.stroke();
+
+        // Draw connection line (distance component)
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(centerX + v1x, centerY + v1y);
+        ctx.lineTo(centerX + v2x, centerY + v2y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw arrowheads
+        const drawArrow = (x1, y1, x2, y2, color) => {
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - 8 * Math.cos(angle - Math.PI / 6), y2 - 8 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - 8 * Math.cos(angle + Math.PI / 6), y2 - 8 * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        };
+
+        drawArrow(centerX, centerY, centerX + v1x, centerY + v1y, '#0ea5e9');
+        drawArrow(centerX, centerY, centerX + v2x, centerY + v2y, '#4deeea');
+
+        // Center point
+        ctx.fillStyle = '#4ff975';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label
+        ctx.font = '7px monospace';
+        ctx.fillStyle = 'rgba(79, 249, 117, 0.9)';
+        ctx.fillText('YAT-Product', centerX - 30, canvas.height - 10);
+    }
+
+    animate();
+}
+
 // Initialize visualizations when page loads
 document.addEventListener('DOMContentLoaded', () => {
     initCOEMVisualization();
@@ -467,6 +1071,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initCVDInnovationVisualizations();
     initCOEMInnovationVisualizations();
     initComplexityVisualization();
+    initRevenuePathVisualization();
+    initScalingProblemVisualization();
+    initBlackBoxVisualization();
+    initNonDeterminismVisualization();
+    initStandardDLVisualization();
+    initYATProductVisualization();
 });
 
 // ============================================
@@ -976,8 +1586,17 @@ const observer = new MutationObserver((mutations) => {
                 initCVDInnovationVisualizations();
             } else if (mutation.target.id === 'coemInnovationSlide') {
                 initCOEMInnovationVisualizations();
-            } else if (mutation.target.id === 'complexitySlide') {
+            } else if (mutation.target.id === 'complexitySlide' || mutation.target.id === 'competitiveBarriersSlide') {
                 initComplexityVisualization();
+            } else if (mutation.target.id === 'strategicValueSlide') {
+                initRevenuePathVisualization();
+            } else if (mutation.target.id === 'scalingImpasseSlide') {
+                initScalingProblemVisualization();
+                initBlackBoxVisualization();
+                initNonDeterminismVisualization();
+            } else if (mutation.target.id === 'yatKernelSlide') {
+                initStandardDLVisualization();
+                initYATProductVisualization();
             }
         }
     });
