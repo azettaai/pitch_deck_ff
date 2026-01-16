@@ -884,23 +884,24 @@ function initStandardDLVisualization() {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const angle = time * 0.5;
+        const vectorLength = 35; // Reduced for smaller canvas
 
         // Vector 1 (weight)
-        const v1x = Math.cos(angle) * 50;
-        const v1y = Math.sin(angle) * 50;
+        const v1x = Math.cos(angle) * vectorLength;
+        const v1y = Math.sin(angle) * vectorLength;
 
         // Vector 2 (input)
-        const v2x = Math.cos(angle + Math.PI / 3) * 50;
-        const v2y = Math.sin(angle + Math.PI / 3) * 50;
+        const v2x = Math.cos(angle + Math.PI / 3) * vectorLength;
+        const v2y = Math.sin(angle + Math.PI / 3) * vectorLength;
 
         // Dot product result (projection)
-        const dot = (v1x * v2x + v1y * v2y) / (50 * 50);
+        const dot = (v1x * v2x + v1y * v2y) / (vectorLength * vectorLength);
         const projectionX = v2x * dot;
         const projectionY = v2y * dot;
 
         // Draw vectors
         ctx.strokeStyle = '#0ea5e9';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.lineTo(centerX + v1x, centerY + v1y);
@@ -918,8 +919,8 @@ function initStandardDLVisualization() {
         const clippedY = v2y * clipped;
 
         ctx.strokeStyle = dot < 0 ? 'rgba(239, 68, 68, 0.5)' : '#22c55e';
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.lineTo(centerX + clippedX, centerY + clippedY);
@@ -933,8 +934,8 @@ function initStandardDLVisualization() {
             const angle = Math.atan2(y2 - y1, x2 - x1);
             ctx.beginPath();
             ctx.moveTo(x2, y2);
-            ctx.lineTo(x2 - 8 * Math.cos(angle - Math.PI / 6), y2 - 8 * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(x2 - 8 * Math.cos(angle + Math.PI / 6), y2 - 8 * Math.sin(angle + Math.PI / 6));
+            ctx.lineTo(x2 - 6 * Math.cos(angle - Math.PI / 6), y2 - 6 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - 6 * Math.cos(angle + Math.PI / 6), y2 - 6 * Math.sin(angle + Math.PI / 6));
             ctx.closePath();
             ctx.fill();
         };
@@ -945,13 +946,14 @@ function initStandardDLVisualization() {
         // Center point
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
         ctx.fill();
 
         // Label
-        ctx.font = '7px monospace';
+        ctx.font = '6px monospace';
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.fillText('Dot Product → ReLU', centerX - 35, canvas.height - 10);
+        ctx.textAlign = 'center';
+        ctx.fillText('Dot Product → ReLU', centerX, canvas.height - 5);
     }
 
     animate();
@@ -963,101 +965,166 @@ function initYATProductVisualization() {
     const ctx = canvas.getContext('2d');
     let time = 0;
 
+    // Initialize vector positions (not from center, but as independent particles)
+    let v1 = {
+        x: canvas.width * 0.3,
+        y: canvas.height * 0.3,
+        vx: 0,
+        vy: 0,
+        mass: 1
+    };
+
+    let v2 = {
+        x: canvas.width * 0.7,
+        y: canvas.height * 0.7,
+        vx: 0,
+        vy: 0,
+        mass: 1
+    };
+
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         time += 0.02;
 
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const angle = time * 0.5;
+        // Calculate distance and direction between vectors
+        const dx = v2.x - v1.x;
+        const dy = v2.y - v1.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const distSq = dist * dist;
 
-        // Vector 1 (weight)
-        const v1x = Math.cos(angle) * 50;
-        const v1y = Math.sin(angle) * 50;
+        // Calculate dot product (directional alignment)
+        // Normalize vectors for dot product calculation
+        const v1Len = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+        const v2Len = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+        const v1NormX = v1.x / (v1Len || 1);
+        const v1NormY = v1.y / (v1Len || 1);
+        const v2NormX = v2.x / (v2Len || 1);
+        const v2NormY = v2.y / (v2Len || 1);
+        const dot = (v1NormX * v2NormX + v1NormY * v2NormY);
+        const dotSq = dot * dot;
 
-        // Vector 2 (input)
-        const v2x = Math.cos(angle + Math.PI / 3) * 50;
-        const v2y = Math.sin(angle + Math.PI / 3) * 50;
+        // YAT-Product gravitational force: (dot^2) / (dist^2 + epsilon)
+        const epsilon = 10;
+        const gravitationalStrength = dotSq / (distSq / 100 + epsilon);
+        const force = gravitationalStrength * 0.15; // Scaling factor
 
-        // YAT-Product combines direction and distance
-        const dot = (v1x * v2x + v1y * v2y) / (50 * 50);
-        const dist = Math.sqrt((v2x - v1x) ** 2 + (v2y - v1y) ** 2);
-        const yatValue = (dot * dot) / ((dist / 50) ** 2 + 0.1);
+        // Apply gravitational pull
+        if (dist > 5) { // Prevent division by zero
+            const forceX = (dx / dist) * force;
+            const forceY = (dy / dist) * force;
 
-        // Draw unified transformation (smooth curve)
-        const steps = 30;
-        ctx.strokeStyle = '#4ff975';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
+            // Apply force to both vectors (mutual attraction)
+            v1.vx += forceX / v1.mass;
+            v1.vy += forceY / v1.mass;
+            v2.vx -= forceX / v2.mass;
+            v2.vy -= forceY / v2.mass;
 
-        for (let i = 0; i <= steps; i++) {
-            const t = i / steps;
-            const interpX = v1x + (v2x - v1x) * t;
-            const interpY = v1y + (v2y - v1y) * t;
-            
-            // YAT transformation creates smooth manifold
-            const scale = 1 + Math.sin(t * Math.PI) * yatValue * 0.3;
-            const x = centerX + interpX * scale;
-            const y = centerY + interpY * scale;
-
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
+            // Add orbital motion based on alignment (perpendicular force)
+            const perpX = -dy / dist;
+            const perpY = dx / dist;
+            const orbitalStrength = dot * 0.05;
+            v1.vx += perpX * orbitalStrength;
+            v1.vy += perpY * orbitalStrength;
+            v2.vx -= perpX * orbitalStrength;
+            v2.vy -= perpY * orbitalStrength;
         }
-        ctx.stroke();
 
-        // Draw vectors
-        ctx.strokeStyle = '#0ea5e9';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX + v1x, centerY + v1y);
-        ctx.stroke();
+        // Damping
+        v1.vx *= 0.95;
+        v1.vy *= 0.95;
+        v2.vx *= 0.95;
+        v2.vy *= 0.95;
 
-        ctx.strokeStyle = '#4deeea';
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX + v2x, centerY + v2y);
-        ctx.stroke();
+        // Update positions
+        v1.x += v1.vx;
+        v1.y += v1.vy;
+        v2.x += v2.vx;
+        v2.y += v2.vy;
 
-        // Draw connection line (distance component)
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.4)';
+        // Boundary constraints
+        const margin = 15;
+        if (v1.x < margin || v1.x > canvas.width - margin) {
+            v1.vx *= -0.5;
+            v1.x = Math.max(margin, Math.min(canvas.width - margin, v1.x));
+        }
+        if (v1.y < margin || v1.y > canvas.height - margin) {
+            v1.vy *= -0.5;
+            v1.y = Math.max(margin, Math.min(canvas.height - margin, v1.y));
+        }
+        if (v2.x < margin || v2.x > canvas.width - margin) {
+            v2.vx *= -0.5;
+            v2.x = Math.max(margin, Math.min(canvas.width - margin, v2.x));
+        }
+        if (v2.y < margin || v2.y > canvas.height - margin) {
+            v2.vy *= -0.5;
+            v2.y = Math.max(margin, Math.min(canvas.height - margin, v2.y));
+        }
+
+        // Draw gravitational field (gradient showing attraction)
+        if (dist < 150) {
+            const gradient = ctx.createRadialGradient(
+                (v1.x + v2.x) / 2, (v1.y + v2.y) / 2, 0,
+                (v1.x + v2.x) / 2, (v1.y + v2.y) / 2, dist * 0.8
+            );
+            gradient.addColorStop(0, `rgba(79, 249, 117, ${gravitationalStrength * 0.3})`);
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc((v1.x + v2.x) / 2, (v1.y + v2.y) / 2, dist * 0.8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw connection line showing distance (dotted)
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.3)';
         ctx.lineWidth = 1;
         ctx.setLineDash([3, 3]);
         ctx.beginPath();
-        ctx.moveTo(centerX + v1x, centerY + v1y);
-        ctx.lineTo(centerX + v2x, centerY + v2y);
+        ctx.moveTo(v1.x, v1.y);
+        ctx.lineTo(v2.x, v2.y);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Draw arrowheads
-        const drawArrow = (x1, y1, x2, y2, color) => {
-            ctx.strokeStyle = color;
-            ctx.fillStyle = color;
-            const angle = Math.atan2(y2 - y1, x2 - x1);
+        // Draw force vector (gravitational pull)
+        const forceVisualX = (dx / dist) * gravitationalStrength * 10;
+        const forceVisualY = (dy / dist) * gravitationalStrength * 10;
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.6)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(v1.x, v1.y);
+        ctx.lineTo(v1.x + forceVisualX, v1.y + forceVisualY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(v2.x, v2.y);
+        ctx.lineTo(v2.x - forceVisualX, v2.y - forceVisualY);
+        ctx.stroke();
+
+        // Draw vectors as particles with glow
+        const drawVector = (x, y, color) => {
+            // Glow
+            const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 12);
+            glowGradient.addColorStop(0, color.replace(')', ', 0.6)').replace('rgb', 'rgba'));
+            glowGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = glowGradient;
             ctx.beginPath();
-            ctx.moveTo(x2, y2);
-            ctx.lineTo(x2 - 8 * Math.cos(angle - Math.PI / 6), y2 - 8 * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(x2 - 8 * Math.cos(angle + Math.PI / 6), y2 - 8 * Math.sin(angle + Math.PI / 6));
-            ctx.closePath();
+            ctx.arc(x, y, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Vector point
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
             ctx.fill();
         };
 
-        drawArrow(centerX, centerY, centerX + v1x, centerY + v1y, '#0ea5e9');
-        drawArrow(centerX, centerY, centerX + v2x, centerY + v2y, '#4deeea');
-
-        // Center point
-        ctx.fillStyle = '#4ff975';
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
-        ctx.fill();
+        drawVector(v1.x, v1.y, '#0ea5e9');
+        drawVector(v2.x, v2.y, '#4deeea');
 
         // Label
-        ctx.font = '7px monospace';
+        ctx.font = '6px monospace';
         ctx.fillStyle = 'rgba(79, 249, 117, 0.9)';
-        ctx.fillText('YAT-Product', centerX - 30, canvas.height - 10);
+        ctx.textAlign = 'center';
+        ctx.fillText('YAT-Product', canvas.width / 2, canvas.height - 5);
     }
 
     animate();
