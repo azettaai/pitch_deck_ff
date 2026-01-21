@@ -736,38 +736,45 @@
             </div>
         </div>
 
-        <!-- Slide 11: Contact Us -->
-        <div class="slide invert">
-            <div class="content-wrapper" style="text-align: center;">
-                <h3>Connect With Us</h3>
-                <h1>Let's Connect</h1>
-                <h2>Learn more about Azetta.ai's foundational AI research and products</h2>
+        <!-- Slide 10: Pre-Seed Funding -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <h3>Investment Opportunity</h3>
+                <h1>Pre-Seed Funding Round</h1>
+                <h2>Building a competitive 100M parameter proof-of-concept to validate YAT-Product at scale</h2>
 
-                <div class="contact-grid">
-                    <div class="contact-card">
-                        <div class="contact-icon">✉</div>
-                        <h4>Email</h4>
-                        <a href="mailto:labs@azetta.ai">labs@azetta.ai</a>
+                <div class="funding-hero" style="margin: 40px 0;">
+                    <div class="funding-amount" style="text-align: center; margin-bottom: 32px;">
+                        <div style="font-size: 3rem; font-weight: 700; color: var(--primary); margin-bottom: 8px;">$200K</div>
+                        <div style="font-size: 1.2rem; color: var(--text-secondary);">First Tranche • Part of $2M Total Round</div>
                     </div>
-                    <div class="contact-card">
-                        <div class="contact-icon">🌐</div>
-                        <h4>Website</h4>
-                        <a href="https://azetta.ai" target="_blank">azetta.ai</a>
-                    </div>
-                    <div class="contact-card">
-                        <div class="contact-icon">🔗</div>
-                        <h4>Social</h4>
-                        <a href="https://www.linkedin.com/company/azetta-ai/" target="_blank">LinkedIn</a>
+
+                    <div class="feature-grid" style="grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px;">
+                        <div class="feature-card clickable" style="text-align: center; padding: 24px; cursor: pointer;" onclick="openModal('fundingDetailsModal')">
+                            <canvas id="salaryVisualizationCanvas" width="200" height="120" style="width: 100%; height: auto; display: block; margin: 0 auto 16px;"></canvas>
+                            <div style="font-size: 1.8rem; font-weight: 600; color: var(--primary); margin-bottom: 8px;">$50K</div>
+                            <div style="font-size: 0.95rem; color: var(--text-secondary);">Salaries</div>
+                            <div style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">1 year runway for 2 founders</div>
+                        </div>
+
+                        <div class="feature-card clickable" style="text-align: center; padding: 24px; cursor: pointer;" onclick="openModal('fundingDetailsModal')">
+                            <canvas id="gpuComputeCanvas" width="200" height="120" style="width: 100%; height: auto; display: block; margin: 0 auto 16px;"></canvas>
+                            <div style="font-size: 1.8rem; font-weight: 600; color: var(--primary); margin-bottom: 8px;">$100K</div>
+                            <div style="font-size: 0.95rem; color: var(--text-secondary);">GPU Compute</div>
+                            <div style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">Cloud training infrastructure</div>
+                        </div>
+
+                        <div class="feature-card clickable" style="text-align: center; padding: 24px; cursor: pointer;" onclick="openModal('fundingDetailsModal')">
+                            <canvas id="berkeleyOfficeCanvas" width="200" height="120" style="width: 100%; height: auto; display: block; margin: 0 auto 16px;"></canvas>
+                            <div style="font-size: 1.8rem; font-weight: 600; color: var(--primary); margin-bottom: 8px;">$50K</div>
+                            <div style="font-size: 0.95rem; color: var(--text-secondary);">Berkeley Office</div>
+                            <div style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">1 year workspace rental</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="cta-buttons">
-                    <a href="mailto:labs@azetta.ai?subject=Meeting%20Request" class="cta-btn primary">Schedule a Meeting</a>
-                    <a href="https://azetta.ai" target="_blank" class="cta-btn secondary">View Research</a>
-                </div>
-
-                <div class="tagline" style="margin-top: 48px;">
-                    Building Foundational AI from First Principles.
+                <div class="highlight-box" style="margin-top: 32px;">
+                    <strong>Milestone Target:</strong> Train and benchmark a 100M parameter embedding model achieving competitive MTEB leaderboard performance by <strong>June 2026</strong>. This validates YAT-Product scalability and de-risks the remaining $1.8M raise.
                 </div>
             </div>
             <div class="footer">
@@ -1092,6 +1099,144 @@
             <div class="highlight-box" style="margin-top: 32px;">
                 <strong>Status:</strong> Planned product based on YAT-Product's white-box interpretability properties. Development roadmap aligned with Omnilingual and Cosma DB maturity.
             </div>
+        </div>
+    </div>
+
+    <!-- Pre-Seed Funding Details Modal -->
+    <div id="fundingDetailsModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 1200px;">
+            <button class="modal-close" onclick="closeModal('fundingDetailsModal')">&times;</button>
+
+            <h3 style="margin-bottom: 16px;">Pre-Seed Funding: Technical Roadmap</h3>
+            <h4 style="color: var(--text-secondary); margin-bottom: 32px;">$200K initial tranche to validate YAT-Product scalability with GPU-trained proof-of-concept</h4>
+
+            <div class="highlight-box" style="margin-bottom: 32px;">
+                <strong>Mission-Critical Milestone:</strong>
+                Train and benchmark a fully-scaled <strong>100M parameter embedding model</strong> using YAT-Product architecture to demonstrate competitive performance on the MTEB leaderboard. This validates our theoretical efficiency claims and provides empirical evidence for the remaining $1.8M raise.
+            </div>
+
+            <!-- Funding Allocation Breakdown -->
+            <div style="margin-bottom: 40px;">
+                <h4 style="margin-bottom: 20px; font-size: 1.2rem; color: var(--primary);">Capital Allocation ($200K)</h4>
+
+                <div class="feature-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+                    <div class="feature-card" style="padding: 24px;">
+                        <h4 style="color: var(--primary); margin-bottom: 16px;">💰 Engineering ($50K)</h4>
+                        <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                            <li><strong>2 Founders:</strong> Taha Bouhsine (CEO) & Douglas Seo (CTO)</li>
+                            <li><strong>Timeline:</strong> 12 months runway</li>
+                            <li><strong>Roles:</strong> Full-time model development, training pipeline, benchmarking</li>
+                            <li><strong>Expertise:</strong> Kernel methods, distributed systems, ML infrastructure</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" style="padding: 24px;">
+                        <h4 style="color: var(--primary); margin-bottom: 16px;">🖥️ GPU Compute ($100K)</h4>
+                        <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                            <li><strong>Providers:</strong> Google Cloud, Lambda Labs, Hyperbolic</li>
+                            <li><strong>Target:</strong> A100/H100 GPU clusters</li>
+                            <li><strong>Use Case:</strong> Training 100M param model on large-scale text corpus</li>
+                            <li><strong>Efficiency Thesis:</strong> YAT-Product requires 90% less compute than standard architectures</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" style="padding: 24px;">
+                        <h4 style="color: var(--primary); margin-bottom: 16px;">🏢 Infrastructure ($50K)</h4>
+                        <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                            <li><strong>Location:</strong> Berkeley, CA workspace</li>
+                            <li><strong>Timeline:</strong> 12 months lease</li>
+                            <li><strong>Strategic Value:</strong> UC Berkeley EECS alumni network & research connections</li>
+                            <li><strong>Purpose:</strong> Dedicated environment for deep technical work</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Specifications -->
+            <div style="margin-bottom: 40px;">
+                <h4 style="margin-bottom: 20px; font-size: 1.2rem; color: var(--primary);">Technical Specifications: 100M Parameter POC</h4>
+
+                <div class="feature-grid" style="grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div class="feature-card" style="padding: 24px;">
+                        <h4 style="margin-bottom: 16px;">Model Architecture</h4>
+                        <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                            <li><strong>Type:</strong> Embedding model (dual-encoder architecture)</li>
+                            <li><strong>Parameters:</strong> 100M (competitive with 500M+ standard models)</li>
+                            <li><strong>Context Length:</strong> Large context window for long-form semantic search</li>
+                            <li><strong>Training Paradigm:</strong> Contrastive learning + supervised fine-tuning</li>
+                            <li><strong>Innovation:</strong> YAT-Product kernel replaces standard dot-product attention</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" style="padding: 24px;">
+                        <h4 style="margin-bottom: 16px;">Benchmarking & Validation</h4>
+                        <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                            <li><strong>Primary Target:</strong> MTEB (Massive Text Embedding Benchmark) Leaderboard</li>
+                            <li><strong>Goal:</strong> Competitive performance (~65 mean task score)</li>
+                            <li><strong>Timeline:</strong> June 2026 completion</li>
+                            <li><strong>Comparisons:</strong> multilingual-e5-large, LaBSE, all-MiniLM-L6-v2</li>
+                            <li><strong>Success Metric:</strong> Match/exceed performance with 10x fewer parameters</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 24px;">
+                    <strong>Reference Benchmark:</strong> See the model comparison chart showing Azetta.AI's projected efficiency—achieving competitive MTEB scores (~65) with only 100M parameters, where competitors require 500M+ parameters for similar performance.
+                </div>
+            </div>
+
+            <!-- De-Risking Strategy -->
+            <div style="margin-bottom: 40px;">
+                <h4 style="margin-bottom: 20px; font-size: 1.2rem; color: var(--primary);">Risk Mitigation & Upside Scenarios</h4>
+
+                <div class="feature-card" style="padding: 24px; margin-bottom: 24px;">
+                    <h4 style="color: var(--primary); margin-bottom: 16px;">What This POC De-Risks for Future Investors</h4>
+                    <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                        <li><strong>Scalability Validation:</strong> Proves YAT-Product maintains efficiency beyond small-scale experiments</li>
+                        <li><strong>Training Stability:</strong> Demonstrates gradient flow and convergence at 100M parameters</li>
+                        <li><strong>Competitive Benchmarking:</strong> Empirical evidence against industry-standard models on MTEB</li>
+                        <li><strong>Compute Efficiency:</strong> Real-world validation of 90% compute reduction thesis</li>
+                        <li><strong>Commercial Viability:</strong> Opens path to Cosma DB productization with proven embeddings</li>
+                    </ul>
+                </div>
+
+                <div class="feature-grid" style="grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div class="feature-card" style="padding: 24px;">
+                        <h4 style="color: var(--primary); margin-bottom: 16px;">Downside Protection</h4>
+                        <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                            <li><strong>Scenario 1:</strong> If YAT-Product doesn't scale as projected, pivot to licensing kernel technology to enterprises</li>
+                            <li><strong>Scenario 2:</strong> Offer ML consulting services leveraging kernel expertise to generate revenue</li>
+                            <li><strong>Scenario 3:</strong> Raise additional capital if $100K GPU budget proves insufficient</li>
+                            <li><strong>IP Protection:</strong> Trade secret strategy (no patents) maintains competitive moat</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card" style="padding: 24px;">
+                        <h4 style="color: var(--primary); margin-bottom: 16px;">Success Unlocks</h4>
+                        <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+                            <li><strong>Remaining $1.8M:</strong> Hire 5 world-class ML engineers + scale compute</li>
+                            <li><strong>Product Roadmap:</strong> Cosma DB beta launch with validated embeddings</li>
+                            <li><strong>Strategic Partnerships:</strong> Berkeley research collaborations, industry pilots</li>
+                            <li><strong>Market Position:</strong> First-mover advantage in interpretable, efficient AI</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Round Structure -->
+            <div style="margin-bottom: 24px;">
+                <h4 style="margin-bottom: 20px; font-size: 1.2rem; color: var(--primary);">Full Round Structure</h4>
+
+                <div class="highlight-box">
+                    <p style="font-size: 0.95rem; line-height: 1.8; margin-bottom: 16px;">
+                        <strong>Total Raise:</strong> $2M Pre-Seed Round<br>
+                        <strong>First Tranche:</strong> $200K (this offering) — Validates POC by June 2026<br>
+                        <strong>Remaining Tranches:</strong> $1.8M — Scales team (5 engineers), GPU infrastructure ($700K), legal/ops ($300K)<br>
+                        <strong>Minimum Check:</strong> $50K per investor
+                    </p>
+                </div>
+            </div>
+
         </div>
     </div>
 

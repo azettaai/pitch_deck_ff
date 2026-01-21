@@ -1593,6 +1593,68 @@ canvas {
     line-height: 1.5;
 }
 
+/* ==================== FUNDING SLIDE SPECIFIC STYLES ==================== */
+.funding-hero .funding-amount {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.funding-hero .feature-card {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.funding-hero .feature-card canvas {
+    border-radius: 8px;
+    background: rgba(10, 20, 15, 0.3);
+    margin-bottom: 16px;
+}
+
+.funding-hero .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 32px var(--primary-glow);
+    border-color: var(--primary);
+}
+
+.funding-hero .feature-card.clickable:hover {
+    cursor: pointer;
+}
+
+.funding-hero .feature-card.clickable::after {
+    content: "Click for details →";
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    font-size: 0.7rem;
+    color: var(--primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.funding-hero .feature-card.clickable:hover::after {
+    opacity: 1;
+}
+
+.funding-hero .feature-card.clickable:hover canvas {
+    box-shadow: 0 4px 16px rgba(79, 249, 117, 0.2);
+}
+
+/* Modal content styling for funding details */
+#fundingDetailsModal .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#fundingDetailsModal ul {
+    list-style: none;
+}
+
+#fundingDetailsModal ul li::before {
+    content: "▹ ";
+    color: var(--primary);
+    font-weight: bold;
+    margin-right: 8px;
+}
+
 /* Responsive adjustments for gallery */
 @media (max-width: 768px) {
     .aethergpt-gallery-grid {
@@ -2520,12 +2582,39 @@ canvas {
     max-width: 90vw;
 }
 
+/* Funding slide mobile responsiveness */
+@media (max-width: 768px) {
+    .funding-hero .funding-amount div:first-child {
+        font-size: 2rem !important;
+    }
+
+    .funding-hero .feature-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .funding-hero .feature-card.clickable::after {
+        font-size: 0.6rem;
+        bottom: 8px;
+        right: 12px;
+    }
+
+    #fundingDetailsModal .modal-content {
+        padding: 20px;
+        max-width: 95vw;
+    }
+
+    #fundingDetailsModal .feature-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 /* Additional mobile portrait prevention */
 @media (orientation: portrait) and (max-width: 768px) {
     body {
         overflow: hidden !important;
     }
-    
+
     .deck-container {
         display: none;
     }

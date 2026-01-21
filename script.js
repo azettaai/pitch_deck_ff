@@ -1352,6 +1352,277 @@ function initYATProductVisualization() {
     animate();
 }
 
+// ============================================
+// Funding Slide Visualizations (Slide 10)
+// ============================================
+
+function initSalaryVisualization() {
+    const canvas = document.getElementById('salaryVisualizationCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let time = 0;
+
+    // Two engineers represented as avatars
+    const engineers = [
+        { x: 50, y: 60, phase: 0, name: 'Taha' },
+        { x: 150, y: 60, phase: Math.PI, name: 'Douglas' }
+    ];
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.05;
+
+        engineers.forEach(eng => {
+            const bounce = Math.sin(time + eng.phase) * 3;
+            const y = eng.y + bounce;
+
+            // Avatar circle with glow
+            const gradient = ctx.createRadialGradient(eng.x, y, 0, eng.x, y, 20);
+            gradient.addColorStop(0, 'rgba(79, 249, 117, 0.4)');
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(eng.x, y, 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Avatar head
+            ctx.fillStyle = '#4ff975';
+            ctx.beginPath();
+            ctx.arc(eng.x, y - 5, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Avatar body
+            ctx.beginPath();
+            ctx.arc(eng.x, y + 8, 8, 0, Math.PI, true);
+            ctx.lineTo(eng.x - 8, y + 20);
+            ctx.lineTo(eng.x + 8, y + 20);
+            ctx.closePath();
+            ctx.fill();
+
+            // Code brackets animation
+            const codeOpacity = (Math.sin(time * 2 + eng.phase) + 1) / 2;
+            ctx.font = '16px monospace';
+            ctx.fillStyle = `rgba(79, 249, 117, ${codeOpacity * 0.6})`;
+            ctx.fillText('</', eng.x - 15, y - 25);
+            ctx.fillText('>', eng.x + 5, y - 25);
+        });
+
+        // Timeline bar showing 12 months
+        const barWidth = 160;
+        const barX = 20;
+        const barY = 100;
+        const progress = (Math.sin(time * 0.5) + 1) / 2;
+
+        // Bar background
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.2)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(barX, barY);
+        ctx.lineTo(barX + barWidth, barY);
+        ctx.stroke();
+
+        // Progress fill
+        ctx.strokeStyle = '#4ff975';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(barX, barY);
+        ctx.lineTo(barX + barWidth * progress, barY);
+        ctx.stroke();
+
+        // Month markers
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.font = '7px monospace';
+        ctx.fillText('0mo', barX - 5, barY + 12);
+        ctx.fillText('12mo', barX + barWidth - 15, barY + 12);
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+function initGPUComputeVisualization() {
+    const canvas = document.getElementById('gpuComputeCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let time = 0;
+
+    // GPU compute nodes
+    const gpuNodes = [];
+    for (let i = 0; i < 8; i++) {
+        gpuNodes.push({
+            x: 30 + (i % 4) * 35,
+            y: 30 + Math.floor(i / 4) * 35,
+            phase: (i * Math.PI) / 4,
+            intensity: Math.random()
+        });
+    }
+
+    // Data particles flowing through
+    const particles = [];
+    for (let i = 0; i < 15; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: Math.random() * 2 + 1
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.05;
+
+        // Draw connections between nodes
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.1)';
+        ctx.lineWidth = 1;
+        gpuNodes.forEach((node1, i) => {
+            gpuNodes.forEach((node2, j) => {
+                if (i < j) {
+                    const dist = Math.hypot(node2.x - node1.x, node2.y - node1.y);
+                    if (dist < 60) {
+                        ctx.beginPath();
+                        ctx.moveTo(node1.x, node1.y);
+                        ctx.lineTo(node2.x, node2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+        });
+
+        // Draw GPU nodes with pulsing effect
+        gpuNodes.forEach(node => {
+            const pulse = (Math.sin(time * 2 + node.phase) + 1) / 2;
+            const size = 6 + pulse * 3;
+
+            // Glow
+            const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, size * 2);
+            gradient.addColorStop(0, `rgba(79, 249, 117, ${0.4 * pulse})`);
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, size * 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Node
+            ctx.fillStyle = '#4ff975';
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Animate data particles
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+            ctx.fillStyle = 'rgba(77, 238, 234, 0.6)';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Label
+        ctx.font = '7px monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.fillText('Training...', canvas.width - 45, canvas.height - 5);
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+function initBerkeleyOfficeVisualization() {
+    const canvas = document.getElementById('berkeleyOfficeCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let time = 0;
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.03;
+
+        // Building outline (simple office representation)
+        const buildingX = 60;
+        const buildingY = 30;
+        const buildingWidth = 80;
+        const buildingHeight = 70;
+
+        // Building base
+        ctx.strokeStyle = 'rgba(79, 249, 117, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(buildingX, buildingY, buildingWidth, buildingHeight);
+
+        // Windows grid (4x3)
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 4; col++) {
+                const wx = buildingX + 15 + col * 18;
+                const wy = buildingY + 15 + row * 20;
+                const windowSize = 12;
+
+                // Window light effect
+                const isLit = (row === 1 && col === 1) || (row === 1 && col === 2);
+                const lightIntensity = isLit ? (Math.sin(time) + 1) / 2 : 0.2;
+
+                ctx.fillStyle = `rgba(79, 249, 117, ${lightIntensity * 0.5})`;
+                ctx.fillRect(wx, wy, windowSize, windowSize);
+
+                ctx.strokeStyle = 'rgba(79, 249, 117, 0.6)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(wx, wy, windowSize, windowSize);
+            }
+        }
+
+        // Berkeley banner/text
+        ctx.font = 'bold 10px monospace';
+        ctx.fillStyle = '#4ff975';
+        ctx.fillText('BERKELEY', buildingX + 10, buildingY - 5);
+
+        // Location pin animated
+        const pinX = 30;
+        const pinY = 60;
+        const pinBounce = Math.sin(time * 2) * 2;
+
+        // Pin glow
+        const gradient = ctx.createRadialGradient(pinX, pinY + pinBounce, 0, pinX, pinY + pinBounce, 15);
+        gradient.addColorStop(0, 'rgba(79, 249, 117, 0.4)');
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(pinX, pinY + pinBounce, 15, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pin shape
+        ctx.fillStyle = '#4ff975';
+        ctx.beginPath();
+        ctx.arc(pinX, pinY + pinBounce - 5, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(pinX, pinY + pinBounce + 3);
+        ctx.lineTo(pinX - 5, pinY + pinBounce + 10);
+        ctx.lineTo(pinX + 5, pinY + pinBounce + 10);
+        ctx.closePath();
+        ctx.fill();
+
+        // Research connections (signal waves)
+        const waveOpacity = (Math.sin(time * 3) + 1) / 2;
+        ctx.strokeStyle = `rgba(77, 238, 234, ${waveOpacity * 0.5})`;
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 3; i++) {
+            const radius = 15 + i * 10 + (time * 10) % 30;
+            ctx.beginPath();
+            ctx.arc(buildingX + buildingWidth / 2, buildingY - 10, radius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
 // Initialize visualizations when page loads
 // ============================================
 // Canvas Lazy Loading System
@@ -1373,7 +1644,10 @@ const canvasInitializers = {
     'cvdDeterministicCanvas': () => initCVDInnovationVisualizations(),
     'cvdZeroBuildCanvas': () => initCVDInnovationVisualizations(),
     'coemProblemCanvas': () => initCOEMInnovationVisualizations(),
-    'coemSolutionCanvas': () => initCOEMInnovationVisualizations()
+    'coemSolutionCanvas': () => initCOEMInnovationVisualizations(),
+    'salaryVisualizationCanvas': initSalaryVisualization,
+    'gpuComputeCanvas': initGPUComputeVisualization,
+    'berkeleyOfficeCanvas': initBerkeleyOfficeVisualization
 };
 
 const initializedCanvases = new Set();
