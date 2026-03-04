@@ -1542,6 +1542,30 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   line-height: 1.6;
 }
 
+#rotate-ok {
+  margin-top: 0.5rem;
+  padding: 0.55rem 2rem;
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-family: 'Chakra Petch', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s, color 0.2s;
+}
+#rotate-ok:hover {
+  background: var(--primary);
+  color: var(--bg);
+}
+
+#rotate-prompt.dismissed {
+  display: none !important;
+}
+
 /* ── Landscape mobile (phones ~375–480px tall) ───────────────────────── */
 @media (max-height: 500px) and (orientation: landscape) {
   :root {
