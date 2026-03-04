@@ -870,8 +870,6 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   flex-direction: column;
   gap: 0.5rem;
   position: relative;
-  justify-content: center;
-  align-items: center;
 }
 
 .mx-cell.azetta-cell {
@@ -887,7 +885,6 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   color: var(--text);
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  text-align: center;
 }
 .mx-label.green { color: var(--primary); text-shadow: 0 0 6px var(--primary-glow); }
 
