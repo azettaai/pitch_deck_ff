@@ -1671,24 +1671,32 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 
 /* ── Slide 7 — GTM Flywheel mobile fix ──────────────────────────────── */
 @media (max-height: 700px) and (orientation: landscape) {
-  /* Release inline height:100% so slide can scroll naturally */
+  /* Release inline height:100% so content flows naturally */
   .s7-wrapper      { height: auto !important; }
-  /* Body stays horizontal but no longer tries to fill viewport height */
+  /* Body: horizontal, flywheel fills available height dynamically */
   .s7-body         { flex: 0 0 auto !important; margin-right: 0 !important; gap: 0.6rem !important; align-items: center !important; }
-  /* Flywheel — larger but capped so it doesn't overflow */
-  .s7-body .fw-svg { max-height: 55vh !important; width: auto; }
-  /* Cards stay stacked in right column, just tighter */
+  /* Flywheel: fills remaining viewport height after header (~130px for tag+h1+h2+gaps) */
+  .s7-body .fw-svg { height: calc(100vh - 130px) !important; max-height: none !important; width: auto !important; }
+  /* Cards stacked on the right, stretch to match flywheel height */
   .s7-right        { gap: 0.5rem !important; align-self: stretch !important; }
   .ip-shield-card, .proven-model-card { padding: 0.5rem 0.7rem; }
   .ip-shield-heading, .proven-model-heading { font-size: 0.72rem; }
   /* Fix Morrison Foerster header overflow — allow it to wrap */
-  .ip-shield-card > div:first-child          { flex-wrap: wrap !important; gap: 0.3rem !important; }
-  .ip-shield-card > div:first-child > div:last-child { flex-shrink: 1 !important; min-width: 0; }
-  .ip-shield-partner-label                   { display: none; }
-  .ip-shield-firm                            { font-size: 0.65rem !important; }
-  .ip-shield-point span, .proven-model-desc { font-size: 0.6rem; line-height: 1.4; }
+  .ip-shield-card > div:first-child                   { flex-wrap: wrap !important; gap: 0.3rem !important; }
+  .ip-shield-card > div:first-child > div:last-child  { flex-shrink: 1 !important; min-width: 0; }
+  .ip-shield-partner-label                            { display: none; }
+  .ip-shield-firm                                     { font-size: 0.65rem !important; }
+  .ip-shield-point span, .proven-model-desc           { font-size: 0.6rem; line-height: 1.4; }
   .proven-companies { gap: 0.4rem; flex-wrap: wrap; }
   .proven-co span   { font-size: 0.6rem; }
+}
+
+/* ── Slide 7 — very narrow landscape (< 600px wide): stack vertically ── */
+@media (max-height: 700px) and (max-width: 600px) and (orientation: landscape) {
+  .s7-body         { flex-direction: column !important; align-items: stretch !important; }
+  .s7-body .fw-svg { height: 35vw !important; width: 100% !important; }
+  .s7-right        { flex-direction: row !important; }
+  .ip-shield-card, .proven-model-card { flex: 1; }
 }
 
 /* ── Touch targets — bigger nav buttons on any mobile ────────────────── */
