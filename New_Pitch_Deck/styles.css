@@ -892,7 +892,9 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
+  flex: 1;
   justify-content: center;
+  align-items: center;
   align-content: center;
 }
 
