@@ -1242,6 +1242,14 @@ function stopFlywheel() {
   });
 }
 
+// ── Rotate Prompt Dismiss ──────────────────────────────────────────────
+(function initRotateDismiss() {
+  const btn    = document.getElementById('rotate-ok');
+  const prompt = document.getElementById('rotate-prompt');
+  if (!btn || !prompt) return;
+  btn.addEventListener('click', () => prompt.classList.add('dismissed'));
+})();
+
 // ── Password Gate ──────────────────────────────────────────────────────
 (function initPasswordGate() {
   const gate    = document.getElementById('password-gate');
