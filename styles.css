@@ -1671,8 +1671,13 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 
 /* ── Slide 7 — GTM Flywheel mobile fix ──────────────────────────────── */
 @media (max-height: 700px) and (orientation: landscape) {
-  .s7-body         { flex-direction: row !important; gap: 0.6rem !important; margin-right: 0 !important; align-items: stretch !important; }
-  .s7-body .fw-svg { max-height: 200px; }
+  /* Release inline height:100% so slide can scroll naturally */
+  .s7-wrapper      { height: auto !important; }
+  /* Body stays horizontal but no longer tries to fill viewport height */
+  .s7-body         { flex: 0 0 auto !important; margin-right: 0 !important; gap: 0.6rem !important; align-items: center !important; }
+  /* Cap flywheel so it doesn't push cards off-screen */
+  .s7-body .fw-svg { max-height: 180px !important; width: auto; }
+  /* Cards stay stacked in right column, just tighter */
   .s7-right        { gap: 0.5rem !important; align-self: stretch !important; }
   .ip-shield-card, .proven-model-card { padding: 0.5rem 0.7rem; }
   .ip-shield-heading, .proven-model-heading { font-size: 0.72rem; }
