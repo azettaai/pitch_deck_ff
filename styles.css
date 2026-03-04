@@ -892,7 +892,10 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
-  align-content: flex-start;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 }
 
 .mx-tag {
@@ -909,10 +912,15 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 
 .mx-tag.hi {
   color: var(--primary);
-  background: rgba(120, 196, 164, 0.08);
-  border-color: rgba(120, 196, 164, 0.3);
-  font-weight: 600;
-  text-shadow: 0 0 6px var(--primary-glow);
+  background: rgba(120, 196, 164, 0.12);
+  border: 1.5px solid rgba(120, 196, 164, 0.6);
+  font-weight: 700;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  padding: 0.45rem 0.9rem;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 10px var(--primary-glow);
+  box-shadow: 0 0 16px rgba(120, 196, 164, 0.15), inset 0 0 12px rgba(120, 196, 164, 0.05);
+  gap: 0.5rem;
 }
 
 .co-logo {
