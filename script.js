@@ -9,7 +9,7 @@ let currentSlide = 1;
 const TOTAL_SLIDES = 13;
 
 // ── DOM refs ───────────────────────────────────────────────────────────
-const slides      = document.querySelectorAll('.slide');
+let slides        = [];
 const progressBar = document.getElementById('progress-bar');
 const counter     = document.getElementById('slide-counter');
 const btnPrev     = document.getElementById('btn-prev');
@@ -1250,34 +1250,78 @@ function stopFlywheel() {
   btn.addEventListener('click', () => prompt.classList.add('dismissed'));
 })();
 
-// ── Password Gate ──────────────────────────────────────────────────────
-(function initPasswordGate() {
+// ── Password Gate (AES-256-GCM client-side decrypt) ────────────────────
+(async function initPasswordGate() {
   const gate    = document.getElementById('password-gate');
   const input   = document.getElementById('password-input');
   const submit  = document.getElementById('password-submit');
   const error   = document.getElementById('password-error');
 
-  function unlock() {
-    sessionStorage.setItem('azetta_unlocked', Date.now().toString());
-    gate.classList.add('unlocked');
-    setTimeout(() => gate.remove(), 420);
+  // Read the encrypted payload injected by build.js.
+  // If absent (local dev without building), gate is removed immediately.
+  const payloadEl = document.getElementById('__enc__');
+  if (!payloadEl) {
+    // No encrypted payload — source file served directly (local dev).
+    slides = document.querySelectorAll('.slide');
+    gate.remove();
+    initDeck();
+    return;
   }
 
-  function attempt() {
-    if (input.value.trim().toLowerCase() === 'manifold') {
-      unlock();
-    } else {
+  const { s, v, c } = JSON.parse(payloadEl.textContent);
+  const fromB64 = b => Uint8Array.from(atob(b), x => x.charCodeAt(0));
+  const salt = fromB64(s);
+  const iv   = fromB64(v);
+  const ct   = fromB64(c);
+
+  async function decryptDeck(password) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+    );
+    const key = await crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations: 200000, hash: 'SHA-256' },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      false, ['decrypt']
+    );
+    const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+    return new TextDecoder().decode(plainBuf);
+  }
+
+  async function unlock(password) {
+    const html = await decryptDeck(password);
+    const deck = document.getElementById('deck');
+    deck.innerHTML = html;
+    slides = deck.querySelectorAll('.slide');
+    sessionStorage.setItem('azetta_pwd', password);
+    gate.classList.add('unlocked');
+    setTimeout(() => { gate.remove(); initDeck(); }, 420);
+  }
+
+  async function attempt() {
+    const pwd = input.value.trim();
+    submit.disabled = true;
+    submit.textContent = '...';
+    try {
+      await unlock(pwd);
+    } catch (_) {
       error.classList.add('visible');
       input.value = '';
       input.focus();
       setTimeout(() => error.classList.remove('visible'), 2500);
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'ENTER';
     }
   }
 
-  const ts = sessionStorage.getItem('azetta_unlocked');
-  if (ts && (Date.now() - parseInt(ts, 10)) < 30 * 60 * 1000) {
-    gate.remove();
-    return;
+  // Session resume: re-decrypt with stored password (avoids re-entry on refresh).
+  const stored = sessionStorage.getItem('azetta_pwd');
+  if (stored) {
+    try { await unlock(stored); return; } catch (_) {
+      sessionStorage.removeItem('azetta_pwd');
+    }
   }
 
   submit.addEventListener('click', attempt);
@@ -1285,8 +1329,8 @@ function stopFlywheel() {
   input.focus();
 })();
 
-// ── Init ───────────────────────────────────────────────────────────────
-(function init() {
+// ── Init (called only after deck HTML is decrypted and injected) ────────
+function initDeck() {
   // Ensure first slide is visible
   slides.forEach((s, i) => {
     s.classList.toggle('active', i === 0);
@@ -1306,4 +1350,4 @@ function stopFlywheel() {
   };
   document.addEventListener('keydown', hideHint, { once: true });
   document.addEventListener('click', hideHint, { once: true });
-})();
+}
