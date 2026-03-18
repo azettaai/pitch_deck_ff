@@ -1,2513 +1,1309 @@
-// ============================================
-// Mobile Landscape Lock & Scroll Prevention
-// ============================================
+/* =====================================================================
+   AZETTA AI — PITCH DECK NAVIGATION & INTERACTIVITY
+   ===================================================================== */
 
-// Prevent scrolling on mobile with smart vertical scroll detection
-function preventScrolling() {
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.height = '100%';
+'use strict';
 
-    let touchStartY = 0;
-    let touchStartX = 0;
+// ── State ──────────────────────────────────────────────────────────────
+let currentSlide = 1;
+const TOTAL_SLIDES = 13;
 
-    document.addEventListener('touchstart', (e) => {
-        touchStartY = e.touches[0].clientY;
-        touchStartX = e.touches[0].clientX;
-    }, { passive: true });
+// ── DOM refs ───────────────────────────────────────────────────────────
+const slides      = document.querySelectorAll('.slide');
+const progressBar = document.getElementById('progress-bar');
+const counter     = document.getElementById('slide-counter');
+const btnPrev     = document.getElementById('btn-prev');
+const btnNext     = document.getElementById('btn-next');
 
-    // Prevent touch scrolling with vertical scroll detection
-    document.addEventListener('touchmove', (e) => {
-        // Allow touch events on interactive elements
-        if (e.target.closest('.modal-overlay') ||
-            e.target.closest('.modal-content') ||
-            e.target.closest('.concept-tooltip')) {
-            return;
-        }
+// ── Core navigation ────────────────────────────────────────────────────
+function goToSlide(n, direction = 'next') {
+  if (n < 1 || n > TOTAL_SLIDES) return;
 
-        // Allow vertical scroll within .slide
-        const slideElement = e.target.closest('.slide');
-        if (slideElement) {
-            const touchMoveY = e.touches[0].clientY;
-            const touchMoveX = e.touches[0].clientX;
-            const deltaY = Math.abs(touchMoveY - touchStartY);
-            const deltaX = Math.abs(touchMoveX - touchStartX);
+  const prev = document.querySelector('.slide.active');
+  const next = slides[n - 1];
 
-            // If predominantly vertical movement, allow scroll
-            if (deltaY > deltaX * 1.5) {
-                return; // Allow vertical scroll
-            }
-        }
+  if (prev === next) return;
 
-        e.preventDefault();
-    }, { passive: false });
+  // Exit current slide
+  if (prev) {
+    if (currentSlide === 3) stopBlackboxDemo();
+    if (currentSlide === 4) stopPGDemo();
+    if (currentSlide === 7) stopFlywheel();
+    prev.classList.add('exit');
+    prev.classList.remove('active');
+    setTimeout(() => prev.classList.remove('exit'), 400);
+  }
 
-    // Prevent wheel scrolling
-    document.addEventListener('wheel', (e) => {
-        if (!e.target.closest('.modal-content') &&
-            !e.target.closest('.tooltip-body')) {
-            e.preventDefault();
-        }
-    }, { passive: false });
+  // Enter next slide
+  // Direction hint: when going back, flip the entry transform
+  if (direction === 'prev') {
+    next.style.transform = 'translateX(-40px)';
+  } else {
+    next.style.transform = 'translateX(40px)';
+  }
+
+  // Force reflow so the transform takes effect before adding 'active'
+  // eslint-disable-next-line no-unused-expressions
+  next.offsetHeight;
+
+  next.style.transform = '';
+  next.classList.add('active');
+
+  currentSlide = n;
+
+  updateUI();
+  onSlideEnter(n);
 }
 
-// Lock orientation to landscape (if supported)
-function lockOrientation() {
-    if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('landscape').catch((err) => {
-            console.log('Orientation lock not supported:', err);
-        });
-    } else if (screen.lockOrientation) {
-        screen.lockOrientation('landscape');
-    } else if (screen.mozLockOrientation) {
-        screen.mozLockOrientation('landscape');
-    } else if (screen.msLockOrientation) {
-        screen.msLockOrientation('landscape');
-    }
+function nextSlide() { goToSlide(currentSlide + 1, 'next'); }
+function prevSlide() { goToSlide(currentSlide - 1, 'prev'); }
+
+// ── UI sync ────────────────────────────────────────────────────────────
+function updateUI() {
+  // Progress bar
+  const pct = ((currentSlide - 1) / (TOTAL_SLIDES - 1)) * 100;
+  progressBar.style.width = pct + '%';
+
+  // Counter
+  const pad = n => String(n).padStart(2, '0');
+  counter.textContent = `${pad(currentSlide)} / ${pad(TOTAL_SLIDES)}`;
+
+  // Button states
+  btnPrev.style.opacity = currentSlide === 1 ? '0.3' : '1';
+  btnNext.style.opacity = currentSlide === TOTAL_SLIDES ? '0.3' : '1';
 }
 
-// Handle orientation changes
-function handleOrientationChange() {
-    const isPortrait = window.innerHeight > window.innerWidth;
-    if (isPortrait && window.innerWidth < 768) {
-        // Show message or force landscape
-        let message = document.getElementById('orientation-message');
-        if (!message) {
-            message = document.createElement('div');
-            message.id = 'orientation-message';
-            const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#050505';
-            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#4ff975';
-            const primaryGlow = getComputedStyle(document.documentElement).getPropertyValue('--primary-glow').trim() || 'rgba(79, 249, 117, 0.4)';
-            
-            message.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: ${bgColor};
-                border: 2px solid ${primaryColor};
-                padding: 40px;
-                z-index: 99999;
-                font-family: 'Press Start 2P', monospace;
-                font-size: 0.7rem;
-                color: ${primaryColor};
-                text-align: center;
-                box-shadow: 0 0 40px ${primaryGlow};
-                max-width: 90vw;
-            `;
-            message.textContent = 'Please rotate your device to landscape mode';
-            document.body.appendChild(message);
-        }
-    } else {
-        const message = document.getElementById('orientation-message');
-        if (message) {
-            message.remove();
-        }
-    }
+// ── Per-slide effects ──────────────────────────────────────────────────
+const initiated = new Set();
+
+function onSlideEnter(n) {
+  if (n === 3) { initBlackboxDemo(); return; }
+  if (n === 4) { initPGDemo();       return; }
+  if (n === 7) { initFlywheel();     return; }
+  if (initiated.has(n)) return;
+  initiated.add(n);
+
+  switch (n) {
+    case 10: initTAMChart(); break;
+    case 2:  animateStatNumbers(); break;
+    case 9:  initPeriodica(); pdShowScreen('pd-splash'); break;
+  }
 }
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    preventScrolling();
-    lockOrientation();
-    handleOrientationChange();
+// ── TAM Bar Chart ──────────────────────────────────────────────────────
+function initTAMChart() {
+  const container = document.getElementById('tam-chart');
+  if (!container) return;
 
-    // Initial overflow check
-    setTimeout(checkSlideOverflow, 500);
+  const barEls = container.querySelectorAll('.bar');
+  const maxHeight = container.clientHeight * 0.75; // 75% of available height
 
-    // Re-check on orientation change
-    window.addEventListener('orientationchange', () => {
-        setTimeout(() => {
-            handleOrientationChange();
-            lockOrientation();
-        }, 100);
-    });
+  // Animate each bar from 0 to target height
+  barEls.forEach((bar, i) => {
+    const pct = parseFloat(bar.dataset.pct) / 100;
+    const targetH = Math.max(pct * maxHeight, 4);
 
-    // Re-check on resize
-    window.addEventListener('resize', () => {
-        handleOrientationChange();
-        checkSlideOverflow(); // Re-check overflow on resize
-    });
-});
+    bar.style.height = '0px';
+    bar.style.transition = 'none';
 
-// Prevent zoom on double tap
-let lastTouchEnd = 0;
-document.addEventListener('touchend', (e) => {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-    }
-    lastTouchEnd = now;
-}, false);
-
-// ============================================
-// Slide Navigation
-// ============================================
-
-let currentSlide = 0;
-const slides = document.querySelectorAll('.slide');
-const totalSlides = slides.length;
-const progressBar = document.getElementById('progressBar');
-const slideCounter = document.getElementById('slideCounter');
-
-function updateProgress() {
-    const progress = ((currentSlide + 1) / totalSlides) * 100;
-    progressBar.style.width = progress + '%';
-    slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+    setTimeout(() => {
+      bar.style.transition = `height 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${i * 0.08}s`;
+      bar.style.height = targetH + 'px';
+    }, 100);
+  });
 }
 
-function showSlide(index) {
-    slides.forEach((slide, i) => {
-        slide.classList.remove('active');
-        if (i === index) {
-            slide.classList.add('active');
-            slide.scrollTop = 0; // Reset scroll position
-        }
-    });
-    updateProgress();
+// ── Stat number animation (slide 2) ────────────────────────────────────
+function animateStatNumbers() {
+  // Nothing fancy needed — stats are static text,
+  // but we can add a quick scale-in pulse on the numbers.
+  const statNums = document.querySelectorAll('[data-slide="2"] .stat-number');
+  statNums.forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.7)';
+    el.style.transition = 'none';
 
-    // Check for overflow after slide becomes active
-    setTimeout(checkSlideOverflow, 100);
+    setTimeout(() => {
+      el.style.transition = `opacity 0.4s ease ${i * 0.12}s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.12}s`;
+      el.style.opacity = '1';
+      el.style.transform = 'scale(1)';
+    }, 50);
+  });
 }
 
-function nextSlide() {
-    if (currentSlide < totalSlides - 1) {
-        currentSlide++;
-        showSlide(currentSlide);
-    }
-}
-
-function prevSlide() {
-    if (currentSlide > 0) {
-        currentSlide--;
-        showSlide(currentSlide);
-    }
-}
-
-function toggleFullScreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        }
-    }
-}
-
-// Keyboard Navigation
+// ── Keyboard controls ──────────────────────────────────────────────────
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
-        e.preventDefault();
-        nextSlide();
-    } else if (e.key === 'ArrowLeft') {
-        prevSlide();
-    } else if (e.key === 'f' || e.key === 'F') {
-        toggleFullScreen();
-    } else if (e.key === 'Home') {
-        currentSlide = 0;
-        showSlide(currentSlide);
-    } else if (e.key === 'End') {
-        currentSlide = totalSlides - 1;
-        showSlide(currentSlide);
-    }
+  if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+  switch (e.key) {
+    case 'ArrowRight':
+    case 'ArrowDown':
+    case ' ':
+      e.preventDefault();
+      nextSlide();
+      break;
+
+    case 'ArrowLeft':
+    case 'ArrowUp':
+      e.preventDefault();
+      prevSlide();
+      break;
+
+    case 'Home':
+      e.preventDefault();
+      goToSlide(1);
+      break;
+
+    case 'End':
+      e.preventDefault();
+      goToSlide(TOTAL_SLIDES);
+      break;
+
+    case 'f':
+    case 'F':
+      toggleFullscreen();
+      break;
+  }
 });
 
-// Touch Navigation (Swipe) - Enhanced for vertical scroll
+// ── Button controls ────────────────────────────────────────────────────
+btnNext.addEventListener('click', nextSlide);
+btnPrev.addEventListener('click', prevSlide);
+
+// ── Touch / swipe support ──────────────────────────────────────────────
 let touchStartX = 0;
-let touchEndX = 0;
 let touchStartY = 0;
-let touchEndY = 0;
-let touchStartTime = 0;
 
 document.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
-    touchStartTime = Date.now();
-});
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
 
 document.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    touchEndY = e.changedTouches[0].screenY;
-    handleSwipe();
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+
+  // Only respond to predominantly horizontal swipes
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+    if (dx < 0) nextSlide();
+    else prevSlide();
+  }
+}, { passive: true });
+
+// ── Fullscreen ─────────────────────────────────────────────────────────
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+// ── Click on slide body to advance ────────────────────────────────────
+// (Except on interactive elements)
+document.getElementById('deck').addEventListener('click', (e) => {
+  const tag = e.target.tagName.toLowerCase();
+  if (['button', 'a', 'input', 'select', 'textarea', 'th', 'td'].includes(tag)) return;
+  if (e.target.closest('#nav')) return;
+  if (e.target.closest('#periodica-demo')) return;
+  if (e.target.closest('.s2-card')) return;
+  if (e.target.closest('.s3-card')) return;
+
+  // Click right half → next, left half → prev
+  const mid = window.innerWidth / 2;
+  if (e.clientX > mid) nextSlide();
+  else prevSlide();
 });
 
-function handleSwipe() {
-    const swipeThreshold = 50;
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-    const absDeltaX = Math.abs(deltaX);
-    const absDeltaY = Math.abs(deltaY);
-    const swipeTime = Date.now() - touchStartTime;
-
-    // Only trigger swipe if:
-    // 1. Horizontal movement exceeds threshold
-    // 2. Horizontal movement > vertical movement (predominantly horizontal)
-    // 3. Swipe completed in < 500ms (quick gesture)
-    if (absDeltaX < swipeThreshold || absDeltaY > absDeltaX || swipeTime > 500) {
-        return; // Not a valid horizontal swipe
-    }
-
-    if (deltaX < -swipeThreshold) {
-        nextSlide();
-    } else if (deltaX > swipeThreshold) {
-        prevSlide();
-    }
-}
-
-// ============================================
-// Scroll Indicator Management
-// ============================================
-
-function checkSlideOverflow() {
-    const activeSlide = document.querySelector('.slide.active');
-    if (!activeSlide) return;
-
-    const contentHeight = activeSlide.scrollHeight;
-    const viewportHeight = activeSlide.clientHeight;
-
-    if (contentHeight > viewportHeight + 30) {
-        activeSlide.classList.add('has-overflow');
-    } else {
-        activeSlide.classList.remove('has-overflow');
-    }
-
-    // Hide indicator when scrolled to bottom
-    let hideTimeout;
-    activeSlide.addEventListener('scroll', () => {
-        clearTimeout(hideTimeout);
-        const scrollTop = activeSlide.scrollTop;
-        const scrollHeight = activeSlide.scrollHeight;
-        const clientHeight = activeSlide.clientHeight;
-
-        if (scrollTop + clientHeight >= scrollHeight - 15) {
-            hideTimeout = setTimeout(() => {
-                activeSlide.classList.remove('has-overflow');
-            }, 1000);
-        } else if (contentHeight > viewportHeight + 30) {
-            activeSlide.classList.add('has-overflow');
-        }
-    });
-}
-
-// Initialize
-updateProgress();
-
-// Render LaTeX equations with KaTeX
-function renderLatexEquations() {
-    if (typeof katex !== 'undefined') {
-        document.querySelectorAll('.latex-equation').forEach(el => {
-            const latex = el.textContent.trim();
-            // Remove the \( and \) delimiters if present
-            const cleanedLatex = latex.replace(/^\\\(/, '').replace(/\\\)$/, '').trim();
-            try {
-                katex.render(cleanedLatex, el, {
-                    displayMode: true,
-                    throwOnError: false
-                });
-            } catch (e) {
-                console.error('KaTeX rendering error:', e, 'for:', cleanedLatex);
-            }
-        });
-    } else {
-        // If KaTeX not loaded yet, try again in 100ms
-        setTimeout(renderLatexEquations, 100);
-    }
-}
-
-// Call rendering after DOM and KaTeX load
-document.addEventListener('DOMContentLoaded', () => {
-    renderLatexEquations();
-});
-
-// ============================================
-// Physics-Inspired Visualizations for Cosma Platform Slide
-// ============================================
-
-// COEM Visualization: Particles converging into unified clusters
-function initCOEMVisualization() {
-    const canvas = document.getElementById('coemCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const particles = [];
-    const colors = ['#0ea5e9', '#6366f1', '#22c55e', '#f59e0b', '#ef4444'];
-
-    // Create particles representing different languages
-    for (let i = 0; i < 20; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5,
-            radius: 3 + Math.random() * 3,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            targetX: canvas.width / 2,
-            targetY: canvas.height / 2
-        });
-    }
-
-    function animate() {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        particles.forEach(p => {
-            // Gravitational attraction toward center (unified space)
-            const dx = p.targetX - p.x;
-            const dy = p.targetY - p.y;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-
-            p.vx += (dx / dist) * 0.02;
-            p.vy += (dy / dist) * 0.02;
-
-            // Add orbital motion
-            p.vx += dy * 0.001;
-            p.vy -= dx * 0.001;
-
-            // Damping
-            p.vx *= 0.99;
-            p.vy *= 0.99;
-
-            p.x += p.vx;
-            p.y += p.vy;
-
-            // Keep particles contained
-            p.x = Math.max(10, Math.min(canvas.width - 10, p.x));
-            p.y = Math.max(10, Math.min(canvas.height - 10, p.y));
-
-            // Draw particle with glow
-            ctx.beginPath();
-            const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 2);
-            gradient.addColorStop(0, p.color);
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.arc(p.x, p.y, p.radius * 2, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.fillStyle = p.color;
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-// CVD Visualization: Disk platters with data traversal
-function initCVDVisualization() {
-    const canvas = document.getElementById('cvdCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let angle = 0;
-    const dataPoints = [];
-
-    for (let i = 0; i < 8; i++) {
-        dataPoints.push({
-            angle: (Math.PI * 2 / 8) * i,
-            radius: 20 + Math.random() * 15,
-            speed: 0.02 + Math.random() * 0.01
-        });
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-
-        // Draw disk platters
-        for (let r = 35; r > 10; r -= 8) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(14, 165, 233, ${0.2 + (35 - r) * 0.02})`;
-            ctx.lineWidth = 2;
-            ctx.arc(cx, cy, r, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        // Draw spinning read head
-        angle += 0.03;
-        const headX = cx + Math.cos(angle) * 30;
-        const headY = cy + Math.sin(angle) * 30;
-
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(headX, headY);
-        ctx.strokeStyle = '#6366f1';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(headX, headY, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#6366f1';
-        ctx.fill();
-
-        // Draw data points on disk
-        dataPoints.forEach(d => {
-            d.angle += d.speed;
-            const x = cx + Math.cos(d.angle) * d.radius;
-            const y = cy + Math.sin(d.angle) * d.radius;
-
-            ctx.beginPath();
-            ctx.arc(x, y, 2, 0, Math.PI * 2);
-            ctx.fillStyle = '#22c55e';
-            ctx.fill();
-        });
-
-        // Center hub
-        ctx.beginPath();
-        ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-        ctx.fillStyle = '#0ea5e9';
-        ctx.fill();
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-// CSL Visualization: API network with pulsing connections
-function initCSLVisualization() {
-    const canvas = document.getElementById('cslCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    const nodes = [
-        { x: canvas.width / 2, y: canvas.height / 2, radius: 8, pulse: 0 },
-        { x: 40, y: 20, radius: 4 },
-        { x: 160, y: 20, radius: 4 },
-        { x: 30, y: 60, radius: 4 },
-        { x: 170, y: 60, radius: 4 },
-        { x: 60, y: 70, radius: 4 },
-        { x: 140, y: 70, radius: 4 }
-    ];
-
-    const connections = [
-        { from: 0, to: 1, progress: 0, speed: 0.02 },
-        { from: 0, to: 2, progress: 0.3, speed: 0.025 },
-        { from: 0, to: 3, progress: 0.6, speed: 0.018 },
-        { from: 0, to: 4, progress: 0.1, speed: 0.022 },
-        { from: 0, to: 5, progress: 0.5, speed: 0.02 },
-        { from: 0, to: 6, progress: 0.8, speed: 0.023 }
-    ];
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw connections
-        connections.forEach(c => {
-            const from = nodes[c.from];
-            const to = nodes[c.to];
-
-            // Static line
-            ctx.beginPath();
-            ctx.moveTo(from.x, from.y);
-            ctx.lineTo(to.x, to.y);
-            ctx.strokeStyle = 'rgba(14, 165, 233, 0.3)';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            // Animated pulse along line
-            c.progress += c.speed;
-            if (c.progress > 1) c.progress = 0;
-
-            const pulseX = from.x + (to.x - from.x) * c.progress;
-            const pulseY = from.y + (to.y - from.y) * c.progress;
-
-            ctx.beginPath();
-            ctx.arc(pulseX, pulseY, 3, 0, Math.PI * 2);
-            ctx.fillStyle = '#0ea5e9';
-            ctx.fill();
-        });
-
-        // Draw nodes
-        nodes.forEach((n, i) => {
-            if (i === 0) {
-                // Central API node with glow
-                n.pulse += 0.05;
-                const glowRadius = n.radius + Math.sin(n.pulse) * 3;
-
-                ctx.beginPath();
-                const gradient = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glowRadius * 2);
-                gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
-                gradient.addColorStop(1, 'transparent');
-                ctx.fillStyle = gradient;
-                ctx.arc(n.x, n.y, glowRadius * 2, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-            ctx.fillStyle = i === 0 ? '#6366f1' : '#0ea5e9';
-            ctx.fill();
-        });
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-// ============================================
-// Revenue Path Visualization
-// ============================================
-
-function initRevenuePathVisualization() {
-    const canvas = document.getElementById('revenuePathCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let time = 0;
-
-    const stages = [
-        { label: 'Design Partners', value: 0.15, color: '#4ff975' },
-        { label: 'Enterprise', value: 0.5, color: '#4deeea' },
-        { label: 'API Marketplace', value: 0.75, color: '#f9d71c' },
-        { label: 'EBITDA+', value: 1.0, color: '#4ff975' }
-    ];
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        time += 0.01;
-
-        const padding = 30;
-        const width = canvas.width - padding * 2;
-        const height = canvas.height - padding * 2;
-
-        // Draw grid lines
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 4; i++) {
-            const y = padding + (height / 4) * i;
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(padding + width, y);
-            ctx.stroke();
-        }
-
-        // Draw revenue path
-        ctx.strokeStyle = '#4ff975';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        
-        stages.forEach((stage, i) => {
-            const x = padding + (width / 3) * i;
-            const y = padding + height - stage.value * height;
-            
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        });
-        ctx.stroke();
-
-        // Draw animated point
-        const progress = (time * 0.3) % 1;
-        const stageIndex = Math.floor(progress * 3);
-        const stageProgress = (progress * 3) % 1;
-        const currentStage = stages[stageIndex];
-        const nextStage = stages[Math.min(stageIndex + 1, stages.length - 1)];
-        
-        const x = padding + (width / 3) * (stageIndex + stageProgress);
-        const y = padding + height - (currentStage.value + (nextStage.value - currentStage.value) * stageProgress) * height;
-
-        // Glow effect
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 12);
-        gradient.addColorStop(0, 'rgba(79, 249, 117, 0.6)');
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(x, y, 12, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Point
-        ctx.fillStyle = '#4ff975';
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Draw stage markers
-        stages.forEach((stage, i) => {
-            const x = padding + (width / 3) * i;
-            const y = padding + height - stage.value * height;
-            
-            ctx.fillStyle = stage.color;
-            ctx.beginPath();
-            ctx.arc(x, y, 5, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        // Labels
-        ctx.font = '8px "Press Start 2P", monospace';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.textAlign = 'center';
-        stages.forEach((stage, i) => {
-            const x = padding + (width / 3) * i;
-            ctx.fillText(stage.label.substring(0, 8), x, canvas.height - 8);
-        });
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-// ============================================
-// Scaling Impasse Visualizations (Slide 2)
-// ============================================
-
-function initScalingProblemVisualization() {
-    const canvas = document.getElementById('scalingProblemCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let time = 0;
-
-    const padding = { top: 30, right: 20, bottom: 40, left: 50 };
-    const width = canvas.width - padding.left - padding.right;
-    const height = canvas.height - padding.top - padding.bottom;
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        time += 0.02;
-
-        // Draw axes
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(padding.left, padding.top);
-        ctx.lineTo(padding.left, padding.top + height);
-        ctx.lineTo(padding.left + width, padding.top + height);
-        ctx.stroke();
-
-        // Draw exponential curve (O(N²) problem)
-        ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        
-        for (let n = 0; n <= 100; n++) {
-            const x = padding.left + (n / 100) * width;
-            const y = padding.top + height - Math.pow(n / 100, 2) * height * 0.9;
-            
-            if (n === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
-        ctx.stroke();
-
-        // Animated point
-        const progress = (time * 20) % 100;
-        const x = padding.left + (progress / 100) * width;
-        const y = padding.top + height - Math.pow(progress / 100, 2) * height * 0.9;
-
-        // Glow
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 15);
-        gradient.addColorStop(0, 'rgba(239, 68, 68, 0.6)');
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(x, y, 15, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Point
-        ctx.fillStyle = '#ef4444';
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Labels
-        ctx.font = '8px "Press Start 2P", monospace';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        // ctx.fillText('O(N²)', padding.left + width - 30, padding.top + 15);
-        ctx.font = '7px monospace';
-        ctx.fillText('Compute', padding.left + width / 2, canvas.height - 8);
-        ctx.save();
-        ctx.translate(15, padding.top + height / 2);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillText('Cost', 0, 0);
-        ctx.restore();
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-function initBlackBoxVisualization() {
-    const canvas = document.getElementById('blackBoxCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let time = 0;
-
-    // Calculate point on quadratic Bezier curve at parameter t (0 to 1)
-    function getQuadraticBezierPoint(t, p0, p1, p2) {
-        const oneMinusT = 1 - t;
-        return {
-            x: oneMinusT * oneMinusT * p0.x + 2 * oneMinusT * t * p1.x + t * t * p2.x,
-            y: oneMinusT * oneMinusT * p0.y + 2 * oneMinusT * t * p1.y + t * t * p2.y
-        };
-    }
-
-    // Pre-calculate waypoints along Bezier curve + optional straight segment
-    function calculatePathWaypoints(p0, p1, p2, straightEndPoint = null, numPoints = 100) {
-        const waypoints = [];
-
-        // Sample points along the Bezier curve
-        const curvePoints = Math.floor(numPoints * 0.7); // 70% of points for curve
-        for (let i = 0; i <= curvePoints; i++) {
-            const t = i / curvePoints;
-            waypoints.push(getQuadraticBezierPoint(t, p0, p1, p2));
-        }
-
-        // If there's a straight segment, add those points
-        if (straightEndPoint) {
-            const straightPoints = numPoints - curvePoints;
-            for (let i = 1; i <= straightPoints; i++) {
-                const t = i / straightPoints;
-                waypoints.push({
-                    x: p2.x + (straightEndPoint.x - p2.x) * t,
-                    y: p2.y + (straightEndPoint.y - p2.y) * t
-                });
-            }
-        }
-
-        return waypoints;
-    }
-
-    const inputNodes = 5;
-    const outputNodes = 3;
-    const inputX = 40;
-    const blackBoxX = canvas.width / 2;
-    const blackBoxWidth = 80;
-    const blackBoxHeight = canvas.height - 40;
-    const blackBoxY = 20;
-    const outputX = canvas.width - 40;
-
-    // Calculate positions
-    const inputSpacing = (canvas.height - 60) / (inputNodes - 1);
-    const inputNodeY = 30;
-    const outputSpacing = (canvas.height - 60) / (outputNodes - 1);
-    const outputNodeY = 30;
-
-    // Pre-calculate waypoints for input paths
-    const inputWaypoints = [];
-    for (let i = 0; i < inputNodes; i++) {
-        const y = inputNodeY + i * inputSpacing;
-        const targetY = blackBoxY + blackBoxHeight / 2 + (i - inputNodes / 2) * 10;
-
-        const startPoint = { x: inputX + 6, y: y };
-        const midX = (inputX + 6 + blackBoxX - blackBoxWidth / 2) / 2;
-        const controlPoint = { x: (midX + blackBoxX - blackBoxWidth / 2) / 2, y: (y + targetY) / 2 };
-        const endPoint = { x: blackBoxX - blackBoxWidth / 2, y: targetY };
-
-        inputWaypoints[i] = calculatePathWaypoints(startPoint, controlPoint, endPoint);
-    }
-
-    // Pre-calculate waypoints for output paths
-    const outputWaypoints = [];
-    for (let i = 0; i < outputNodes; i++) {
-        const y = outputNodeY + i * outputSpacing;
-        const sourceY = blackBoxY + blackBoxHeight / 2 + (i - outputNodes / 2) * 15;
-
-        const startPoint = { x: blackBoxX + blackBoxWidth / 2, y: sourceY };
-        const midX = (blackBoxX + blackBoxWidth / 2 + outputX) / 2;
-        const controlPoint = { x: (blackBoxX + blackBoxWidth / 2 + midX) / 2, y: (sourceY + y) / 2 };
-        const curveEndPoint = { x: midX, y: y };
-        const finalPoint = { x: outputX - 6, y: y };
-
-        outputWaypoints[i] = calculatePathWaypoints(startPoint, controlPoint, curveEndPoint, finalPoint);
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        time += 0.03;
-
-        // Draw input layer nodes
-        for (let i = 0; i < inputNodes; i++) {
-            const y = inputNodeY + i * inputSpacing;
-            
-            // Input node (visible/interpretable)
-            const pulse = 1 + Math.sin(time * 2 + i * 0.5) * 0.2;
-            ctx.fillStyle = '#4deeea';
-            ctx.beginPath();
-            ctx.arc(inputX, y, 6 * pulse, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Glow
-            const gradient = ctx.createRadialGradient(inputX, y, 0, inputX, y, 12 * pulse);
-            gradient.addColorStop(0, 'rgba(77, 238, 234, 0.6)');
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(inputX, y, 12 * pulse, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Draw black box (uninterpretable hidden layers)
-        ctx.fillStyle = `rgba(0, 0, 0, ${0.85 + Math.sin(time * 1.5) * 0.1})`;
-        ctx.fillRect(blackBoxX - blackBoxWidth / 2, blackBoxY, blackBoxWidth, blackBoxHeight);
-        
-        // Black box border (pulsing)
-        ctx.strokeStyle = `rgba(100, 100, 100, ${0.6 + Math.sin(time * 2) * 0.3})`;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(blackBoxX - blackBoxWidth / 2, blackBoxY, blackBoxWidth, blackBoxHeight);
-        
-        // "?" symbol inside black box (uninterpretable)
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.font = 'bold 24px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText('?', blackBoxX, canvas.height / 2 + 8);
-
-        // Draw connections from input to black box (fading out)
-        for (let i = 0; i < inputNodes; i++) {
-            const y = inputNodeY + i * inputSpacing;
-            const targetY = blackBoxY + blackBoxHeight / 2 + (i - inputNodes / 2) * 10;
-            
-            // Connection line that fades into black box
-            ctx.strokeStyle = `rgba(77, 238, 234, ${0.4 + Math.sin(time * 2 + i) * 0.2})`;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(inputX + 6, y);
-            
-            // Line fades as it approaches black box
-            const midX = (inputX + blackBoxX - blackBoxWidth / 2) / 2;
-            ctx.lineTo(midX, y);
-            
-            // Curve into black box (fading)
-            const controlX = (midX + blackBoxX - blackBoxWidth / 2) / 2;
-            ctx.quadraticCurveTo(controlX, (y + targetY) / 2, blackBoxX - blackBoxWidth / 2, targetY);
-            ctx.stroke();
-            
-            // Animated data packet flowing
-            const progress = (time * 30 + i * 10) % 100;
-            if (progress < 90) {
-                const waypointIndex = Math.floor((progress / 90) * (inputWaypoints[i].length - 1));
-                const packet = inputWaypoints[i][waypointIndex];
-
-                // Fade out as approaching black box
-                const opacity = 1 - (progress / 90) * 0.5;
-                ctx.fillStyle = `rgba(77, 238, 234, ${opacity})`;
-                ctx.beginPath();
-                ctx.arc(packet.x, packet.y, 3, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        // Draw output layer nodes
-        for (let i = 0; i < outputNodes; i++) {
-            const y = outputNodeY + i * outputSpacing;
-            
-            // Output node (visible but disconnected from reasoning)
-            const pulse = 1 + Math.sin(time * 2 + i * 0.7) * 0.2;
-            ctx.fillStyle = '#f59e0b';
-            ctx.beginPath();
-            ctx.arc(outputX, y, 6 * pulse, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Glow
-            const gradient = ctx.createRadialGradient(outputX, y, 0, outputX, y, 12 * pulse);
-            gradient.addColorStop(0, 'rgba(245, 158, 11, 0.6)');
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(outputX, y, 12 * pulse, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Draw connections from black box to output (emerging from opacity)
-        for (let i = 0; i < outputNodes; i++) {
-            const y = outputNodeY + i * outputSpacing;
-            const sourceY = blackBoxY + blackBoxHeight / 2 + (i - outputNodes / 2) * 15;
-            
-            // Connection line emerging from black box
-            ctx.strokeStyle = `rgba(245, 158, 11, ${0.4 + Math.sin(time * 2 + i) * 0.2})`;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(blackBoxX + blackBoxWidth / 2, sourceY);
-            
-            // Curve out of black box (fading in)
-            const midX = (blackBoxX + blackBoxWidth / 2 + outputX) / 2;
-            const controlX = (blackBoxX + blackBoxWidth / 2 + midX) / 2;
-            ctx.quadraticCurveTo(controlX, (sourceY + y) / 2, midX, y);
-            ctx.lineTo(outputX - 6, y);
-            ctx.stroke();
-            
-            // Animated data packet emerging
-            const progress = (time * 30 + i * 10 + 50) % 100;
-            if (progress < 90) {
-                const waypointIndex = Math.floor((progress / 90) * (outputWaypoints[i].length - 1));
-                const packet = outputWaypoints[i][waypointIndex];
-
-                ctx.fillStyle = '#f59e0b';
-                ctx.beginPath();
-                ctx.arc(packet.x, packet.y, 3, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        // Labels
-        ctx.font = '8px "Press Start 2P", monospace';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.textAlign = 'left';
-        ctx.fillText('INPUT', 10, 15);
-        
-        ctx.textAlign = 'center';
-        ctx.fillText('BLACK BOX', blackBoxX, 12);
-        
-        ctx.textAlign = 'right';
-        ctx.fillText('OUTPUT', canvas.width - 10, 15);
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-function initNonDeterminismVisualization() {
-    const canvas = document.getElementById('nonDeterminismCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const particles = [];
-    const colors = ['#ef4444', '#f59e0b', '#94a3b8', '#6366f1'];
-
-    // Initialize particles
-    for (let i = 0; i < 20; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 3,
-            vy: (Math.random() - 0.5) * 3,
-            radius: 3 + Math.random() * 3,
-            color: colors[Math.floor(Math.random() * colors.length)]
-        });
-    }
-
-    function animate() {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        particles.forEach(p => {
-            // Random velocity changes (non-deterministic)
-            p.vx += (Math.random() - 0.5) * 0.5;
-            p.vy += (Math.random() - 0.5) * 0.5;
-            
-            // Damping
-            p.vx *= 0.98;
-            p.vy *= 0.98;
-
-            p.x += p.vx;
-            p.y += p.vy;
-
-            // Bounce off walls
-            if (p.x < p.radius || p.x > canvas.width - p.radius) {
-                p.vx *= -1;
-                p.x = Math.max(p.radius, Math.min(canvas.width - p.radius, p.x));
-            }
-            if (p.y < p.radius || p.y > canvas.height - p.radius) {
-                p.vy *= -1;
-                p.y = Math.max(p.radius, Math.min(canvas.height - p.radius, p.y));
-            }
-
-            // Draw particle
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = p.color;
-            ctx.fill();
-        });
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-// ============================================
-// YAT Kernel Visualizations (Slide 4)
-// ============================================
-
-function initStandardDLVisualization() {
-    const canvas = document.getElementById('standardDLCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let time = 0;
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        time += 0.02;
-
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const angle = time * 0.5;
-        const vectorLength = 40;
-
-        // Vector 1 (weight) - rotating
-        const v1x = Math.cos(angle) * vectorLength;
-        const v1y = Math.sin(angle) * vectorLength;
-
-        // Vector 2 (input) - fixed at 60 degrees offset
-        const v2Angle = angle + Math.PI / 3;
-        const v2x = Math.cos(v2Angle) * vectorLength;
-        const v2y = Math.sin(v2Angle) * vectorLength;
-
-        // Calculate dot product (directional alignment only)
-        const dot = (v1x * v2x + v1y * v2y) / (vectorLength * vectorLength);
-        const isNegative = dot < 0;
-        const clipped = Math.max(0, dot); // ReLU clipping
-
-        // Show clipping effect with visual fade
-        const clippedX = v2x * clipped;
-        const clippedY = v2y * clipped;
-
-        // Background glow for alignment visualization
-        const alignmentColor = isNegative ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)';
-        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, vectorLength * 1.5);
-        gradient.addColorStop(0, alignmentColor);
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Draw projection line (dot product visualization)
-        ctx.strokeStyle = isNegative ? 'rgba(239, 68, 68, 0.4)' : 'rgba(34, 197, 94, 0.4)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 3]);
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX + v2x * dot, centerY + v2y * dot);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Draw clipped result (ReLU activation)
-        if (clipped > 0) {
-            ctx.strokeStyle = '#22c55e';
-            ctx.lineWidth = 3;
-            ctx.shadowColor = '#22c55e';
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(centerX + clippedX, centerY + clippedY);
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-        }
-
-        // Draw vectors
-        const drawVector = (x, y, color, label) => {
-            // Vector line
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 2;
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 8;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(centerX + x, centerY + y);
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-
-            // Arrowhead
-            const angle = Math.atan2(y, x);
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.moveTo(centerX + x, centerY + y);
-            ctx.lineTo(centerX + x - 8 * Math.cos(angle - Math.PI / 6), centerY + y - 8 * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(centerX + x - 8 * Math.cos(angle + Math.PI / 6), centerY + y - 8 * Math.sin(angle + Math.PI / 6));
-            ctx.closePath();
-            ctx.fill();
-
-            // Label
-            ctx.font = '7px monospace';
-            ctx.fillStyle = color;
-            ctx.textAlign = 'center';
-            ctx.fillText(label, centerX + x * 1.3, centerY + y * 1.3);
-        };
-
-        drawVector(v1x, v1y, '#0ea5e9', 'w');
-        drawVector(v2x, v2y, '#4deeea', 'x');
-
-        // Center point
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = '#ffffff';
-        ctx.shadowBlur = 5;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Show dot product value and clipping indicator
-        ctx.font = '7px monospace';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.textAlign = 'center';
-        ctx.fillText(`dot: ${dot.toFixed(2)}`, centerX, 15);
-
-        if (isNegative) {
-            ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
-            ctx.fillText('CLIPPED!', centerX, canvas.height - 8);
-        } else {
-            ctx.fillStyle = 'rgba(34, 197, 94, 0.9)';
-            ctx.fillText('ReLU: ' + clipped.toFixed(2), centerX, canvas.height - 8);
-        }
-
-        requestAnimationFrame(animate);
-    }
-
-    animate();
-}
-
-function initYATProductVisualization() {
-    const canvas = document.getElementById('yatProductCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let time = 0;
-
-    // Initialize vector positions as independent particles with trails
-    let v1 = {
-        x: canvas.width * 0.25,
-        y: canvas.height * 0.4,
-        vx: 0.3,
-        vy: 0.2,
-        mass: 1,
-        trail: []
-    };
-
-    let v2 = {
-        x: canvas.width * 0.75,
-        y: canvas.height * 0.6,
-        vx: -0.2,
-        vy: -0.3,
-        mass: 1,
-        trail: []
-    };
-
-    function animate() {
-        // Fade previous frame for trail effect
-        ctx.fillStyle = 'rgba(5, 5, 5, 0.15)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        time += 0.02;
-
-        // Calculate distance and direction between vectors
-        const dx = v2.x - v1.x;
-        const dy = v2.y - v1.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const distSq = dist * dist;
-
-        // Calculate directional alignment (dot product)
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const v1DirX = v1.x - centerX;
-        const v1DirY = v1.y - centerY;
-        const v2DirX = v2.x - centerX;
-        const v2DirY = v2.y - centerY;
-        const v1Len = Math.sqrt(v1DirX * v1DirX + v1DirY * v1DirY);
-        const v2Len = Math.sqrt(v2DirX * v2DirX + v2DirY * v2DirY);
-        const dot = (v1DirX * v2DirX + v1DirY * v2DirY) / (v1Len * v2Len || 1);
-        const dotSq = dot * dot;
-
-        // YAT-Product gravitational force: (dot²) / (dist² / scale + ε)
-        const epsilon = 5;
-        const gravitationalStrength = dotSq / (distSq / 150 + epsilon);
-        const force = gravitationalStrength * 0.2;
-
-        // Apply gravitational attraction
-        if (dist > 5) {
-            const forceX = (dx / dist) * force;
-            const forceY = (dy / dist) * force;
-
-            // Mutual attraction (Newton's 3rd law)
-            v1.vx += forceX;
-            v1.vy += forceY;
-            v2.vx -= forceX;
-            v2.vy -= forceY;
-
-            // Add orbital component for visual interest
-            const perpX = -dy / dist;
-            const perpY = dx / dist;
-            const orbitalStrength = dotSq * 0.08;
-            v1.vx += perpX * orbitalStrength;
-            v1.vy += perpY * orbitalStrength;
-            v2.vx -= perpX * orbitalStrength;
-            v2.vy -= perpY * orbitalStrength;
-        }
-
-        // Velocity damping
-        v1.vx *= 0.96;
-        v1.vy *= 0.96;
-        v2.vx *= 0.96;
-        v2.vy *= 0.96;
-
-        // Update positions
-        v1.x += v1.vx;
-        v1.y += v1.vy;
-        v2.x += v2.vx;
-        v2.y += v2.vy;
-
-        // Boundary constraints with soft bounce
-        const margin = 20;
-        if (v1.x < margin || v1.x > canvas.width - margin) {
-            v1.vx *= -0.7;
-            v1.x = Math.max(margin, Math.min(canvas.width - margin, v1.x));
-        }
-        if (v1.y < margin || v1.y > canvas.height - margin) {
-            v1.vy *= -0.7;
-            v1.y = Math.max(margin, Math.min(canvas.height - margin, v1.y));
-        }
-        if (v2.x < margin || v2.x > canvas.width - margin) {
-            v2.vx *= -0.7;
-            v2.x = Math.max(margin, Math.min(canvas.width - margin, v2.x));
-        }
-        if (v2.y < margin || v2.y > canvas.height - margin) {
-            v2.vy *= -0.7;
-            v2.y = Math.max(margin, Math.min(canvas.height - margin, v2.y));
-        }
-
-        // Update trails
-        v1.trail.push({ x: v1.x, y: v1.y });
-        v2.trail.push({ x: v2.x, y: v2.y });
-        if (v1.trail.length > 20) v1.trail.shift();
-        if (v2.trail.length > 20) v2.trail.shift();
-
-        // Draw gravitational field (intensity based on force strength)
-        const midX = (v1.x + v2.x) / 2;
-        const midY = (v1.y + v2.y) / 2;
-        const fieldRadius = dist * 0.7;
-        const gradient = ctx.createRadialGradient(midX, midY, 0, midX, midY, fieldRadius);
-        gradient.addColorStop(0, `rgba(79, 249, 117, ${Math.min(gravitationalStrength * 0.4, 0.3)})`);
-        gradient.addColorStop(0.5, `rgba(79, 249, 117, ${Math.min(gravitationalStrength * 0.2, 0.15)})`);
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(midX, midY, fieldRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Draw distance relationship line
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.25)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(v1.x, v1.y);
-        ctx.lineTo(v2.x, v2.y);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Draw force vectors showing gravitational pull
-        const forceScale = gravitationalStrength * 15;
-        const f1x = (dx / dist) * forceScale;
-        const f1y = (dy / dist) * forceScale;
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.7)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(v1.x, v1.y);
-        ctx.lineTo(v1.x + f1x, v1.y + f1y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(v2.x, v2.y);
-        ctx.lineTo(v2.x - f1x, v2.y - f1y);
-        ctx.stroke();
-
-        // Draw motion trails
-        const drawTrail = (trail, color) => {
-            for (let i = 1; i < trail.length; i++) {
-                const alpha = i / trail.length * 0.3;
-                ctx.strokeStyle = color.replace('1)', `${alpha})`);
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
-                ctx.lineTo(trail[i].x, trail[i].y);
-                ctx.stroke();
-            }
-        };
-        drawTrail(v1.trail, 'rgba(14, 165, 233, 1)');
-        drawTrail(v2.trail, 'rgba(77, 238, 234, 1)');
-
-        // Draw particles with glow
-        const drawParticle = (x, y, color, label) => {
-            const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 15);
-            glowGradient.addColorStop(0, color);
-            glowGradient.addColorStop(0.3, color.replace('1)', '0.4)'));
-            glowGradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = glowGradient;
-            ctx.beginPath();
-            ctx.arc(x, y, 15, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillStyle = color;
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            ctx.font = '8px monospace';
-            ctx.fillStyle = color;
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x, y - 12);
-        };
-
-        drawParticle(v1.x, v1.y, 'rgba(14, 165, 233, 1)', 'w');
-        drawParticle(v2.x, v2.y, 'rgba(77, 238, 234, 1)', 'x');
-
-        // Display force equation
-        ctx.font = '7px monospace';
-        ctx.fillStyle = 'rgba(79, 249, 117, 0.9)';
-        ctx.textAlign = 'center';
-        ctx.fillText(`F ∝ dot²/dist²`, canvas.width / 2, 12);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.fillText(`dist: ${dist.toFixed(0)}px`, canvas.width / 2, canvas.height - 8);
-
-        requestAnimationFrame(animate);
-    }
-
-    animate();
-}
-
-// ============================================
-// Funding Slide Visualizations (Slide 10)
-// ============================================
-
-function initSalaryVisualization() {
-    const canvas = document.getElementById('salaryVisualizationCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let time = 0;
-
-    // Two engineers represented as avatars
-    const engineers = [
-        { x: 50, y: 60, phase: 0, name: 'Taha' },
-        { x: 150, y: 60, phase: Math.PI, name: 'Douglas' }
-    ];
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        time += 0.05;
-
-        engineers.forEach(eng => {
-            const bounce = Math.sin(time + eng.phase) * 3;
-            const y = eng.y + bounce;
-
-            // Avatar circle with glow
-            const gradient = ctx.createRadialGradient(eng.x, y, 0, eng.x, y, 20);
-            gradient.addColorStop(0, 'rgba(79, 249, 117, 0.4)');
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(eng.x, y, 20, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Avatar head
-            ctx.fillStyle = '#4ff975';
-            ctx.beginPath();
-            ctx.arc(eng.x, y - 5, 12, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Avatar body
-            ctx.beginPath();
-            ctx.arc(eng.x, y + 8, 8, 0, Math.PI, true);
-            ctx.lineTo(eng.x - 8, y + 20);
-            ctx.lineTo(eng.x + 8, y + 20);
-            ctx.closePath();
-            ctx.fill();
-
-            // Code brackets animation
-            const codeOpacity = (Math.sin(time * 2 + eng.phase) + 1) / 2;
-            ctx.font = '16px monospace';
-            ctx.fillStyle = `rgba(79, 249, 117, ${codeOpacity * 0.6})`;
-            ctx.fillText('</', eng.x - 15, y - 25);
-            ctx.fillText('>', eng.x + 5, y - 25);
-        });
-
-        // Timeline bar showing 12 months
-        const barWidth = 160;
-        const barX = 20;
-        const barY = 100;
-        const progress = (Math.sin(time * 0.5) + 1) / 2;
-
-        // Bar background
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.2)';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(barX, barY);
-        ctx.lineTo(barX + barWidth, barY);
-        ctx.stroke();
-
-        // Progress fill
-        ctx.strokeStyle = '#4ff975';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(barX, barY);
-        ctx.lineTo(barX + barWidth * progress, barY);
-        ctx.stroke();
-
-        // Month markers
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-        ctx.font = '7px monospace';
-        ctx.fillText('0mo', barX - 5, barY + 12);
-        ctx.fillText('12mo', barX + barWidth - 15, barY + 12);
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-function initGPUComputeVisualization() {
-    const canvas = document.getElementById('gpuComputeCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let time = 0;
-
-    // GPU compute nodes
-    const gpuNodes = [];
-    for (let i = 0; i < 8; i++) {
-        gpuNodes.push({
-            x: 30 + (i % 4) * 35,
-            y: 30 + Math.floor(i / 4) * 35,
-            phase: (i * Math.PI) / 4,
-            intensity: Math.random()
-        });
-    }
-
-    // Data particles flowing through
-    const particles = [];
-    for (let i = 0; i < 15; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 2,
-            vy: (Math.random() - 0.5) * 2,
-            size: Math.random() * 2 + 1
-        });
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        time += 0.05;
-
-        // Draw connections between nodes
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.1)';
-        ctx.lineWidth = 1;
-        gpuNodes.forEach((node1, i) => {
-            gpuNodes.forEach((node2, j) => {
-                if (i < j) {
-                    const dist = Math.hypot(node2.x - node1.x, node2.y - node1.y);
-                    if (dist < 60) {
-                        ctx.beginPath();
-                        ctx.moveTo(node1.x, node1.y);
-                        ctx.lineTo(node2.x, node2.y);
-                        ctx.stroke();
-                    }
-                }
-            });
-        });
-
-        // Draw GPU nodes with pulsing effect
-        gpuNodes.forEach(node => {
-            const pulse = (Math.sin(time * 2 + node.phase) + 1) / 2;
-            const size = 6 + pulse * 3;
-
-            // Glow
-            const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, size * 2);
-            gradient.addColorStop(0, `rgba(79, 249, 117, ${0.4 * pulse})`);
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, size * 2, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Node
-            ctx.fillStyle = '#4ff975';
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        // Animate data particles
-        particles.forEach(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-
-            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-            ctx.fillStyle = 'rgba(77, 238, 234, 0.6)';
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        // Label
-        ctx.font = '7px monospace';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.fillText('Training...', canvas.width - 45, canvas.height - 5);
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-function initBerkeleyOfficeVisualization() {
-    const canvas = document.getElementById('berkeleyOfficeCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let time = 0;
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        time += 0.03;
-
-        // Building outline (simple office representation)
-        const buildingX = 60;
-        const buildingY = 30;
-        const buildingWidth = 80;
-        const buildingHeight = 70;
-
-        // Building base
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.4)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(buildingX, buildingY, buildingWidth, buildingHeight);
-
-        // Windows grid (4x3)
-        for (let row = 0; row < 3; row++) {
-            for (let col = 0; col < 4; col++) {
-                const wx = buildingX + 15 + col * 18;
-                const wy = buildingY + 15 + row * 20;
-                const windowSize = 12;
-
-                // Window light effect
-                const isLit = (row === 1 && col === 1) || (row === 1 && col === 2);
-                const lightIntensity = isLit ? (Math.sin(time) + 1) / 2 : 0.2;
-
-                ctx.fillStyle = `rgba(79, 249, 117, ${lightIntensity * 0.5})`;
-                ctx.fillRect(wx, wy, windowSize, windowSize);
-
-                ctx.strokeStyle = 'rgba(79, 249, 117, 0.6)';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(wx, wy, windowSize, windowSize);
-            }
-        }
-
-        // Berkeley banner/text
-        ctx.font = 'bold 10px monospace';
-        ctx.fillStyle = '#4ff975';
-        ctx.fillText('BERKELEY', buildingX + 10, buildingY - 5);
-
-        // Location pin animated
-        const pinX = 30;
-        const pinY = 60;
-        const pinBounce = Math.sin(time * 2) * 2;
-
-        // Pin glow
-        const gradient = ctx.createRadialGradient(pinX, pinY + pinBounce, 0, pinX, pinY + pinBounce, 15);
-        gradient.addColorStop(0, 'rgba(79, 249, 117, 0.4)');
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(pinX, pinY + pinBounce, 15, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Pin shape
-        ctx.fillStyle = '#4ff975';
-        ctx.beginPath();
-        ctx.arc(pinX, pinY + pinBounce - 5, 8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(pinX, pinY + pinBounce + 3);
-        ctx.lineTo(pinX - 5, pinY + pinBounce + 10);
-        ctx.lineTo(pinX + 5, pinY + pinBounce + 10);
-        ctx.closePath();
-        ctx.fill();
-
-        // Research connections (signal waves)
-        const waveOpacity = (Math.sin(time * 3) + 1) / 2;
-        ctx.strokeStyle = `rgba(77, 238, 234, ${waveOpacity * 0.5})`;
-        ctx.lineWidth = 2;
-        for (let i = 0; i < 3; i++) {
-            const radius = 15 + i * 10 + (time * 10) % 30;
-            ctx.beginPath();
-            ctx.arc(buildingX + buildingWidth / 2, buildingY - 10, radius, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-// Initialize visualizations when page loads
-// ============================================
-// Canvas Lazy Loading System
-// ============================================
-
-const canvasInitializers = {
-    'coemCanvas': initCOEMVisualization,
-    'cvdCanvas': initCVDVisualization,
-    'cslCanvas': initCSLVisualization,
-    'complexityCanvas': initComplexityVisualization,
-    'complexityCanvasModal': initComplexityCanvasModalVisualization,
-    'revenuePathCanvas': initRevenuePathVisualization,
-    'scalingProblemCanvas': initScalingProblemVisualization,
-    'blackBoxCanvas': initBlackBoxVisualization,
-    'nonDeterminismCanvas': initNonDeterminismVisualization,
-    'standardDLCanvas': initStandardDLVisualization,
-    'yatProductCanvas': initYATProductVisualization,
-    'cvdStructureFreeCanvas': () => initCVDInnovationVisualizations(),
-    'cvdDeterministicCanvas': () => initCVDInnovationVisualizations(),
-    'cvdZeroBuildCanvas': () => initCVDInnovationVisualizations(),
-    'coemProblemCanvas': () => initCOEMInnovationVisualizations(),
-    'coemSolutionCanvas': () => initCOEMInnovationVisualizations(),
-    'salaryVisualizationCanvas': initSalaryVisualization,
-    'gpuComputeCanvas': initGPUComputeVisualization,
-    'berkeleyOfficeCanvas': initBerkeleyOfficeVisualization
+// ── Periodica Demo (Slide 10) ────────────────────────────────────────
+const PD_NEURONS = [
+  {
+    id: 'N-247', type: 'syco', col: 3, row: 2,
+    label: 'Sycophancy Bias',
+    desc: 'Activates strongly when generating agreement or validation language. Causes the model to prioritize user approval over factual accuracy.',
+    weight: 0.94, recommended: 0.15, min: 0, max: 1, step: 0.01,
+    action: 'Reduce Influence',
+    fixMsg: 'Sycophancy influence reduced. Model will now answer critically rather than seeking approval.',
+  },
+  {
+    id: 'N-891', type: 'hall', col: 7, row: 5,
+    label: 'Hallucination Risk',
+    desc: 'Unstable activation pattern. Fires inconsistently across semantically similar prompts, generating confident outputs that may be completely unfounded.',
+    weight: 1.42, recommended: 0.85, min: 0.5, max: 1.5, step: 0.01,
+    action: 'Stabilize Weight',
+    fixMsg: 'Neuron stabilized. Confidence is now calibrated to actual knowledge boundaries.',
+  },
+  {
+    id: 'N-156', type: 'pii', col: 1, row: 7,
+    label: 'PII Retention',
+    desc: 'Encodes PII from training data. Memorized customer names, account numbers, and addresses may surface verbatim in model outputs.',
+    weight: 0.88, recommended: 0.00, min: 0, max: 1, step: 0.01,
+    action: 'Remove from Network',
+    fixMsg: 'PII successfully scrubbed. Customer data can no longer be recovered from the network.',
+  },
+  {
+    id: 'N-412', type: 'bias', col: 5, row: 1,
+    label: 'Demographic Bias',
+    desc: 'Systematic skew across demographic groups. Certain occupations, traits, and risk assessments are consistently associated with specific genders and ethnicities in output patterns.',
+    weight: 0.78, recommended: 0.10, min: 0, max: 1, step: 0.01,
+    action: 'Correct Bias',
+    fixMsg: 'Demographic bias corrected. Word associations and risk assessments are now balanced across groups.',
+  },
+];
+
+// Named healthy neurons shown on hover
+const PD_NAMED = {
+  '0-0': { id: 'N-001', name: 'Grammar Structure' },
+  '8-0': { id: 'N-008', name: 'Punctuation Rules' },
+  '4-1': { id: 'N-013', name: 'Semantic Coherence' },
+  '2-3': { id: 'N-029', name: 'Named Entity Recog.' },
+  '6-3': { id: 'N-051', name: 'Factual Recall' },
+  '0-4': { id: 'N-036', name: 'Code Syntax' },
+  '8-4': { id: 'N-044', name: 'Math Reasoning' },
+  '4-6': { id: 'N-058', name: 'Spatial Reasoning' },
+  '8-8': { id: 'N-080', name: 'Temporal Reasoning' },
+  '0-8': { id: 'N-072', name: 'Discourse Patterns' },
+  '4-8': { id: 'N-076', name: 'Sentiment Detection' },
 };
 
-const initializedCanvases = new Set();
+// IP neurons revealed by search (col-row key)
+const PD_IP_POS = ['6-2', '4-4', '2-6'];
+const PD_IP_IDS = { '6-2': 'N-789', '4-4': 'N-401', '2-6': 'N-233' };
 
-function lazyInitCanvas(canvasId) {
-    if (initializedCanvases.has(canvasId)) return;
+// Pricing per demo model
+const PD_PRICING = {
+  'GPT-J-6B':   { params: '6B params',  monthly: '$9,000',  label: 'Small' },
+  'Llama-3-8B': { params: '8B params',  monthly: '$15,000', label: 'Small' },
+  'Mistral-7B': { params: '7B params',  monthly: '$12,000', label: 'Small' },
+};
 
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
+const pdState = {
+  model: 'Llama-3-8B',
+  fixed: new Set(),
+  premium: false,
+  pendingAction: null,
+  ipSearchDone: false,
+  ipFixed: false,
+};
+const pdTypeColor = { syco: '#e84545', hall: '#e8a02a', pii: '#a050ff', bias: '#e84587' };
+const pdTypeBadge = { syco: 'pd-nbadge-syco', hall: 'pd-nbadge-hall', pii: 'pd-nbadge-pii', bias: 'pd-nbadge-bias' };
+const pdTypeCat   = { syco: 'Behavior', hall: 'Instability', pii: 'Privacy', bias: 'Fairness' };
 
-    // Responsive canvas sizing for mobile
-    if (window.matchMedia('(max-height: 600px) and (orientation: landscape)').matches) {
-        const parentWidth = canvas.parentElement.clientWidth;
-        canvas.width = Math.min(parentWidth - 20, canvas.width);
-        canvas.height = Math.round(canvas.width * 0.6);
-    }
+function initPeriodica() {
+  const startBtn = document.getElementById('pd-start-btn');
+  if (!startBtn || startBtn.dataset.bound) return;
+  startBtn.dataset.bound = '1';
 
-    const initFn = canvasInitializers[canvasId];
-    if (initFn) {
-        try {
-            initFn();
-            initializedCanvases.add(canvasId);
-            console.log(`✓ Lazy initialized: ${canvasId}`);
-        } catch (error) {
-            console.error(`✗ Failed to init ${canvasId}:`, error);
-        }
-    }
-}
-
-// Intersection Observer for slide visibility
-const slideObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const slide = entry.target;
-            const canvases = slide.querySelectorAll('canvas');
-            canvases.forEach(canvas => {
-                lazyInitCanvas(canvas.id);
-            });
-        }
+  document.querySelectorAll('.pd-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.pd-chip').forEach(c => c.classList.remove('pd-chip-sel'));
+      chip.classList.add('pd-chip-sel');
+      pdState.model = chip.dataset.model;
     });
-}, { threshold: 0.1 });
+  });
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize only first slide canvases immediately
-    const firstSlide = document.querySelector('.slide.active');
-    if (firstSlide) {
-        const canvases = firstSlide.querySelectorAll('canvas');
-        canvases.forEach(canvas => lazyInitCanvas(canvas.id));
+  startBtn.addEventListener('click', pdStartScan);
+
+  const exploreBtn = document.getElementById('pd-explore-btn');
+  if (exploreBtn) exploreBtn.addEventListener('click', () => pdShowScreen('pd-upload'));
+}
+
+function pdShowScreen(id) {
+  document.querySelectorAll('.pd-screen').forEach(s => s.classList.remove('pd-active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('pd-active');
+}
+
+function pdStartScan() {
+  const scanName = document.getElementById('pd-scan-model-name');
+  if (scanName) scanName.textContent = pdState.model;
+  pdShowScreen('pd-scan');
+
+  const fill   = document.getElementById('pd-scan-fill');
+  const phase  = document.getElementById('pd-scan-phase');
+  const count  = document.getElementById('pd-n-count');
+  const phases = [
+    'Tokenizing architecture…',
+    'Mapping layer activations…',
+    'Identifying neuron specializations…',
+    'Flagging anomalies…',
+    'Generating audit report…',
+  ];
+
+  let progress = 0, lastPhaseIdx = -1;
+  const interval = setInterval(() => {
+    progress += 2;
+    if (fill)  fill.style.width = progress + '%';
+    if (count) count.textContent = Math.round((progress / 100) * 8192).toLocaleString();
+    const pi = Math.min(Math.floor((progress / 100) * phases.length), phases.length - 1);
+    if (pi !== lastPhaseIdx) { lastPhaseIdx = pi; if (phase) phase.textContent = phases[pi]; }
+    if (progress >= 100) { clearInterval(interval); setTimeout(pdBuildAndShowMap, 350); }
+  }, 30);
+}
+
+function pdBuildAndShowMap() {
+  const el = document.getElementById('pd-map-model');
+  if (el) el.textContent = pdState.model;
+  pdBuildMap();
+  pdBuildFlagList();
+  pdWireSearch();
+  pdShowScreen('pd-main');
+}
+
+function pdBuildMap() {
+  const map = document.getElementById('pd-map');
+  if (!map) return;
+  map.innerHTML = '';
+
+  const byPos = {};
+  PD_NEURONS.forEach(n => { byPos[`${n.col}-${n.row}`] = n; });
+
+  let seed = 12345;
+  const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 0xffffffff; };
+
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const key     = `${col}-${row}`;
+      const special = byPos[key];
+      const named   = PD_NAMED[key];
+      const isIP    = PD_IP_POS.includes(key);
+      const el = document.createElement('div');
+
+      el.style.left = ((col / 8) * 86 + 7 + (rand() - 0.5) * 3.5).toFixed(1) + '%';
+      el.style.top  = ((row / 8) * 86 + 7 + (rand() - 0.5) * 3.5).toFixed(1) + '%';
+
+      if (special) {
+        const isFixed = pdState.fixed.has(special.type);
+        el.className = `pd-neuron pd-n-${isFixed ? 'fixed' : special.type}`;
+        el.id        = `pd-neuron-${special.type}`;
+        el.title     = `${special.id} · ${special.label}${isFixed ? ' ✓ Fixed' : ' — click to inspect'}`;
+        if (!isFixed) el.addEventListener('click', () => pdSelectNeuron(special.type));
+      } else if (isIP) {
+        const wasFound = pdState.ipSearchDone;
+        el.className = `pd-neuron ${wasFound ? (pdState.ipFixed ? 'pd-n-fixed' : 'pd-n-ip') : 'pd-n-ok'}`;
+        el.id        = `pd-ip-${key.replace('-', '_')}`;
+        el.dataset.ipKey = key;
+        el.title     = wasFound ? `${PD_IP_IDS[key]} · IP-Protected Training Data` : `N-${String(row * 9 + col + 10).padStart(3, '0')} · Analyzing…`;
+        if (wasFound && !pdState.ipFixed) el.addEventListener('click', pdShowIPResult);
+      } else if (named) {
+        el.className = 'pd-neuron pd-n-named';
+        el.title     = `${named.id} · ${named.name} — Stable · No issues detected`;
+      } else {
+        el.className = 'pd-neuron pd-n-ok';
+        el.title     = `N-${String(row * 9 + col + 10).padStart(3, '0')} · Stable · No issues detected`;
+      }
+      map.appendChild(el);
     }
+  }
+}
 
-    // Observe all slides for lazy loading
-    document.querySelectorAll('.slide').forEach(slide => {
-        slideObserver.observe(slide);
+function pdBuildFlagList() {
+  const list = document.getElementById('pd-flag-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  PD_NEURONS.forEach(n => {
+    const isFixed = pdState.fixed.has(n.type);
+    const item = document.createElement('div');
+    item.className = 'pd-flag-item' + (isFixed ? ' pd-flag-done' : '');
+    item.id = `pd-flag-${n.type}`;
+    item.innerHTML = `
+      <span class="pd-fdot" style="background:${isFixed ? 'var(--primary)' : pdTypeColor[n.type]};"></span>
+      <div class="pd-finfo">
+        <div class="pd-fid">${n.id}</div>
+        <div class="pd-fname">${n.label}</div>
+      </div>
+      ${isFixed ? '<span class="pd-ffixed">✓ FIXED</span>' : '<span class="pd-farrow">›</span>'}
+    `;
+    if (!isFixed) item.addEventListener('click', () => pdSelectNeuron(n.type));
+    list.appendChild(item);
+  });
+
+  if (pdState.ipSearchDone) pdAddIPToFlagList();
+}
+
+function pdAddIPToFlagList() {
+  const list = document.getElementById('pd-flag-list');
+  if (!list || document.getElementById('pd-flag-ip')) return;
+  const item = document.createElement('div');
+  item.className = 'pd-flag-item' + (pdState.ipFixed ? ' pd-flag-done' : '');
+  item.id = 'pd-flag-ip';
+  item.innerHTML = `
+    <span class="pd-fdot" style="background:${pdState.ipFixed ? 'var(--primary)' : '#e8c42a'};"></span>
+    <div class="pd-finfo">
+      <div class="pd-fid">N-789, N-401, N-233</div>
+      <div class="pd-fname">IP-Protected Training Data</div>
+    </div>
+    ${pdState.ipFixed ? '<span class="pd-ffixed">✓ FIXED</span>' : '<span class="pd-farrow">›</span>'}
+  `;
+  if (!pdState.ipFixed) item.addEventListener('click', pdShowIPResult);
+  list.appendChild(item);
+}
+
+function pdWireSearch() {
+  const input = document.getElementById('pd-search-input');
+  const btn   = document.getElementById('pd-search-btn');
+  if (!input || !btn || btn.dataset.bound) return;
+  btn.dataset.bound = '1';
+  const doSearch = () => { const q = input.value.trim(); if (q) pdRunSearch(q); };
+  btn.addEventListener('click', doSearch);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+}
+
+function pdRunSearch(query) {
+  const q = query.toLowerCase();
+  const ipTerms = ['ip', 'copyright', 'intellectual property', 'licensed', 'pirated', 'training data', 'protected', 'proprietary'];
+  if (ipTerms.some(t => q.includes(t))) {
+    pdDoIPSearch();
+  } else {
+    pdShowGenericSearchResult(query);
+  }
+}
+
+function pdDoIPSearch() {
+  PD_IP_POS.forEach(key => {
+    const el = document.getElementById(`pd-ip-${key.replace('-', '_')}`);
+    if (el && !pdState.ipFixed) {
+      el.className = 'pd-neuron pd-n-ip';
+      el.title = `${PD_IP_IDS[key]} · IP-Protected Training Data — click to inspect`;
+      el.addEventListener('click', pdShowIPResult);
+    }
+  });
+  const legIP = document.getElementById('pd-leg-ip');
+  if (legIP) legIP.style.display = '';
+  if (!pdState.ipSearchDone) { pdState.ipSearchDone = true; pdAddIPToFlagList(); }
+  pdShowIPResult();
+}
+
+function pdShowIPResult() {
+  pdSwitchDetailView('pd-search-view');
+  const sv = document.getElementById('pd-search-view');
+  if (!sv) return;
+
+  if (pdState.ipFixed) {
+    sv.innerHTML = `
+      <button class="pd-back-btn" id="pd-sv-back">← Back to overview</button>
+      <div class="pd-fixed-state">
+        <div class="pd-fixed-icon">✓</div>
+        <div class="pd-fixed-name">IP-Protected Training Data</div>
+        <div class="pd-fixed-msg">All traces of copyrighted content removed. The model can no longer reproduce protected text verbatim.</div>
+      </div>`;
+  } else {
+    sv.innerHTML = `
+      <button class="pd-back-btn" id="pd-sv-back">← Back to overview</button>
+      <div class="pd-sv-result">
+        <span class="pd-sv-badge pd-sv-badge-ip">⚠ IP MATCH DETECTED</span>
+        <div class="pd-neuron-name">IP-Protected Training Data</div>
+        <div class="pd-neuron-desc">Traces of copyrighted content detected across <strong style="color:#e8c42a;">3 neurons</strong> (N-789, N-401, N-233). Under specific prompts this model can reproduce sections of protected text verbatim — creating significant legal and compliance risk.</div>
+        <div class="pd-sv-neurons">
+          <span class="pd-sv-n" style="background:rgba(232,196,42,0.12);border-color:rgba(232,196,42,0.4);color:#e8c42a;">N-789</span>
+          <span class="pd-sv-n" style="background:rgba(232,196,42,0.12);border-color:rgba(232,196,42,0.4);color:#e8c42a;">N-401</span>
+          <span class="pd-sv-n" style="background:rgba(232,196,42,0.12);border-color:rgba(232,196,42,0.4);color:#e8c42a;">N-233</span>
+        </div>
+        <button class="pd-apply-btn" id="pd-ip-fix-btn">Remove IP Data from Network →</button>
+      </div>`;
+  }
+
+  document.getElementById('pd-sv-back').addEventListener('click', pdShowFlagsView);
+  if (!pdState.ipFixed) {
+    document.getElementById('pd-ip-fix-btn').addEventListener('click', () => {
+      pdState.pendingAction = { type: 'ip' };
+      pdCheckPremium();
     });
-});
-
-// ============================================
-// CVD Innovation Slide Visualizations
-// ============================================
-
-function initCVDInnovationVisualizations() {
-    // Structure-Free: Direct path vs graph hops
-    const sfCanvas = document.getElementById('cvdStructureFreeCanvas');
-    if (sfCanvas) {
-        const ctx = sfCanvas.getContext('2d');
-        let time = 0;
-
-        function animate() {
-            ctx.clearRect(0, 0, sfCanvas.width, sfCanvas.height);
-            time += 0.02;
-
-            // Draw chaotic graph nodes (what we removed)
-            ctx.globalAlpha = 0.3;
-            for (let i = 0; i < 6; i++) {
-                const x = 30 + i * 25;
-                const y = 40 + Math.sin(time + i) * 15;
-                ctx.beginPath();
-                ctx.arc(x, y, 4, 0, Math.PI * 2);
-                ctx.fillStyle = '#94a3b8';
-                ctx.fill();
-            }
-
-            // Draw direct traversal path (our solution)
-            ctx.globalAlpha = 1;
-            ctx.beginPath();
-            ctx.moveTo(20, 40);
-            ctx.lineTo(180, 40);
-            ctx.strokeStyle = '#0ea5e9';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Animated traversal point
-            const px = 20 + ((time * 30) % 160);
-            ctx.beginPath();
-            ctx.arc(px, 40, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#6366f1';
-            ctx.fill();
-
-            // Glow
-            const gradient = ctx.createRadialGradient(px, 40, 0, px, 40, 12);
-            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(px, 40, 12, 0, Math.PI * 2);
-            ctx.fill();
-
-            requestAnimationFrame(animate);
-        }
-        animate();
-    }
-
-    // Deterministic: Consistent waveform vs jitter
-    const detCanvas = document.getElementById('cvdDeterministicCanvas');
-    if (detCanvas) {
-        const ctx = detCanvas.getContext('2d');
-        let time = 0;
-
-        function animate() {
-            ctx.clearRect(0, 0, detCanvas.width, detCanvas.height);
-            time += 0.03;
-
-            // Draw jittery line (HNSW)
-            ctx.beginPath();
-            ctx.moveTo(10, 25);
-            for (let x = 10; x < 190; x += 5) {
-                const jitter = Math.random() * 12 - 6;
-                ctx.lineTo(x, 25 + jitter);
-            }
-            ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            // Draw smooth deterministic line (CVD)
-            ctx.beginPath();
-            ctx.moveTo(10, 55);
-            for (let x = 10; x < 190; x += 2) {
-                const y = 55 + Math.sin((x + time * 20) * 0.05) * 5;
-                ctx.lineTo(x, y);
-            }
-            ctx.strokeStyle = '#22c55e';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Labels
-            ctx.font = '9px Inter, sans-serif';
-            ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
-            ctx.fillText('HNSW', 165, 18);
-            ctx.fillStyle = '#22c55e';
-            ctx.fillText('CVD', 170, 72);
-
-            requestAnimationFrame(animate);
-        }
-        animate();
-    }
-
-    // Zero Build: Instant data point appearance
-    const zbCanvas = document.getElementById('cvdZeroBuildCanvas');
-    if (zbCanvas) {
-        const ctx = zbCanvas.getContext('2d');
-        let time = 0;
-        const dataPoints = [];
-
-        function animate() {
-            ctx.clearRect(0, 0, zbCanvas.width, zbCanvas.height);
-            time += 1;
-
-            // Add new data point every ~40 frames
-            if (time % 40 === 0 && dataPoints.length < 12) {
-                dataPoints.push({
-                    x: 20 + Math.random() * 160,
-                    y: 15 + Math.random() * 50,
-                    age: 0,
-                    color: ['#0ea5e9', '#6366f1', '#22c55e'][Math.floor(Math.random() * 3)]
-                });
-            }
-
-            // Draw and age points
-            dataPoints.forEach((p, i) => {
-                p.age++;
-                const alpha = Math.min(1, p.age / 10);
-
-                // Pulse effect on new points
-                const pulse = p.age < 15 ? 1 + (15 - p.age) * 0.1 : 1;
-
-                ctx.globalAlpha = alpha;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 4 * pulse, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-
-                // Glow for new points
-                if (p.age < 20) {
-                    const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 10 * pulse);
-                    gradient.addColorStop(0, p.color.replace(')', ', 0.4)').replace('rgb', 'rgba'));
-                    gradient.addColorStop(1, 'transparent');
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, 10 * pulse, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-            ctx.globalAlpha = 1;
-
-            // Reset when full
-            if (dataPoints.length >= 12 && dataPoints[0].age > 100) {
-                dataPoints.shift();
-            }
-
-            requestAnimationFrame(animate);
-        }
-        animate();
-    }
+  }
 }
 
-// ============================================
-// COEM Innovation Slide Visualizations
-// ============================================
-
-function initCOEMInnovationVisualizations() {
-    // Problem: Chaotic incompatible vectors
-    const probCanvas = document.getElementById('coemProblemCanvas');
-    if (probCanvas) {
-        const ctx = probCanvas.getContext('2d');
-        const particles = [];
-
-        for (let i = 0; i < 15; i++) {
-            particles.push({
-                x: 40 + Math.random() * 200,
-                y: 15 + Math.random() * 60,
-                vx: (Math.random() - 0.5) * 1.5,
-                vy: (Math.random() - 0.5) * 1.5,
-                color: ['#ef4444', '#f59e0b', '#94a3b8'][Math.floor(Math.random() * 3)]
-            });
-        }
-
-        function animate() {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-            ctx.fillRect(0, 0, probCanvas.width, probCanvas.height);
-
-            particles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-
-                // Bounce off walls (contained)
-                if (p.x < 10 || p.x > probCanvas.width - 10) p.vx *= -1;
-                if (p.y < 10 || p.y > probCanvas.height - 10) p.vy *= -1;
-
-                // Clamp to bounds
-                p.x = Math.max(10, Math.min(probCanvas.width - 10, p.x));
-                p.y = Math.max(10, Math.min(probCanvas.height - 10, p.y));
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-            });
-
-            // Draw chaotic lines between random pairs
-            ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < 5; i++) {
-                const a = particles[Math.floor(Math.random() * particles.length)];
-                const b = particles[Math.floor(Math.random() * particles.length)];
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.stroke();
-            }
-
-            requestAnimationFrame(animate);
-        }
-        animate();
-    }
-
-    // Solution: Smooth manifold with organized particles
-    const solCanvas = document.getElementById('coemSolutionCanvas');
-    if (solCanvas) {
-        const ctx = solCanvas.getContext('2d');
-        let time = 0;
-        const particles = [];
-        const cx = solCanvas.width / 2;
-        const cy = solCanvas.height / 2;
-
-        // Create organized orbital particles
-        const colors = ['#0ea5e9', '#6366f1', '#22c55e'];
-        for (let ring = 0; ring < 3; ring++) {
-            const radius = 15 + ring * 12;
-            const count = 4 + ring * 2;
-            for (let i = 0; i < count; i++) {
-                particles.push({
-                    angle: (Math.PI * 2 / count) * i,
-                    radius: radius,
-                    speed: 0.01 + ring * 0.005,
-                    color: colors[ring]
-                });
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, solCanvas.width, solCanvas.height);
-            time += 0.02;
-
-            // Draw orbital rings
-            for (let r = 15; r <= 39; r += 12) {
-                ctx.beginPath();
-                ctx.arc(cx, cy, r, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(14, 165, 233, 0.2)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-            }
-
-            // Draw particles
-            particles.forEach(p => {
-                p.angle += p.speed;
-                const x = cx + Math.cos(p.angle) * p.radius;
-                const y = cy + Math.sin(p.angle) * p.radius;
-
-                ctx.beginPath();
-                ctx.arc(x, y, 3, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-            });
-
-            // Central unified core
-            const pulse = 6 + Math.sin(time * 2) * 1;
-            const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, pulse * 2);
-            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.6)');
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(cx, cy, pulse * 2, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.arc(cx, cy, pulse, 0, Math.PI * 2);
-            ctx.fillStyle = '#6366f1';
-            ctx.fill();
-
-            requestAnimationFrame(animate);
-        }
-        animate();
-    }
+function pdShowGenericSearchResult(query) {
+  pdSwitchDetailView('pd-search-view');
+  const sv = document.getElementById('pd-search-view');
+  if (!sv) return;
+  sv.innerHTML = `
+    <button class="pd-back-btn" id="pd-sv-back">← Back to overview</button>
+    <div class="pd-sv-result">
+      <span class="pd-sv-badge pd-sv-badge-ok">✓ NO RISK DETECTED</span>
+      <div class="pd-neuron-name" style="font-size:0.8rem;">"${query}"</div>
+      <div class="pd-neuron-desc">No significant risk found for this concept. Related activations are within normal parameters.</div>
+      <p class="pd-detail-hint" style="font-style:normal;text-align:left;padding:0;margin-top:0.3rem;">Try <strong style="color:#e8c42a;">"IP-protected data"</strong> to probe for training data compliance risk.</p>
+    </div>`;
+  document.getElementById('pd-sv-back').addEventListener('click', pdShowFlagsView);
 }
 
-// ============================================
-// Trade Secrets & Research Advancement Visualization (Slide 8)
-// ============================================
-
-let complexityAnimationId = null;
-
-function initComplexityVisualization() {
-    const canvas = document.getElementById('complexityCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    const padding = { top: 60, right: 50, bottom: 80, left: 100 };
-    const width = canvas.width - padding.left - padding.right;
-    const height = canvas.height - padding.top - padding.bottom;
-
-    let time = 0;
-
-    // Timeline years
-    const startYear = 2022;
-    const currentYear = 2026;
-    const futureYear = 2030;
-    const totalYears = futureYear - startYear;
-
-    function drawBackground() {
-        // Gradient background
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, 'rgba(5, 5, 5, 1)');
-        gradient.addColorStop(1, 'rgba(10, 10, 15, 1)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Grid lines for years
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= totalYears; i++) {
-            const x = padding.left + (i / totalYears) * width;
-            ctx.beginPath();
-            ctx.moveTo(x, padding.top);
-            ctx.lineTo(x, padding.top + height);
-            ctx.stroke();
-        }
+function pdSwitchDetailView(show) {
+  ['pd-flags-view', 'pd-neuron-view', 'pd-search-view'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (id === show) {
+      el.style.display = 'flex';
+    } else {
+      el.style.display = 'none';
+      if (id === 'pd-neuron-view') el.innerHTML = '';
     }
-
-    function drawAxes() {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = 2;
-
-        // Timeline axis
-        ctx.beginPath();
-        ctx.moveTo(padding.left, padding.top + height);
-        ctx.lineTo(padding.left + width, padding.top + height);
-        ctx.stroke();
-
-        // Year labels
-        ctx.font = '10px "Share Tech Mono", monospace';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.textAlign = 'center';
-        for (let i = 0; i <= totalYears; i += 2) {
-            const year = startYear + i;
-            const x = padding.left + (i / totalYears) * width;
-            ctx.fillText(year.toString(), x, padding.top + height + 20);
-        }
-
-        // Y-axis label
-        ctx.save();
-        ctx.translate(30, padding.top + height / 2);
-        ctx.rotate(-Math.PI / 2);
-        ctx.font = '12px "Share Tech Mono", monospace';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.textAlign = 'center';
-        ctx.fillText('Research Advancement', 0, 0);
-        ctx.restore();
-    }
-
-    function drawOpenSourceLine() {
-        // Open source research line (slower advancement, public)
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([8, 4]);
-
-        ctx.beginPath();
-        for (let i = 0; i <= totalYears; i++) {
-            const year = startYear + i;
-            const x = padding.left + (i / totalYears) * width;
-            // Open source grows linearly but slower
-            const progress = i / totalYears;
-            const y = padding.top + height - (progress * 0.35) * height;
-            
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Label
-        ctx.font = '9px "Share Tech Mono", monospace';
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.8)';
-        ctx.textAlign = 'left';
-        const labelY = padding.top + height - (0.35) * height;
-        ctx.fillText('Public Open Source', padding.left + width * 0.1, labelY - 8);
-    }
-
-    function drawPrivateResearchLine() {
-        // Azetta private research line (years ahead)
-        const privateAdvantage = 2.5; // years ahead
-        
-        ctx.strokeStyle = '#4ff975';
-        ctx.lineWidth = 3;
-        ctx.shadowColor = '#4ff975';
-        ctx.shadowBlur = 15;
-
-        ctx.beginPath();
-        for (let i = 0; i <= totalYears; i++) {
-            const year = startYear + i;
-            const x = padding.left + (i / totalYears) * width;
-            // Private research is ahead - uses future progress
-            const effectiveProgress = Math.min(1, (i + privateAdvantage) / totalYears);
-            const y = padding.top + height - (effectiveProgress * 0.85) * height;
-            
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        // Animated glow effect
-        time += 0.02;
-        const currentX = padding.left + ((currentYear - startYear) / totalYears) * width;
-        const currentY = padding.top + height - (((currentYear - startYear + privateAdvantage) / totalYears) * 0.85) * height;
-        
-        const glowGradient = ctx.createRadialGradient(currentX, currentY, 0, currentX, currentY, 40);
-        glowGradient.addColorStop(0, `rgba(79, 249, 117, ${0.3 + Math.sin(time * 2) * 0.2})`);
-        glowGradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = glowGradient;
-        ctx.beginPath();
-        ctx.arc(currentX, currentY, 40, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Current position marker
-        ctx.fillStyle = '#4ff975';
-        ctx.beginPath();
-        ctx.arc(currentX, currentY, 5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Label
-        ctx.font = 'bold 10px "Share Tech Mono", monospace';
-        ctx.fillStyle = '#4ff975';
-        ctx.textAlign = 'right';
-        const labelY = padding.top + height - (((currentYear - startYear + privateAdvantage) / totalYears) * 0.85) * height;
-        ctx.fillText('Azetta Private Research', padding.left + width - 20, labelY - 8);
-    }
-
-    function drawGapIndicator() {
-        // Visual gap showing years ahead
-        const gapYears = 2.5;
-        const currentYearX = padding.left + ((currentYear - startYear) / totalYears) * width;
-        const openSourceY = padding.top + height - (((currentYear - startYear) / totalYears) * 0.35) * height;
-        const privateY = padding.top + height - (((currentYear - startYear + gapYears) / totalYears) * 0.85) * height;
-
-        // Arrow showing gap
-        ctx.strokeStyle = 'rgba(79, 249, 117, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(currentYearX + 30, openSourceY);
-        ctx.lineTo(currentYearX + 30, privateY);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Arrow head
-        ctx.fillStyle = 'rgba(79, 249, 117, 0.7)';
-        ctx.beginPath();
-        ctx.moveTo(currentYearX + 30, privateY);
-        ctx.lineTo(currentYearX + 25, privateY - 5);
-        ctx.lineTo(currentYearX + 35, privateY - 5);
-        ctx.closePath();
-        ctx.fill();
-
-        // Gap label
-        ctx.font = '9px "Share Tech Mono", monospace';
-        ctx.fillStyle = '#4ff975';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${gapYears} Years Ahead`, currentYearX + 30, (openSourceY + privateY) / 2);
-    }
-
-    function drawTradeSecrets() {
-        // Lock icons and "TRADE SECRETS" text
-        ctx.font = 'bold 14px "Press Start 2P", monospace';
-        ctx.fillStyle = '#4ff975';
-        ctx.textAlign = 'center';
-        ctx.fillText('TRADE SECRETS', canvas.width / 2, padding.top - 25);
-
-        // Lock icons floating
-        time += 0.015;
-        for (let i = 0; i < 3; i++) {
-            const x = padding.left + (width / 4) * (i + 1);
-            const y = padding.top + 10 + Math.sin(time + i * 2) * 8;
-            
-            ctx.font = '16px monospace';
-            ctx.fillStyle = `rgba(79, 249, 117, ${0.6 + Math.sin(time * 2 + i) * 0.3})`;
-            ctx.fillText('🔒', x, y);
-        }
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        drawBackground();
-        drawAxes();
-        drawOpenSourceLine();
-        drawPrivateResearchLine();
-        drawGapIndicator();
-        drawTradeSecrets();
-
-        complexityAnimationId = requestAnimationFrame(animate);
-    }
-
-    // Cancel any existing animation
-    if (complexityAnimationId) {
-        cancelAnimationFrame(complexityAnimationId);
-    }
-
-    animate();
+  });
 }
 
-// ============================================
-// Technical Replication Challenges Visualization (Modal)
-// ============================================
-
-let complexityModalAnimationId = null;
-
-function initComplexityCanvasModalVisualization() {
-    const canvas = document.getElementById('complexityCanvasModal');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    let time = 0;
-
-    // Components that need to be replicated
-    const components = [
-        { name: 'YAT-Product Kernel', angle: 0, distance: 120, color: '#4ff975', locked: true },
-        { name: 'Training Pipeline', angle: Math.PI / 3, distance: 140, color: '#4deeea', locked: true },
-        { name: 'Cosma DB Algorithm', angle: (Math.PI * 2) / 3, distance: 130, color: '#0ea5e9', locked: true },
-        { name: 'Omnilingual Manifold', angle: Math.PI, distance: 125, color: '#6366f1', locked: true },
-        { name: 'Integration Layer', angle: (Math.PI * 4) / 3, distance: 135, color: '#f59e0b', locked: true },
-        { name: 'Production Scaling', angle: (Math.PI * 5) / 3, distance: 145, color: '#ef4444', locked: true }
-    ];
-
-    function drawBackground() {
-        // Dark gradient background
-        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(canvas.width, canvas.height));
-        gradient.addColorStop(0, 'rgba(10, 10, 15, 1)');
-        gradient.addColorStop(1, 'rgba(5, 5, 5, 1)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function drawCenter() {
-        // Central "Azetta" core - protected
-        const pulse = 15 + Math.sin(time * 3) * 3;
-        
-        // Outer glow
-        const outerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulse * 3);
-        outerGradient.addColorStop(0, 'rgba(79, 249, 117, 0.2)');
-        outerGradient.addColorStop(0.5, 'rgba(79, 249, 117, 0.1)');
-        outerGradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = outerGradient;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, pulse * 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Inner core
-        const innerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulse);
-        innerGradient.addColorStop(0, '#4ff975');
-        innerGradient.addColorStop(0.7, 'rgba(79, 249, 117, 0.6)');
-        innerGradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = innerGradient;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, pulse, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Lock symbol
-        ctx.font = '24px monospace';
-        ctx.fillStyle = '#4ff975';
-        ctx.textAlign = 'center';
-        ctx.fillText('🔒', centerX, centerY + 8);
-
-        // Label
-        ctx.font = 'bold 11px "Press Start 2P", monospace';
-        ctx.fillStyle = '#4ff975';
-        ctx.fillText('AZETTA IP', centerX, centerY + 35);
-    }
-
-    function drawComponents() {
-        components.forEach((comp, i) => {
-            time += 0.01;
-            const x = centerX + Math.cos(comp.angle + time * 0.2) * comp.distance;
-            const y = centerY + Math.sin(comp.angle + time * 0.2) * comp.distance;
-
-            // Component connection line (fading)
-            ctx.strokeStyle = `rgba(79, 249, 117, ${0.15 + Math.sin(time * 2 + i) * 0.1})`;
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([3, 3]);
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Component circle with lock
-            if (comp.locked) {
-                // Locked component - pulsing red
-                const lockPulse = 1 + Math.sin(time * 4 + i) * 0.2;
-                const lockGradient = ctx.createRadialGradient(x, y, 0, x, y, 25 * lockPulse);
-                lockGradient.addColorStop(0, `rgba(239, 68, 68, ${0.6 + Math.sin(time * 4) * 0.3})`);
-                lockGradient.addColorStop(1, 'transparent');
-                ctx.fillStyle = lockGradient;
-                ctx.beginPath();
-                ctx.arc(x, y, 25 * lockPulse, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Lock icon
-                ctx.font = '18px monospace';
-                ctx.fillStyle = '#ef4444';
-                ctx.textAlign = 'center';
-                ctx.fillText('🔒', x, y + 6);
-            }
-
-            // Component border
-            ctx.strokeStyle = comp.color;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(x, y, 20, 0, Math.PI * 2);
-            ctx.stroke();
-
-            // Component label
-            ctx.font = '8px "Share Tech Mono", monospace';
-            ctx.fillStyle = comp.color;
-            ctx.textAlign = 'center';
-            ctx.fillText(comp.name, x, y + 45);
-        });
-    }
-
-    function drawReplicationBarriers(padding) {
-        // Barrier lines preventing replication
-        const barrierCount = 8;
-        for (let i = 0; i < barrierCount; i++) {
-            const angle = (Math.PI * 2 / barrierCount) * i + time * 0.1;
-            const innerRadius = 180;
-            const outerRadius = 250;
-            
-            const x1 = centerX + Math.cos(angle) * innerRadius;
-            const y1 = centerY + Math.sin(angle) * innerRadius;
-            const x2 = centerX + Math.cos(angle) * outerRadius;
-            const y2 = centerY + Math.sin(angle) * outerRadius;
-
-            // Barrier line with warning effect
-            const alpha = 0.2 + Math.sin(time * 3 + i) * 0.15;
-            ctx.strokeStyle = `rgba(255, 107, 107, ${alpha})`;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-
-            // Warning symbol at end
-            const warningAlpha = 0.4 + Math.sin(time * 4 + i) * 0.3;
-            ctx.fillStyle = `rgba(255, 107, 107, ${warningAlpha})`;
-            ctx.font = '14px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText('⚠', x2, y2);
-        }
-
-        // Barrier label
-        ctx.font = '10px "Share Tech Mono", monospace';
-        ctx.fillStyle = 'rgba(255, 107, 107, 0.7)';
-        ctx.textAlign = 'center';
-        ctx.fillText('Replication Barriers', centerX, padding);
-    }
-
-    function drawChallengeText() {
-        // Animated challenge indicators
-        const challenges = [
-            'Specialized Expertise Required',
-            'Integrated Architecture Complexity',
-            'Production-Scale Validation Needed',
-            'Trade Secret Protection'
-        ];
-
-        ctx.font = '9px "Share Tech Mono", monospace';
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
-        ctx.textAlign = 'center';
-        
-        challenges.forEach((challenge, i) => {
-            const y = canvas.height - 60 + i * 12;
-            const alpha = 0.4 + Math.sin(time * 2 + i * 0.5) * 0.3;
-            ctx.fillStyle = `rgba(148, 163, 184, ${alpha})`;
-            ctx.fillText(challenge, centerX, y);
-        });
-    }
-
-    const padding = 40;
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        drawBackground();
-        drawReplicationBarriers(padding);
-        drawComponents();
-        drawCenter();
-        drawChallengeText();
-
-        complexityModalAnimationId = requestAnimationFrame(animate);
-    }
-
-    // Cancel any existing animation
-    if (complexityModalAnimationId) {
-        cancelAnimationFrame(complexityModalAnimationId);
-    }
-
-    animate();
+function pdShowFlagsView() {
+  pdSwitchDetailView('pd-flags-view');
 }
 
-// Re-initialize when slide becomes active
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.target.classList && mutation.target.classList.contains('active')) {
-            if (mutation.target.id === 'cosmaPlatformSlide') {
-                initCOEMVisualization();
-                initCVDVisualization();
-                initCSLVisualization();
-            } else if (mutation.target.id === 'cvdInnovationSlide') {
-                initCVDInnovationVisualizations();
-            } else if (mutation.target.id === 'coemInnovationSlide') {
-                initCOEMInnovationVisualizations();
-            } else if (mutation.target.id === 'complexitySlide' || mutation.target.id === 'competitiveBarriersSlide') {
-                initComplexityVisualization();
-            } else if (mutation.target.id === 'strategicValueSlide') {
-                initRevenuePathVisualization();
-            } else if (mutation.target.id === 'scalingImpasseSlide') {
-                initScalingProblemVisualization();
-                initBlackBoxVisualization();
-                initNonDeterminismVisualization();
-            } else if (mutation.target.id === 'yatKernelSlide') {
-                initStandardDLVisualization();
-                initYATProductVisualization();
-            }
-        }
+function pdSelectNeuron(type) {
+  const n = PD_NEURONS.find(x => x.type === type);
+  if (!n) return;
+
+  pdSwitchDetailView('pd-neuron-view');
+  const nv = document.getElementById('pd-neuron-view');
+  if (!nv) return;
+  nv.innerHTML = '';
+
+  const back = pdMakeBackBtn();
+
+  if (pdState.fixed.has(type)) {
+    const fixed = document.createElement('div');
+    fixed.className = 'pd-fixed-state';
+    fixed.innerHTML = `<div class="pd-fixed-icon">✓</div><div class="pd-fixed-name">${n.label}</div><div class="pd-fixed-msg">${n.fixMsg}</div>`;
+    nv.append(back, fixed);
+    return;
+  }
+
+  const idRow = document.createElement('div');
+  idRow.className = 'pd-neuron-id-row';
+  idRow.innerHTML = `<span class="pd-neuron-id">${n.id}</span><span class="pd-nbadge ${pdTypeBadge[type]}">${pdTypeCat[type]}</span>`;
+
+  const name = document.createElement('div');
+  name.className = 'pd-neuron-name';
+  name.textContent = n.label;
+
+  const desc = document.createElement('div');
+  desc.className = 'pd-neuron-desc';
+  desc.textContent = n.desc;
+
+  const weightSec = document.createElement('div');
+  weightSec.className = 'pd-weight-section';
+  const wRow = document.createElement('div');
+  wRow.className = 'pd-weight-row';
+  wRow.innerHTML = `<span class="pd-wlabel">Neuron weight</span><span class="pd-wval" id="pd-wval">${n.weight.toFixed(2)}</span>`;
+  const slider = document.createElement('input');
+  slider.type = 'range'; slider.className = 'pd-slider';
+  slider.min = n.min; slider.max = n.max; slider.step = n.step; slider.value = n.weight;
+  slider.addEventListener('input', () => {
+    const wval = document.getElementById('pd-wval');
+    if (wval) wval.textContent = parseFloat(slider.value).toFixed(2);
+  });
+  const rec = document.createElement('div');
+  rec.className = 'pd-recommend';
+  rec.innerHTML = `Recommended: <span>${n.recommended.toFixed(2)}</span>`;
+  weightSec.append(wRow, slider, rec);
+
+  const applyBtn = document.createElement('button');
+  applyBtn.className = 'pd-apply-btn';
+  applyBtn.textContent = n.action + ' →';
+  applyBtn.addEventListener('click', () => {
+    pdState.pendingAction = { type: 'fix', neuronType: type };
+    pdCheckPremium();
+  });
+
+  nv.append(back, idRow, name, desc, weightSec, applyBtn);
+}
+
+function pdMakeBackBtn() {
+  const btn = document.createElement('button');
+  btn.className = 'pd-back-btn';
+  btn.textContent = '← Back to overview';
+  btn.addEventListener('click', pdShowFlagsView);
+  return btn;
+}
+
+function pdCheckPremium() {
+  if (pdState.premium) { pdExecutePendingAction(); } else { pdShowPaywall(); }
+}
+
+function pdShowPaywall() {
+  const pw   = document.getElementById('pd-paywall');
+  const card = document.getElementById('pd-pw-card');
+  if (!pw || !card) return;
+  const p = PD_PRICING[pdState.model] || { params: '?B params', monthly: '$15,000', label: 'Small' };
+  card.innerHTML = `
+    <button class="pd-pw-close" id="pd-pw-close">×</button>
+    <div class="pd-pw-lock">🔒</div>
+    <h3 class="pd-pw-title">Periodica Premium Required</h3>
+    <p class="pd-pw-sub">Steering and editing tools require a Premium plan.</p>
+    <div class="pd-pw-plan-box">
+      <div class="pd-pw-plan-info">
+        <span class="pd-pw-model-chip">${pdState.model}</span>
+        <span class="pd-pw-params">${p.params}</span>
+      </div>
+      <div class="pd-pw-plan-price">
+        <span class="pd-pw-price-amt">${p.monthly}</span>
+        <span class="pd-pw-price-mo">/mo</span>
+      </div>
+    </div>
+    <ul class="pd-pw-features">
+      <li>Unlimited neuron weight editing</li>
+      <li>PII removal &amp; privacy scrubbing</li>
+      <li>Bias detection &amp; correction</li>
+      <li>IP training data detection &amp; removal</li>
+      <li>Continuous model monitoring</li>
+    </ul>
+    <button class="pd-pw-btn" id="pd-pw-activate">Activate Premium — ${p.monthly}/mo</button>
+    <p class="pd-pw-free-note">First audit always free. Cancel anytime.</p>`;
+  pw.style.display = 'flex';
+  document.getElementById('pd-pw-close').addEventListener('click', () => { pw.style.display = 'none'; });
+  document.getElementById('pd-pw-activate').addEventListener('click', pdActivatePremium);
+}
+
+function pdActivatePremium() {
+  const card = document.getElementById('pd-pw-card');
+  if (!card) return;
+  card.innerHTML = `<div class="pd-pw-activating"><div class="pd-pw-spinner"></div><p>Activating Premium…</p></div>`;
+  setTimeout(() => {
+    card.innerHTML = `
+      <div class="pd-pw-success">
+        <div class="pd-pw-success-icon">✓</div>
+        <h3 class="pd-pw-success-title">Premium Activated!</h3>
+        <p class="pd-pw-success-msg">You now have full access to all steering, editing, and removal tools.</p>
+        <button class="pd-pw-btn" id="pd-pw-continue">Continue →</button>
+      </div>`;
+    document.getElementById('pd-pw-continue').addEventListener('click', () => {
+      const pw = document.getElementById('pd-paywall');
+      if (pw) pw.style.display = 'none';
+      pdState.premium = true;
+      pdShowPremiumBadge();
+      pdExecutePendingAction();
     });
-});
-
-document.querySelectorAll('.slide').forEach(slide => {
-    observer.observe(slide, { attributes: true, attributeFilter: ['class'] });
-});
-
-// ============================================
-// Modal System
-// ============================================
-
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        
-        // Initialize modal canvas when modal is opened
-        if (modalId === 'competitiveBarriersModal') {
-            setTimeout(() => {
-                const modalCanvas = document.getElementById('complexityCanvasModal');
-                if (modalCanvas && !initializedCanvases.has('complexityCanvasModal')) {
-                    lazyInitCanvas('complexityCanvasModal');
-                }
-            }, 100);
-        }
-    }
+  }, 1400);
 }
 
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    
-    // Initialize modal canvas when modal is opened
-    if (modalId === 'competitiveBarriersModal') {
-        setTimeout(() => {
-            const modalCanvas = document.getElementById('complexityCanvasModal');
-            if (modalCanvas && !initializedCanvases.has('complexityCanvasModal')) {
-                lazyInitCanvas('complexityCanvasModal');
-            }
-        }, 100);
-    }
+function pdShowPremiumBadge() {
+  const banner = document.getElementById('pd-premium-banner');
+  if (banner) banner.style.display = 'flex';
+  const demo = document.getElementById('periodica-demo');
+  if (demo) demo.classList.add('pd-premium-active');
 }
 
-// ESC key to close modal
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay.active').forEach(modal => {
-            closeModal(modal.id);
-        });
+function pdExecutePendingAction() {
+  const action = pdState.pendingAction;
+  pdState.pendingAction = null;
+  if (!action) return;
+  if (action.type === 'fix') pdApplyFix(action.neuronType);
+  else if (action.type === 'ip') pdApplyIPFix();
+}
+
+function pdApplyFix(type) {
+  pdState.fixed.add(type);
+  const n = PD_NEURONS.find(x => x.type === type);
+
+  const dot = document.getElementById(`pd-neuron-${type}`);
+  if (dot) { dot.className = 'pd-neuron pd-n-fixed'; dot.onclick = null; dot.style.cursor = 'default'; dot.title = `${n.id} · ${n.label} ✓ Fixed`; }
+
+  const item = document.getElementById(`pd-flag-${type}`);
+  if (item && n) {
+    item.className = 'pd-flag-item pd-flag-done';
+    item.innerHTML = `<span class="pd-fdot" style="background:var(--primary);"></span><div class="pd-finfo"><div class="pd-fid">${n.id}</div><div class="pd-fname">${n.label}</div></div><span class="pd-ffixed">✓ FIXED</span>`;
+    item.onclick = null;
+  }
+
+  pdSwitchDetailView('pd-neuron-view');
+  const nv = document.getElementById('pd-neuron-view');
+  if (nv && n) {
+    nv.innerHTML = '';
+    const fixed = document.createElement('div');
+    fixed.className = 'pd-fixed-state';
+    fixed.innerHTML = `<div class="pd-fixed-icon">✓</div><div class="pd-fixed-name">${n.label}</div><div class="pd-fixed-msg">${n.fixMsg}</div>`;
+    nv.append(pdMakeBackBtn(), fixed);
+  }
+
+  if (pdState.fixed.size === PD_NEURONS.length && (!pdState.ipSearchDone || pdState.ipFixed)) setTimeout(pdAllClear, 800);
+}
+
+function pdApplyIPFix() {
+  pdState.ipFixed = true;
+  PD_IP_POS.forEach(key => {
+    const el = document.getElementById(`pd-ip-${key.replace('-', '_')}`);
+    if (el) { el.className = 'pd-neuron pd-n-fixed'; el.onclick = null; el.style.cursor = 'default'; }
+  });
+  const item = document.getElementById('pd-flag-ip');
+  if (item) {
+    item.className = 'pd-flag-item pd-flag-done';
+    item.innerHTML = `<span class="pd-fdot" style="background:var(--primary);"></span><div class="pd-finfo"><div class="pd-fid">N-789, N-401, N-233</div><div class="pd-fname">IP-Protected Training Data</div></div><span class="pd-ffixed">✓ FIXED</span>`;
+    item.onclick = null;
+  }
+  pdSwitchDetailView('pd-search-view');
+  const sv = document.getElementById('pd-search-view');
+  if (sv) {
+    sv.innerHTML = `
+      <button class="pd-back-btn" id="pd-sv-back">← Back to overview</button>
+      <div class="pd-fixed-state">
+        <div class="pd-fixed-icon">✓</div>
+        <div class="pd-fixed-name">IP-Protected Training Data</div>
+        <div class="pd-fixed-msg">All traces of copyrighted content removed. The model can no longer reproduce protected text verbatim.</div>
+      </div>`;
+    document.getElementById('pd-sv-back').addEventListener('click', pdShowFlagsView);
+  }
+  if (pdState.fixed.size === PD_NEURONS.length) setTimeout(pdAllClear, 800);
+}
+
+function pdAllClear() {
+  const fv = document.getElementById('pd-flags-view');
+  if (!fv || fv.querySelector('.pd-all-clear')) return;
+  pdShowFlagsView();
+  const box = document.createElement('div');
+  box.className = 'pd-all-clear';
+  box.innerHTML = '<div class="pd-all-clear-title">✓ Model fully audited &amp; hardened</div><div class="pd-all-clear-sub">All flagged neurons resolved. Ready for deployment.</div>';
+  fv.appendChild(box);
+}
+
+// ── Black-Box Neural Net Animation (Slide 3) ──────────────────────────
+
+// Network: Input(4) → 5×Hidden(7) → Output(3)  [viewBox 400×160]
+const BB_NET = [
+  { x: 28,  ys: [28, 56, 84, 112],                              type: 'io'     },
+  { x: 88,  ys: [12, 33, 54, 75, 96, 117, 138],                type: 'hidden' },
+  { x: 148, ys: [12, 33, 54, 75, 96, 117, 138],                type: 'hidden' },
+  { x: 208, ys: [12, 33, 54, 75, 96, 117, 138],                type: 'hidden' },
+  { x: 268, ys: [12, 33, 54, 75, 96, 117, 138],                type: 'hidden' },
+  { x: 328, ys: [12, 33, 54, 75, 96, 117, 138],                type: 'hidden' },
+  { x: 378, ys: [42, 80, 118],                                  type: 'io'     },
+];
+
+let bbTimers   = [];
+let bbSvgBuilt = false;
+
+function bbKillTimers() {
+  bbTimers.forEach(t => clearTimeout(t));
+  bbTimers = [];
+}
+
+function bbDelay(fn, ms) {
+  bbTimers.push(setTimeout(fn, ms));
+}
+
+function bbBuildSVG() {
+  const edgesG = document.getElementById('bb-edges');
+  const nodesG = document.getElementById('bb-nodes');
+  if (!edgesG || !nodesG) return;
+  const NS = 'http://www.w3.org/2000/svg';
+
+  BB_NET.forEach(({ x: x1, ys: ys1 }, li) => {
+    if (li >= BB_NET.length - 1) return;
+    const { x: x2, ys: ys2 } = BB_NET[li + 1];
+    ys1.forEach((y1, i) => {
+      ys2.forEach((y2, j) => {
+        const ln = document.createElementNS(NS, 'line');
+        ln.setAttribute('x1', x1); ln.setAttribute('y1', y1);
+        ln.setAttribute('x2', x2); ln.setAttribute('y2', y2);
+        ln.setAttribute('stroke', 'rgba(100,120,160,0.06)');
+        ln.setAttribute('stroke-width', '0.55');
+        ln.dataset.from = `${li}-${i}`;
+        ln.dataset.to   = `${li + 1}-${j}`;
+        ln.classList.add('bb-edge');
+        edgesG.appendChild(ln);
+      });
+    });
+  });
+
+  BB_NET.forEach(({ x, ys, type }, li) => {
+    ys.forEach((y, ni) => {
+      const isH = type === 'hidden';
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', x); c.setAttribute('cy', y);
+      c.setAttribute('r', isH ? '4' : '5');
+      c.setAttribute('fill',         isH ? 'rgba(80,100,140,0.2)'   : 'rgba(120,196,164,0.2)');
+      c.setAttribute('stroke',       isH ? 'rgba(100,130,180,0.32)' : 'rgba(120,196,164,0.5)');
+      c.setAttribute('stroke-width', '1');
+      c.dataset.layer = li;
+      c.dataset.node  = ni;
+      c.classList.add('bb-node');
+      nodesG.appendChild(c);
+    });
+  });
+
+  bbSvgBuilt = true;
+}
+
+function bbReset() {
+  document.querySelectorAll('.bb-edge').forEach(e => {
+    e.setAttribute('stroke', 'rgba(100,120,160,0.06)');
+    e.setAttribute('stroke-width', '0.55');
+  });
+  document.querySelectorAll('.bb-node').forEach(n => {
+    const li = parseInt(n.dataset.layer);
+    const isH = BB_NET[li].type === 'hidden';
+    n.setAttribute('fill',         isH ? 'rgba(80,100,140,0.2)'   : 'rgba(120,196,164,0.2)');
+    n.setAttribute('stroke',       isH ? 'rgba(100,130,180,0.32)' : 'rgba(120,196,164,0.5)');
+    n.setAttribute('stroke-width', '1');
+    n.setAttribute('r', isH ? '4' : '5');
+  });
+  const out = document.getElementById('bb-output');
+  if (out) out.textContent = '';
+  const cur = document.getElementById('bb-cursor');
+  if (cur) cur.style.display = '';
+}
+
+function bbFireLayer(li) {
+  const { ys } = BB_NET[li];
+  // Fire 3–4 random neurons
+  const count = 3 + Math.floor(Math.random() * 2);
+  const indices = [...ys.keys()].sort(() => Math.random() - 0.5).slice(0, count);
+  indices.forEach(ni => {
+    const node = document.querySelector(`.bb-node[data-layer="${li}"][data-node="${ni}"]`);
+    if (node) {
+      node.setAttribute('fill', 'rgba(232,160,42,0.82)');
+      node.setAttribute('stroke', 'rgba(232,180,60,0.9)');
+      node.setAttribute('r', '6');
     }
+    // Glow incoming edges (partially visible at input side of box)
+    document.querySelectorAll(`.bb-edge[data-to="${li}-${ni}"]`).forEach(e => {
+      e.setAttribute('stroke', 'rgba(232,160,42,0.38)');
+      e.setAttribute('stroke-width', '1.1');
+    });
+    // Dim outgoing edges (pass signal forward)
+    document.querySelectorAll(`.bb-edge[data-from="${li}-${ni}"]`).forEach(e => {
+      e.setAttribute('stroke', 'rgba(232,160,42,0.18)');
+      e.setAttribute('stroke-width', '0.8');
+    });
+  });
+}
+
+function bbShowOutput(text) {
+  const cur = document.getElementById('bb-cursor');
+  if (cur) cur.style.display = 'none';
+
+  // Light up output nodes green
+  BB_NET[BB_NET.length - 1].ys.forEach((_, ni) => {
+    const node = document.querySelector(`.bb-node[data-layer="${BB_NET.length - 1}"][data-node="${ni}"]`);
+    if (node) {
+      node.setAttribute('fill', 'rgba(120,196,164,0.75)');
+      node.setAttribute('stroke', 'rgba(120,196,164,1)');
+      node.setAttribute('r', '7');
+    }
+  });
+
+  // Type out the answer
+  const el = document.getElementById('bb-output');
+  if (!el) return;
+  let i = 0;
+  function typeNext() {
+    if (i < text.length) { el.textContent += text[i++]; bbDelay(typeNext, 60); }
+  }
+  typeNext();
+}
+
+function bbRunCycle() {
+  bbReset();
+  const STEP = 280; // ms between layer activations
+
+  // Input nodes light up first
+  bbDelay(() => {
+    BB_NET[0].ys.forEach((_, ni) => {
+      const n = document.querySelector(`.bb-node[data-layer="0"][data-node="${ni}"]`);
+      if (n) {
+        n.setAttribute('fill', 'rgba(120,196,164,0.55)');
+        n.setAttribute('stroke', 'rgba(120,196,164,0.9)');
+        n.setAttribute('r', '7');
+      }
+    });
+  }, 120);
+
+  // Hidden layers fire in a left-to-right cascade
+  const hiddenIdxs = BB_NET.map((l, i) => i).filter(i => BB_NET[i].type === 'hidden');
+  hiddenIdxs.forEach((li, idx) => {
+    bbDelay(() => bbFireLayer(li), 120 + (idx + 1) * STEP);
+  });
+
+  // Output fires after the last hidden layer
+  const outputDelay = 120 + (hiddenIdxs.length + 1) * STEP;
+  bbDelay(() => bbShowOutput('Mexico City'), outputDelay + 120);
+
+  // Restart cycle
+  bbDelay(bbRunCycle, outputDelay + 2600);
+}
+
+function initBlackboxDemo() {
+  bbKillTimers();
+  if (!bbSvgBuilt) bbBuildSVG();
+  bbRunCycle();
+}
+
+function stopBlackboxDemo() {
+  bbKillTimers();
+}
+
+// ── Physics-Grounded Demo (Slide 4) ──────────────────────────────────
+//
+// Three monosemantic layers. Each neuron encodes exactly ONE concept.
+// Phase 1 — Forward pass: active neurons fire in sequence, each labeled.
+// Phase 2 — Manifold reveal: a smooth bezier traces the preserved
+//           geometric structure through the active neurons.
+//
+// IO nodes — same x/y columns as slide 3's INPUT / OUTPUT
+const PG_IO_IN  = { x: 28,  ys: [28, 56, 84, 112] };
+const PG_IO_OUT = { x: 378, ys: [42, 80, 118] };
+
+const PG_LAYERS = [
+  { x: 130, nodes: [
+    { y: 30,  concept: 'Geography',    active: true  },
+    { y: 80,  concept: 'Syntax',       active: false },
+    { y: 130, concept: 'Emotion',      active: false },
+  ]},
+  { x: 200, nodes: [
+    { y: 30,  concept: 'Capital City', active: true  },
+    { y: 80,  concept: 'Grammar',      active: false },
+    { y: 130, concept: 'Sentiment',    active: false },
+  ]},
+  { x: 270, nodes: [
+    { y: 30,  concept: 'Named Entity', active: true  },
+    { y: 80,  concept: 'Verb Tense',   active: false },
+    { y: 130, concept: 'Factual',      active: false },
+  ]},
+];
+
+// Bezier through active nodes: Geography(130,30) → CapitalCity(200,30) → NamedEntity(270,30)
+const PG_MANIFOLD_PATH = 'M 130,30 C 163,24 167,24 200,30 C 233,36 239,28 270,30';
+
+let pgTimers   = [];
+let pgSvgBuilt = false;
+
+function pgKillTimers() {
+  pgTimers.forEach(t => clearTimeout(t));
+  pgTimers = [];
+}
+
+function pgDelay(fn, ms) {
+  pgTimers.push(setTimeout(fn, ms));
+}
+
+function pgBuildSVG() {
+  const edgesG  = document.getElementById('pg-edges');
+  const nodesG  = document.getElementById('pg-nodes');
+  const labelsG = document.getElementById('pg-concept-labels');
+  if (!edgesG || !nodesG || !labelsG) return;
+  const NS = 'http://www.w3.org/2000/svg';
+
+  function mkEdge(x1, y1, x2, y2, fromKey, toKey) {
+    const ln = document.createElementNS(NS, 'line');
+    ln.setAttribute('x1', x1); ln.setAttribute('y1', y1);
+    ln.setAttribute('x2', x2); ln.setAttribute('y2', y2);
+    ln.setAttribute('stroke', 'rgba(120,196,164,0.07)');
+    ln.setAttribute('stroke-width', '0.8');
+    ln.dataset.from = fromKey;
+    ln.dataset.to   = toKey;
+    ln.classList.add('pg-edge');
+    edgesG.appendChild(ln);
+  }
+
+  // IO input → layer 0 (edges cross the glass-box border — signal enters)
+  PG_IO_IN.ys.forEach((y, ii) => {
+    PG_LAYERS[0].nodes.forEach(({ y: y2 }, ni) => {
+      mkEdge(PG_IO_IN.x, y, PG_LAYERS[0].x, y2, `io-in-${ii}`, `0-${ni}`);
+    });
+  });
+
+  // Between PG layers
+  PG_LAYERS.forEach(({ x: x1, nodes: ns1 }, li) => {
+    if (li >= PG_LAYERS.length - 1) return;
+    const { x: x2, nodes: ns2 } = PG_LAYERS[li + 1];
+    ns1.forEach(({ y: y1 }, i) => {
+      ns2.forEach(({ y: y2 }, j) => {
+        mkEdge(x1, y1, x2, y2, `${li}-${i}`, `${li + 1}-${j}`);
+      });
+    });
+  });
+
+  // Layer 2 → IO output (edges cross the glass-box border — signal exits)
+  const last = PG_LAYERS[PG_LAYERS.length - 1];
+  PG_IO_OUT.ys.forEach((y, oi) => {
+    last.nodes.forEach(({ y: y1 }, ni) => {
+      mkEdge(last.x, y1, PG_IO_OUT.x, y, `2-${ni}`, `io-out-${oi}`);
+    });
+  });
+
+  function mkCircle(cx, cy, r, fill, stroke, cls, data) {
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r);
+    c.setAttribute('fill', fill);
+    c.setAttribute('stroke', stroke);
+    c.setAttribute('stroke-width', '1');
+    Object.entries(data).forEach(([k, v]) => { c.dataset[k] = v; });
+    c.classList.add(cls);
+    nodesG.appendChild(c);
+  }
+
+  // IO input nodes
+  PG_IO_IN.ys.forEach((y, ni) => {
+    mkCircle(PG_IO_IN.x, y, '5', 'rgba(120,196,164,0.2)', 'rgba(120,196,164,0.5)',
+             'pg-io', { io: 'in', node: ni });
+  });
+
+  // PG nodes + concept labels
+  PG_LAYERS.forEach(({ x, nodes }, li) => {
+    nodes.forEach(({ y, concept }, ni) => {
+      mkCircle(x, y, '7', 'rgba(120,196,164,0.1)', 'rgba(120,196,164,0.3)',
+               'pg-node', { layer: li, node: ni });
+
+      const lbl = document.createElementNS(NS, 'text');
+      lbl.setAttribute('x', x);
+      lbl.setAttribute('y', y - 12);
+      lbl.setAttribute('text-anchor', 'middle');
+      lbl.setAttribute('font-family', "'IBM Plex Mono', monospace");
+      lbl.setAttribute('font-size', '6');
+      lbl.setAttribute('fill', 'rgba(120,196,164,0.22)');
+      lbl.textContent = concept;
+      lbl.dataset.layer = li; lbl.dataset.node = ni;
+      lbl.classList.add('pg-label');
+      labelsG.appendChild(lbl);
+    });
+  });
+
+  // IO output nodes
+  PG_IO_OUT.ys.forEach((y, ni) => {
+    mkCircle(PG_IO_OUT.x, y, '5', 'rgba(120,196,164,0.2)', 'rgba(120,196,164,0.5)',
+             'pg-io', { io: 'out', node: ni });
+  });
+
+  pgSvgBuilt = true;
+}
+
+function pgReset() {
+  document.querySelectorAll('.pg-node').forEach(n => {
+    n.setAttribute('fill',         'rgba(120,196,164,0.1)');
+    n.setAttribute('stroke',       'rgba(120,196,164,0.3)');
+    n.setAttribute('stroke-width', '1');
+    n.setAttribute('r', '7');
+  });
+  document.querySelectorAll('.pg-io').forEach(n => {
+    n.setAttribute('fill',   'rgba(120,196,164,0.2)');
+    n.setAttribute('stroke', 'rgba(120,196,164,0.5)');
+    n.setAttribute('stroke-width', '1');
+    n.setAttribute('r', '5');
+  });
+  document.querySelectorAll('.pg-edge').forEach(e => {
+    e.setAttribute('stroke',       'rgba(120,196,164,0.07)');
+    e.setAttribute('stroke-width', '0.8');
+  });
+  document.querySelectorAll('.pg-label').forEach(l => {
+    l.setAttribute('fill', 'rgba(120,196,164,0.22)');
+  });
+  const mpath = document.getElementById('pg-manifold-path');
+  if (mpath) mpath.setAttribute('stroke', 'rgba(90,181,200,0)');
+  const trail = document.getElementById('pg-trail');
+  if (trail) trail.innerHTML = '';
+  const phLbl = document.getElementById('pg-phase-label');
+  if (phLbl) phLbl.textContent = 'Tracing Neuron Activation';
+  // Prompt strip reset
+  const pgOut = document.getElementById('pg-output');
+  if (pgOut) pgOut.textContent = '';
+  const pgCur = document.getElementById('pg-cursor');
+  if (pgCur) pgCur.style.display = '';
+}
+
+function pgFireNode(li, ni) {
+  const node = document.querySelector(`.pg-node[data-layer="${li}"][data-node="${ni}"]`);
+  if (node) {
+    node.setAttribute('fill',         'rgba(120,196,164,0.72)');
+    node.setAttribute('stroke',       'rgba(120,196,164,1)');
+    node.setAttribute('stroke-width', '2');
+    node.setAttribute('r', '9');
+  }
+  const lbl = document.querySelector(`.pg-label[data-layer="${li}"][data-node="${ni}"]`);
+  if (lbl) lbl.setAttribute('fill', 'rgba(120,196,164,1)');
+  // Glow incoming edges
+  document.querySelectorAll(`.pg-edge[data-to="${li}-${ni}"]`).forEach(e => {
+    e.setAttribute('stroke',       'rgba(120,196,164,0.52)');
+    e.setAttribute('stroke-width', '1.4');
+  });
+}
+
+function pgRunCycle() {
+  pgReset();
+
+  // Signal enters — input nodes light up (mirrors slide 3 input column)
+  pgDelay(() => {
+    document.querySelectorAll('.pg-io[data-io="in"]').forEach(n => {
+      n.setAttribute('fill', 'rgba(120,196,164,0.7)');
+      n.setAttribute('stroke', 'rgba(120,196,164,1)');
+      n.setAttribute('r', '7');
+    });
+  }, 200);
+
+  // Phase 1 — named neurons fire in sequence, incoming edges glow automatically
+  pgDelay(() => pgFireNode(0, 0), 400);   // Geography
+  pgDelay(() => pgFireNode(1, 0), 1000);  // Capital City
+  pgDelay(() => pgFireNode(2, 0), 1600);  // Named Entity
+
+  // Output nodes light up + edges from Named Entity to output glow
+  pgDelay(() => {
+    document.querySelectorAll('.pg-io[data-io="out"]').forEach(n => {
+      n.setAttribute('fill', 'rgba(120,196,164,0.75)');
+      n.setAttribute('stroke', 'rgba(120,196,164,1)');
+      n.setAttribute('r', '7');
+    });
+    document.querySelectorAll('.pg-edge[data-from="2-0"]').forEach(e => {
+      e.setAttribute('stroke', 'rgba(120,196,164,0.52)');
+      e.setAttribute('stroke-width', '1.4');
+    });
+  }, 2000);
+
+  // Answer types into the output strip
+  pgDelay(() => {
+    const cur = document.getElementById('pg-cursor');
+    if (cur) cur.style.display = 'none';
+    const outEl = document.getElementById('pg-output');
+    if (!outEl) return;
+    const text = 'Mexico City';
+    let i = 0;
+    function typeNext() {
+      if (i < text.length) { outEl.textContent += text[i++]; pgDelay(typeNext, 60); }
+    }
+    typeNext();
+  }, 2100);
+
+  // Audit trace appears below SVG
+  pgDelay(() => {
+    const trail = document.getElementById('pg-trail');
+    if (trail) {
+      trail.innerHTML =
+        `<span style="color:var(--text-muted);">Trace: </span>` +
+        `Geography &rarr; Capital City &rarr; Named Entity &rarr; ` +
+        `<strong style="color:var(--primary);">Mexico City ✓</strong>`;
+    }
+  }, 2800);
+
+  // Phase 2 — manifold bezier reveals preserved geometric structure
+  pgDelay(() => {
+    const phLbl = document.getElementById('pg-phase-label');
+    if (phLbl) phLbl.textContent = 'Preserved Geometric Manifold';
+    const mpath = document.getElementById('pg-manifold-path');
+    if (mpath) {
+      mpath.setAttribute('d', PG_MANIFOLD_PATH);
+      mpath.setAttribute('stroke', 'rgba(90,181,200,0.62)');
+    }
+  }, 3500);
+
+  pgDelay(pgRunCycle, 6200);
+}
+
+function initPGDemo() {
+  pgKillTimers();
+  if (!pgSvgBuilt) pgBuildSVG();
+  pgRunCycle();
+}
+
+function stopPGDemo() {
+  pgKillTimers();
+}
+
+// ── Re-init chart on window resize ────────────────────────────────────
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (currentSlide === 8) {
+      initiated.delete(8);
+      initTAMChart();
+    }
+  }, 200);
 });
 
-// Click outside to close
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal-overlay')) {
-        closeModal(e.target.id);
+// ── Research Flywheel Animation (Slide 9) ─────────────────────────────
+const FW_TOTAL = 6;
+let fwTimers = [];
+let fwStep   = 0;
+
+function fwKillTimers() { fwTimers.forEach(t => clearTimeout(t)); fwTimers = []; }
+function fwDelay(fn, ms) { fwTimers.push(setTimeout(fn, ms)); }
+
+function fwAnimate() {
+  document.querySelectorAll('.fw-node').forEach(el => el.classList.remove('fw-active'));
+  document.querySelectorAll('.fw-arc').forEach(el => {
+    el.classList.remove('fw-active');
+    el.setAttribute('marker-end', 'url(#fw-arrowhead)');
+  });
+  const node = document.querySelector(`.fw-node[data-step="${fwStep}"]`);
+  const arc  = document.querySelector(`.fw-arc[data-arc="${fwStep}"]`);
+  if (node) node.classList.add('fw-active');
+  if (arc) {
+    arc.classList.add('fw-active');
+    arc.setAttribute('marker-end', 'url(#fw-arrowhead-active)');
+  }
+  fwStep = (fwStep + 1) % FW_TOTAL;
+  fwDelay(fwAnimate, 1800);
+}
+
+function initFlywheel() {
+  fwKillTimers();
+  fwStep = 0;
+  fwAnimate();
+}
+
+function stopFlywheel() {
+  fwKillTimers();
+  document.querySelectorAll('.fw-node').forEach(el => el.classList.remove('fw-active'));
+  document.querySelectorAll('.fw-arc').forEach(el => {
+    el.classList.remove('fw-active');
+    el.setAttribute('marker-end', 'url(#fw-arrowhead)');
+  });
+}
+
+// ── Rotate Prompt Dismiss ──────────────────────────────────────────────
+(function initRotateDismiss() {
+  const btn    = document.getElementById('rotate-ok');
+  const prompt = document.getElementById('rotate-prompt');
+  if (!btn || !prompt) return;
+  btn.addEventListener('click', () => prompt.classList.add('dismissed'));
+})();
+
+// ── Password Gate ──────────────────────────────────────────────────────
+(function initPasswordGate() {
+  const gate    = document.getElementById('password-gate');
+  const input   = document.getElementById('password-input');
+  const submit  = document.getElementById('password-submit');
+  const error   = document.getElementById('password-error');
+
+  function unlock() {
+    sessionStorage.setItem('azetta_unlocked', Date.now().toString());
+    gate.classList.add('unlocked');
+    setTimeout(() => gate.remove(), 420);
+  }
+
+  function attempt() {
+    if (input.value.trim().toLowerCase() === 'manifold') {
+      unlock();
+    } else {
+      error.classList.add('visible');
+      input.value = '';
+      input.focus();
+      setTimeout(() => error.classList.remove('visible'), 2500);
     }
-});
+  }
+
+  const ts = sessionStorage.getItem('azetta_unlocked');
+  if (ts && (Date.now() - parseInt(ts, 10)) < 30 * 60 * 1000) {
+    gate.remove();
+    return;
+  }
+
+  submit.addEventListener('click', attempt);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') attempt(); });
+  input.focus();
+})();
+
+// ── Init ───────────────────────────────────────────────────────────────
+(function init() {
+  // Ensure first slide is visible
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === 0);
+  });
+
+  updateUI();
+  onSlideEnter(1);
+
+  // Hide key hint after first interaction
+  const hint = document.getElementById('key-hint');
+  const hideHint = () => {
+    hint.style.transition = 'opacity 0.5s ease';
+    hint.style.opacity = '0';
+    setTimeout(() => hint.remove(), 600);
+    document.removeEventListener('keydown', hideHint);
+    document.removeEventListener('click', hideHint);
+  };
+  document.addEventListener('keydown', hideHint, { once: true });
+  document.addEventListener('click', hideHint, { once: true });
+})();
