@@ -9,7 +9,7 @@ let currentSlide = 1;
 const TOTAL_SLIDES = 13;
 
 // ── DOM refs ───────────────────────────────────────────────────────────
-const slides      = document.querySelectorAll('.slide');
+let slides        = document.querySelectorAll('.slide');
 const progressBar = document.getElementById('progress-bar');
 const counter     = document.getElementById('slide-counter');
 const btnPrev     = document.getElementById('btn-prev');
@@ -21,6 +21,8 @@ function goToSlide(n, direction = 'next') {
 
   const prev = document.querySelector('.slide.active');
   const next = slides[n - 1];
+
+  if (!next) return;         // deck not yet populated (encrypted mode)
 
   if (prev === next) return;
 
@@ -88,6 +90,16 @@ function onSlideEnter(n) {
     case 2:  animateStatNumbers(); break;
     case 9:  initPeriodica(); pdShowScreen('pd-splash'); break;
   }
+}
+
+// ── Deck initialisation (called at startup & after decrypt) ───────────
+function initDeck() {
+  slides = document.querySelectorAll('.slide');
+  currentSlide = 1;
+  initiated.clear();
+  slides.forEach((s, i) => s.classList.toggle('active', i === 0));
+  updateUI();
+  onSlideEnter(1);
 }
 
 // ── TAM Bar Chart ──────────────────────────────────────────────────────
@@ -1252,10 +1264,18 @@ function stopFlywheel() {
 
 // ── Password Gate ──────────────────────────────────────────────────────
 (function initPasswordGate() {
-  const gate    = document.getElementById('password-gate');
-  const input   = document.getElementById('password-input');
-  const submit  = document.getElementById('password-submit');
-  const error   = document.getElementById('password-error');
+  const gate   = document.getElementById('password-gate');
+  const input  = document.getElementById('password-input');
+  const submit = document.getElementById('password-submit');
+  const error  = document.getElementById('password-error');
+  const encEl  = document.getElementById('__enc__');
+
+  function showError() {
+    error.classList.add('visible');
+    input.value = '';
+    input.focus();
+    setTimeout(() => error.classList.remove('visible'), 2500);
+  }
 
   function unlock() {
     sessionStorage.setItem('azetta_unlocked', Date.now().toString());
@@ -1263,19 +1283,63 @@ function stopFlywheel() {
     setTimeout(() => gate.remove(), 420);
   }
 
-  function attempt() {
-    if (input.value.trim().toLowerCase() === 'manifold') {
-      unlock();
+  // Decrypt AES-256-GCM payload using the entered password (mirrors build.js)
+  async function decryptDeck(password) {
+    const payload  = JSON.parse(encEl.textContent);
+    const fromB64  = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const salt     = fromB64(payload.s);
+    const iv       = fromB64(payload.v);
+    const ct       = fromB64(payload.c);
+    const enc      = new TextEncoder();
+    const km       = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+    const key      = await crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations: 200000, hash: 'SHA-256' },
+      km,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+    return new TextDecoder().decode(plain);
+  }
+
+  // Inject deck HTML and reinitialise navigation
+  function populateDeck(html) {
+    document.getElementById('deck').innerHTML = html;
+    initDeck();
+  }
+
+  async function attempt() {
+    const password = input.value.trim();
+    if (!password) return;
+
+    if (encEl) {
+      // Encrypted deployment: try AES-GCM decryption
+      try {
+        const html = await decryptDeck(password);
+        sessionStorage.setItem('azetta_deck', html);
+        populateDeck(html);
+        unlock();
+      } catch (err) {
+        console.warn('Deck decryption failed:', err);
+        showError();
+      }
     } else {
-      error.classList.add('visible');
-      input.value = '';
-      input.focus();
-      setTimeout(() => error.classList.remove('visible'), 2500);
+      // Plain dev mode: simple password check
+      if (password.toLowerCase() === 'manifold') {
+        unlock();
+      } else {
+        showError();
+      }
     }
   }
 
   const ts = sessionStorage.getItem('azetta_unlocked');
   if (ts && (Date.now() - parseInt(ts, 10)) < 30 * 60 * 1000) {
+    if (encEl) {
+      const cached = sessionStorage.getItem('azetta_deck');
+      if (cached) populateDeck(cached);
+    }
     gate.remove();
     return;
   }
@@ -1287,16 +1351,13 @@ function stopFlywheel() {
 
 // ── Init ───────────────────────────────────────────────────────────────
 (function init() {
-  // Ensure first slide is visible
-  slides.forEach((s, i) => {
-    s.classList.toggle('active', i === 0);
-  });
-
-  updateUI();
-  onSlideEnter(1);
+  // In encrypted deployment mode the deck is empty until password is entered;
+  // initDeck() will be called by initPasswordGate after decryption instead.
+  if (slides.length > 0) initDeck();
 
   // Hide key hint after first interaction
   const hint = document.getElementById('key-hint');
+  if (!hint) return;
   const hideHint = () => {
     hint.style.transition = 'opacity 0.5s ease';
     hint.style.opacity = '0';
