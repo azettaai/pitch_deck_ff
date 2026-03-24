@@ -3240,18 +3240,18 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 /* ── Slide 04: YAT Kernel / Our Approach ─────────────────────────────── */
 .yat-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 5fr 7fr;
   gap: 2rem;
   align-items: center;
 }
 .yat-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.4rem;
 }
 .yat-title {
   font-family: 'Chakra Petch', monospace;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--primary);
   text-shadow: 0 0 16px var(--primary-glow);
   letter-spacing: 3px;
@@ -3259,15 +3259,15 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 }
 .yat-subtitle {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  margin: 0.3rem 0 0;
-  line-height: 1.6;
+  margin: 0.4rem 0 0;
+  line-height: 1.7;
 }
 .yat-formula-box {
   background: var(--panel-bg);
   border: 1px solid var(--border);
-  padding: 1.2rem;
+  padding: 1.6rem;
   position: relative;
   display: flex;
   justify-content: center;
@@ -3291,16 +3291,16 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 }
 .yat-formula {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   color: var(--primary);
   text-align: center;
   margin: 0;
 }
 .yat-description {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.8;
   margin: 0;
 }
 .yat-viz-wrapper {
