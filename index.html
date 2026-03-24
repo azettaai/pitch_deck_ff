@@ -331,117 +331,46 @@
 
 
     <!-- ================================================================
-         04 — OUR RESEARCH
+         04 — OUR APPROACH
          ================================================================ -->
     <section class="slide" data-slide="4">
-      <div class="content-wrapper">
-        <span class="slide-tag">// 04 — OUR RESEARCH</span>
-        <h1>Physics Grounded AI: A New Mathematical Foundation</h1>
-        <h2>We reimagine AI through a physics lens — revealing fundamental structure that makes models interpretable, steerable, and efficient by design.</h2>
+      <div class="content-wrapper" style="display:flex;flex-direction:column;gap:0.4rem;height:100%;box-sizing:border-box;">
+        <span class="slide-tag">// 04 — OUR APPROACH</span>
+        <h1>Pioneering the Field of Physics Grounded AI</h1>
 
-        <div class="split-col" style="margin-top:1rem;">
+        <div class="yat-container" style="flex:1;min-height:0;">
 
-          <!-- Left: YAT Kernel -->
-          <div style="display:flex;flex-direction:column;gap:0.8rem;">
-            <div class="feature-card" style="padding:0.85rem 1rem;">
-              <h4 style="font-size:0.95rem;margin-bottom:0.5rem;color:var(--primary);">The YAT Kernel</h4>
-              <p style="margin-bottom:0.6rem;">Physics-grounded Mercer kernel capturing alignment <em>and</em> proximity — creating distinct gravity wells in representation space.</p>
-              <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;text-align:center;padding:0.6rem 0;color:var(--secondary);letter-spacing:1px;">
-                ⵟ(x, w) = (x·w)² / ‖x − w‖²
-              </div>
-              <p style="margin-top:0.5rem;font-size:0.82rem;color:var(--text-secondary);">Unlike dot products and cosines, the YAT kernel measures how much a weight vector acts as an <strong style="color:var(--text);">attractor</strong> for an input — yielding monosemantic neurons by design, not approximation.</p>
+          <div class="yat-content">
+            <div>
+              <p class="yat-title">YAT KERNEL</p>
+              <p class="yat-subtitle">The Yat Kernel is a physics-grounded mercer kernel that captures both alignment and proximity to create highly efficient gravity wells in representation space</p>
             </div>
-
-            <div class="feature-card" style="padding:0.85rem 1rem;">
-              <h4 style="font-size:0.95rem;margin-bottom:0.4rem;color:var(--secondary);">2 Papers · ICML 2026</h4>
-              <div style="display:flex;flex-direction:column;gap:0.4rem;">
-                <div style="display:flex;align-items:flex-start;gap:0.5rem;">
-                  <span style="color:var(--primary);font-family:'Chakra Petch',monospace;font-size:0.7rem;margin-top:0.15rem;">▸</span>
-                  <div>
-                    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text);">NoMoreDelulu</span>
-                    <span style="font-size:0.72rem;color:var(--text-secondary);margin-left:0.4rem;">Neural-Matter Networks outperform traditional architectures</span>
-                  </div>
-                </div>
-                <div style="display:flex;align-items:flex-start;gap:0.5rem;">
-                  <span style="color:var(--primary);font-family:'Chakra Petch',monospace;font-size:0.7rem;margin-top:0.15rem;">▸</span>
-                  <div>
-                    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text);">SLAY Attention</span>
-                    <span style="font-size:0.72rem;color:var(--text-secondary);margin-left:0.4rem;">Linear-time YAT-powered attention, outperforms softmax</span>
-                  </div>
-                </div>
+            <div class="yat-formula-box">
+              <div>
+                <p class="yat-formula">ⵟ(x, w) = (x·w)² / ‖x − w‖²</p>
+              </div>
+            </div>
+            <p class="yat-description">Unlike dot products and cosines, the YAT kernel measures how much a weight vector acts as an attractor for an input. Each neuron bends representation space around itself — creating distinct, non-overlapping gravity wells. The result: monosemantic neurons by design, interpretability without any post-hoc approximation.</p>
+            <div class="paper-grid" style="grid-template-columns:1fr 1fr;margin-top:0;">
+              <div class="paper-card">
+                <span class="paper-venue">ICML 2026 · arXiv</span>
+                <h3 class="paper-title">NoMoreDelulu</h3>
+                <p class="paper-desc">Foundational research for Physics Grounded AI; Neural-Matter Networks outperform traditional architectures.</p>
+              </div>
+              <div class="paper-card">
+                <span class="paper-venue">ICML 2026 · arXiv</span>
+                <h3 class="paper-title">SLAY Attention</h3>
+                <p class="paper-desc">Linear-time YAT-powered attention mechanism that outperforms standard softmax attention.</p>
               </div>
             </div>
           </div>
 
-          <!-- Right: Manifold visualization -->
-          <div>
-            <div class="pg-demo-wrap" style="height:100%;">
-              <div class="pg-demo-header">
-                <span class="pg-demo-kicker">⬡ PRESERVED GEOMETRIC MANIFOLD</span>
-                <span class="pg-phase-label">One Neuron · One Concept</span>
-              </div>
-              <div class="bb-prompt-wrap">
-                <div class="bb-prompt-row">
-                  <span class="bb-io-label">Input</span>
-                  <span class="bb-prompt-text">"the capital of Mexico is"</span>
-                </div>
-                <div class="bb-prompt-row">
-                  <span class="bb-io-label">Trace</span>
-                  <span class="bb-output-text" style="color:var(--primary);">Geography → Capital City → Named Entity → <strong>Mexico City ✓</strong></span>
-                </div>
-              </div>
-              <!-- Static manifold network diagram -->
-              <svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" width="100%" style="margin-top:0.5rem;">
-                <!-- Glass box border -->
-                <rect x="52" y="1" width="302" height="155" rx="3"
-                      fill="rgba(90,181,200,0.04)" stroke="rgba(90,181,200,0.28)"
-                      stroke-width="1" stroke-dasharray="4,3"/>
-                <text x="203" y="11" text-anchor="middle"
-                      font-family="'IBM Plex Mono',monospace" font-size="6.5"
-                      fill="rgba(90,181,200,0.22)">· · · interpretable by design · · ·</text>
-
-                <!-- Manifold path (highlighted) -->
-                <path d="M28,80 Q95,40 140,53 Q185,66 200,80 Q215,94 260,107 Q305,120 378,80"
-                      fill="none" stroke="rgba(53,194,84,0.6)" stroke-width="2" stroke-dasharray="5,4"/>
-
-                <!-- Layer 1 nodes -->
-                <circle cx="140" cy="53" r="8" fill="rgba(53,194,84,0.25)" stroke="rgba(53,194,84,0.7)" stroke-width="1.5"/>
-                <text x="140" y="42" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(53,194,84,0.9)">Geography</text>
-                <circle cx="140" cy="80" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
-                <text x="140" y="96" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Syntax</text>
-                <circle cx="140" cy="107" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
-                <text x="140" y="122" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Emotion</text>
-
-                <!-- Layer 2 nodes -->
-                <circle cx="200" cy="80" r="8" fill="rgba(53,194,84,0.25)" stroke="rgba(53,194,84,0.7)" stroke-width="1.5"/>
-                <text x="200" y="69" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(53,194,84,0.9)">Capital City</text>
-                <circle cx="200" cy="53" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
-                <text x="200" y="42" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Grammar</text>
-                <circle cx="200" cy="107" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
-                <text x="200" y="122" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Sentiment</text>
-
-                <!-- Layer 3 nodes -->
-                <circle cx="260" cy="107" r="8" fill="rgba(53,194,84,0.25)" stroke="rgba(53,194,84,0.7)" stroke-width="1.5"/>
-                <text x="260" y="96" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(53,194,84,0.9)">Named Entity</text>
-                <circle cx="260" cy="80" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
-                <text x="260" y="69" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Verb Tense</text>
-                <circle cx="260" cy="53" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
-                <text x="260" y="42" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Factual</text>
-
-                <!-- Input/Output nodes -->
-                <circle cx="28" cy="80" r="7" fill="rgba(120,196,164,0.3)" stroke="#78c4a4" stroke-width="1.5"/>
-                <circle cx="378" cy="80" r="7" fill="rgba(120,196,164,0.3)" stroke="#78c4a4" stroke-width="1.5"/>
-                <text x="378" y="68" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="6" fill="rgba(53,194,84,1)" font-weight="bold">Mexico City</text>
-
-                <!-- Layer labels -->
-                <text x="28" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(120,196,164,0.45)">INPUT</text>
-                <text x="140" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(90,181,200,0.35)">LAYER 1</text>
-                <text x="200" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(90,181,200,0.35)">LAYER 2</text>
-                <text x="260" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(90,181,200,0.35)">LAYER 3</text>
-                <text x="378" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(120,196,164,0.45)">OUTPUT</text>
-              </svg>
-              <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--text-secondary);margin-top:0.4rem;">Each active neuron fires for exactly one concept — full audit trail preserved</div>
+          <div class="yat-viz-wrapper">
+            <div class="yat-viz-header">
+              <span class="viz-label">ⵟ — YAT Kernel Manifold</span>
+              <span class="viz-hint">click to add neurons · up to 5</span>
             </div>
+            <canvas id="yat-manifold-canvas" class="yat-canvas" aria-label="Interactive YAT Kernel manifold — each neuron bends representation space like a gravity well"></canvas>
           </div>
 
         </div>

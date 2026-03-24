@@ -1368,3 +1368,77 @@ function stopFlywheel() {
   document.addEventListener('keydown', hideHint, { once: true });
   document.addEventListener('click', hideHint, { once: true });
 })();
+
+// ── YAT Kernel Manifold (Slide 04) ────────────────────────────────────
+(function initYatManifold() {
+  const canvas = document.getElementById('yat-manifold-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, animRunning = false, rafId = null;
+  let rotationAngle = 0.5;
+  const tiltAngle = 0.6;
+  const neuronColors = ['#4ff975', '#4deeea', '#f9d71c', '#f038ff', '#ed217c'];
+  let neurons = [{ x: 80, y: 60, color: neuronColors[0] }];
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    w = rect.width; h = rect.height;
+    canvas.width = w * devicePixelRatio; canvas.height = h * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  function computeYat(px, py, n) {
+    const dot = n.x*px + n.y*py, dx = px-n.x, dy = py-n.y, d2 = dx*dx+dy*dy;
+    return d2 < 0.01 ? 200 : (dot*dot)/d2;
+  }
+  function getDominant(px, py) {
+    let maxY = 0, idx = 0, total = 0;
+    neurons.forEach((n, i) => { const y = computeYat(px,py,n); total+=y; if(y>maxY){maxY=y;idx=i;} });
+    return { idx, total: Math.log(1+total) };
+  }
+  function project(x, y, z) {
+    const c = Math.cos(rotationAngle), s = Math.sin(rotationAngle);
+    return { x: x*c-y*s, y: (x*s+y*c)*tiltAngle+z };
+  }
+  function rgba(hex, a) {
+    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  function draw() {
+    ctx.clearRect(0,0,w,h);
+    const cx=w/2, cy=h/2-10, gs=25, sp=10;
+    let maxYat=0.01;
+    const gd=[];
+    for(let i=0;i<=gs;i++){gd[i]=[];for(let j=0;j<=gs;j++){const wx=(j-gs/2)*sp,wy=(i-gs/2)*sp,res=getDominant(wx,wy);gd[i][j]={wx,wy,...res};if(res.total>maxYat)maxYat=res.total;}}
+    const wd=70/Math.max(maxYat,0.1);
+    const ht=[];
+    for(let i=0;i<=gs;i++){ht[i]=[];for(let j=0;j<=gs;j++){const g=gd[i][j],depth=Math.min(g.total*wd,100);ht[i][j]={wx:g.wx,wy:g.wy,depth,color:neurons[g.idx].color,intensity:Math.min(depth/70,1)};}}
+    for(let i=0;i<=gs;i++){for(let j=0;j<gs;j++){const a=ht[i][j],b=ht[i][j+1],p1=project(a.wx,a.wy,a.depth),p2=project(b.wx,b.wy,b.depth),col=a.intensity>=b.intensity?a.color:b.color,int=Math.max(a.intensity,b.intensity);ctx.beginPath();ctx.moveTo(cx+p1.x,cy+p1.y);ctx.lineTo(cx+p2.x,cy+p2.y);ctx.strokeStyle=rgba(col,0.3+int*0.5);ctx.lineWidth=1;ctx.stroke();}}
+    for(let j=0;j<=gs;j++){for(let i=0;i<gs;i++){const a=ht[i][j],b=ht[i+1][j],p1=project(a.wx,a.wy,a.depth),p2=project(b.wx,b.wy,b.depth),col=a.intensity>=b.intensity?a.color:b.color,int=Math.max(a.intensity,b.intensity);ctx.beginPath();ctx.moveTo(cx+p1.x,cy+p1.y);ctx.lineTo(cx+p2.x,cy+p2.y);ctx.strokeStyle=rgba(col,0.3+int*0.5);ctx.lineWidth=1;ctx.stroke();}}
+    neurons.forEach((n,idx)=>{
+      const dotP=n.x*n.x+n.y*n.y,nd=Math.min(Math.log(1+dotP*10)*wd,100),ns=project(n.x,n.y,nd);
+      const gr=ctx.createRadialGradient(cx+ns.x,cy+ns.y,0,cx+ns.x,cy+ns.y,18);
+      gr.addColorStop(0,rgba(n.color,0.9));gr.addColorStop(0.5,rgba(n.color,0.3));gr.addColorStop(1,'transparent');
+      ctx.fillStyle=gr;ctx.beginPath();ctx.arc(cx+ns.x,cy+ns.y,18,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(cx+ns.x,cy+ns.y,4,0,Math.PI*2);ctx.fillStyle=n.color;ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.font='8px monospace';ctx.fillStyle=rgba(n.color,0.8);ctx.textAlign='center';ctx.fillText('w'+(idx+1),cx+ns.x,cy+ns.y+14);
+    });
+    ctx.font='9px monospace';ctx.fillStyle='rgba(79,249,117,0.6)';ctx.textAlign='left';ctx.fillText('ⵟ = Σ (x·wᵢ)² / ||x-wᵢ||²',10,h-10);
+    ctx.textAlign='right';ctx.fillText(`neurons: ${neurons.length}/5`,w-10,h-10);
+    rotationAngle+=0.003;
+    if(animRunning) rafId=requestAnimationFrame(draw);
+  }
+  canvas.addEventListener('click', e => {
+    const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left-w/2,my=e.clientY-rect.top-h/2+10;
+    const c=Math.cos(-rotationAngle),s=Math.sin(-rotationAngle),wx=mx*c-(my/tiltAngle)*s,wy=mx*s+(my/tiltAngle)*c;
+    for(let i=0;i<neurons.length;i++){const dx=neurons[i].x-wx,dy=neurons[i].y-wy;if(Math.sqrt(dx*dx+dy*dy)<20&&neurons.length>1){neurons.splice(i,1);return;}}
+    if(neurons.length<5)neurons.push({x:Math.max(-120,Math.min(120,wx)),y:Math.max(-120,Math.min(120,wy)),color:neuronColors[neurons.length%neuronColors.length]});
+  });
+  const obs = new IntersectionObserver(entries => entries.forEach(e => {
+    if(e.isIntersecting){animRunning=true;resize();if(!rafId)draw();}
+    else{animRunning=false;if(rafId){cancelAnimationFrame(rafId);rafId=null;}}
+  }), {threshold:0.1});
+  obs.observe(canvas);
+  window.addEventListener('resize', ()=>{if(animRunning)resize();});
+  resize(); draw();
+})();
