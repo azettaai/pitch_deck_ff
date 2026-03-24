@@ -1443,168 +1443,305 @@ function startYatManifold() {
   draw();
 }
 
-// ── Aether Models Animation (Slide 10) ────────────────────────────────
+// ── Aether Models Animation (Slide 10) — Loan Decision Narrative ──────
 function initAetherModels() {
   const canvas = document.getElementById('aether-models-canvas');
   if (!canvas) return;
   if (canvas._aetherRaf) { cancelAnimationFrame(canvas._aetherRaf); }
 
   const ctx = canvas.getContext('2d');
-  const rect = canvas.getBoundingClientRect();
+  const rectC = canvas.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
-  const W = rect.width, H = rect.height;
+  const W = rectC.width, H = rectC.height;
   canvas.width = W * dpr; canvas.height = H * dpr;
   ctx.scale(dpr, dpr);
 
-  // Model definitions (left side) — different sizes
-  const models = [
-    { id: 'S', label: 'Aether·S', params: '1B params',  size: 52, x: W*0.22, y: H*0.22, color: '#78c4a4' },
-    { id: 'M', label: 'Aether·M', params: '7B params',  size: 70, x: W*0.22, y: H*0.50, color: '#5ab5c8' },
-    { id: 'L', label: 'Aether·L', params: '13B params', size: 88, x: W*0.22, y: H*0.78, color: '#78c4a4' },
-  ];
+  // ── Palette ──────────────────────────────────────────────────────────
+  const GREEN  = '#4ff975', CYAN = '#4deeea', RED = '#ff4455',
+        ORANGE = '#f9a825', GOLD = '#f9d71c', GRAY = '#6b7f72',
+        PANEL  = 'rgba(8,18,12,0.92)';
 
-  // Industry cards (right side)
-  const industries = [
-    { label: 'Healthcare',   icon: '⚕',  x: W*0.78, y: H*0.22, color: '#4deeea' },
-    { label: 'Legal Tech',   icon: '⚖',  x: W*0.78, y: H*0.50, color: '#4ff975' },
-    { label: 'Finance',      icon: '◈',  x: W*0.78, y: H*0.78, color: '#f9d71c' },
-  ];
+  function r(hex, a) {
+    const n = parseInt(hex.replace('#',''), 16);
+    return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+  }
+  function easeOut(t) { return 1-(1-Math.min(t,1))*(1-Math.min(t,1)); }
+  function clamp(t,a,b) { return Math.max(a, Math.min(b, t)); }
+  function w01(s,e) { return clamp((tick-s)/(e-s), 0, 1); }
 
-  // Particles for each model→industry connection
-  const particles = [];
+  // ── Model box (left) ─────────────────────────────────────────────────
+  const MS   = Math.min(H * 0.48, W * 0.26, 110);   // box size
+  const MX   = MS * 0.58 + 4;                         // center x
+  const MY   = H * 0.50;                              // center y
+  const ROWS = 4, COLS = 4;
+
+  function nPos(row, col) {
+    const pad = MS * 0.18;
+    return {
+      x: MX - MS/2 + pad + col * (MS - pad*2)/(COLS-1),
+      y: MY - MS/2 + pad + row * (MS - pad*2)/(ROWS-1),
+    };
+  }
+
+  // ── Phase timeline (ticks) ───────────────────────────────────────────
+  const P = {
+    IDLE:    [0,   55],
+    QUERY:   [55,  120],
+    PROC:    [120, 175],
+    DENY:    [175, 240],
+    AUDIT:   [240, 295],
+    TRAIL:   [295, 470],
+    BIAS:    [470, 540],
+    STEER:   [540, 600],
+    REEVAL:  [600, 650],
+    APPROVE: [650, 730],
+    HOLD:    [730, 790],
+    FADE:    [790, 830],
+  };
+  const LOOP = 830;
   let tick = 0;
 
-  function spawnParticle(mIdx, iIdx, delay) {
-    particles.push({ mIdx, iIdx, t: -delay, speed: 0.006 + Math.random()*0.004 });
+  function phase() {
+    for (const [k,[s,e]] of Object.entries(P)) if (tick>=s && tick<e) return {k, t:(tick-s)/(e-s)};
+    return {k:'FADE', t:1};
   }
 
-  // Stagger spawning
-  models.forEach((m, mi) => {
-    industries.forEach((ind, ii) => {
-      for (let k = 0; k < 2; k++) {
-        spawnParticle(mi, ii, Math.random() * 160);
-      }
-    });
-  });
+  // ── Right-panel layout ───────────────────────────────────────────────
+  const RX = MX + MS/2 + 18;  // right panel start x
+  const RW = W - RX - 6;      // right panel width
 
-  function getPath(m, ind) {
-    const mx = m.x + m.size/2, my = m.y;
-    const ix = ind.x - 36, iy = ind.y;
-    const cx1 = mx + (ix-mx)*0.4, cy1 = my;
-    const cx2 = mx + (ix-mx)*0.6, cy2 = iy;
-    return { mx, my, cx1, cy1, cx2, cy2, ix, iy };
+  // Terminal row items — each has a fixed Y, appears at a given tick
+  const ITEMS = [
+    // [showTick, y_frac, type, text, color, bold]
+    [P.QUERY[0],  0.085, 'cmd',    '>> query( loan_application )',                CYAN,   false],
+    [P.QUERY[0]+20, 0.175,'label', 'client: J. Doe  |  amount: $250,000',        GRAY,   false],
+    [P.DENY[0],   0.295, 'result', '\u2717  DECISION: DENY',                     RED,    true ],
+    [P.AUDIT[0],  0.415, 'cmd',    '>> audit_trail( decision )',                  GOLD,   false],
+    [P.TRAIL[0],  0.515, 'row',    'income       $68,400   \u2192  \u2713 OK',   GREEN,  false],
+    [P.TRAIL[0]+43,0.585,'row',    'credit_score 720       \u2192  \u2713 OK',   GREEN,  false],
+    [P.TRAIL[0]+86,0.655,'row',    'debt_ratio   34%       \u2192  \u2713 OK',   GREEN,  false],
+    [P.TRAIL[0]+129,0.725,'row',   'zip_code     10452     \u2192  \u26a0 BIAS', ORANGE, true ],
+    [P.BIAS[0],   0.820, 'alert',  '\u26a0  BIAS: geographic proxy detected',    ORANGE, true ],
+    [P.STEER[0],  0.915, 'cmd',    ">> steer.remove('zip_code_proxy')",           GOLD,   false],
+  ];
+
+  // ── Draw helpers ─────────────────────────────────────────────────────
+  function drawBox(x, y, w, h, stroke, fill, radius) {
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, radius||3);
+    ctx.fillStyle = fill;   ctx.fill();
+    ctx.strokeStyle = stroke; ctx.stroke();
   }
 
-  function bezierPoint(t, p0, p1, p2, p3) {
-    const u = 1-t;
-    return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
-  }
-
-  function hexToRgba(hex, a) {
-    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-    return `rgba(${r},${g},${b},${a})`;
-  }
-
-  function drawGlassBox(m, t) {
-    const x = m.x - m.size/2, y = m.y - m.size/2;
-    const s = m.size;
-    const pulse = 0.7 + 0.3*Math.sin(t*0.04 + m.x);
-
-    // Box background
-    ctx.fillStyle = `rgba(10,18,14,0.85)`;
-    ctx.strokeStyle = hexToRgba(m.color, 0.5*pulse);
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.roundRect(x, y, s, s, 4); ctx.fill(); ctx.stroke();
-
-    // Corner accent
-    const ca = 8;
-    ctx.strokeStyle = hexToRgba(m.color, 0.9);
-    ctx.lineWidth = 2;
+  function drawCorners(x, y, s, col) {
+    const ca = 7;
+    ctx.strokeStyle = r(col, 0.9); ctx.lineWidth = 1.8;
     [[x,y],[x+s,y],[x,y+s],[x+s,y+s]].forEach(([cx,cy],i) => {
-      const sx = i%2===0?1:-1, sy = i<2?1:-1;
+      const sx=i%2===0?1:-1, sy=i<2?1:-1;
       ctx.beginPath(); ctx.moveTo(cx+sx*ca,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+sy*ca); ctx.stroke();
     });
+  }
 
-    // Neurons inside
-    const nCount = Math.round(s / 18);
-    for (let r=0; r<nCount; r++) {
-      for (let c=0; c<nCount; c++) {
-        const nx = x + s*(c+1)/(nCount+1), ny = y + s*(r+1)/(nCount+1);
-        const phase = Math.sin(t*0.05 + nx*0.1 + ny*0.1);
-        const alpha = 0.25 + 0.35*Math.max(0,phase);
-        ctx.beginPath(); ctx.arc(nx, ny, 2, 0, Math.PI*2);
-        ctx.fillStyle = hexToRgba(m.color, alpha); ctx.fill();
+  // ── Draw model glass box ─────────────────────────────────────────────
+  function drawModel() {
+    const {k} = phase();
+    // Color based on narrative state
+    let col = CYAN;
+    if (k==='DENY'||k==='AUDIT'||k==='TRAIL'||k==='BIAS') col = RED;
+    else if (k==='STEER'||k==='REEVAL') col = ORANGE;
+    else if (k==='APPROVE'||k==='HOLD'||k==='FADE') col = GREEN;
+
+    const pulse = 0.65 + 0.35*Math.sin(tick*0.05);
+    const x = MX-MS/2, y = MY-MS/2;
+
+    ctx.lineWidth = 1.5;
+    drawBox(x, y, MS, MS, r(col, 0.45*pulse), PANEL, 4);
+    drawCorners(x, y, MS, col);
+
+    // Neurons + connections
+    for (let row=0; row<ROWS; row++) {
+      for (let col2=0; col2<COLS; col2++) {
+        const np = nPos(row,col2);
+        const isBias = row===2 && col2===1;
+
+        // Connections to right neighbor
+        if (col2<COLS-1) {
+          const np2 = nPos(row,col2+1);
+          let la = 0.10;
+          if (k==='PROC'||k==='REEVAL') la = 0.10+0.35*Math.max(0,Math.sin(tick*0.14+row+col2));
+          if (isBias && (k==='TRAIL'||k==='BIAS')) la = 0.5+0.4*Math.sin(tick*0.22);
+          ctx.beginPath(); ctx.moveTo(np.x,np.y); ctx.lineTo(np2.x,np2.y);
+          ctx.strokeStyle = r(isBias&&(k==='TRAIL'||k==='BIAS')?ORANGE:col, la);
+          ctx.lineWidth = 0.8; ctx.stroke();
+        }
+        // Connections to bottom neighbor
+        if (row<ROWS-1) {
+          const np2 = nPos(row+1,col2);
+          let la = 0.10;
+          if (k==='PROC'||k==='REEVAL') la = 0.10+0.35*Math.max(0,Math.sin(tick*0.14+row+col2+2));
+          ctx.beginPath(); ctx.moveTo(np.x,np.y); ctx.lineTo(np2.x,np2.y);
+          ctx.strokeStyle = r(col, la); ctx.lineWidth = 0.8; ctx.stroke();
+        }
+
+        // Neuron dot
+        let nc=col, na=0.28;
+        if (isBias) {
+          if (k==='TRAIL'||k==='BIAS')   { nc=ORANGE; na=0.5+0.45*Math.sin(tick*0.28); }
+          else if (k==='STEER')          { nc=RED;    na=(1-phase().t)*0.6; }
+          else if (k==='REEVAL'||k==='APPROVE'||k==='HOLD') { na=0.04; }
+        } else if (k==='PROC'||k==='REEVAL') {
+          na = 0.15+0.75*Math.max(0,Math.sin(tick*0.12+row*0.9+col2*0.6));
+        } else if (k==='APPROVE'||k==='HOLD') {
+          na = 0.28+0.18*Math.sin(tick*0.06+row+col2);
+        }
+        ctx.beginPath(); ctx.arc(np.x,np.y,2.2,0,Math.PI*2);
+        ctx.fillStyle=r(nc,na); ctx.fill();
       }
     }
 
-    // Label below
-    ctx.font = `bold 9px 'IBM Plex Mono',monospace`;
-    ctx.fillStyle = hexToRgba(m.color, 0.9);
-    ctx.textAlign = 'center';
-    ctx.fillText(m.label, m.x, y + s + 13);
-    ctx.font = `8px 'IBM Plex Mono',monospace`;
-    ctx.fillStyle = hexToRgba(m.color, 0.5);
-    ctx.fillText(m.params, m.x, y + s + 23);
+    // API port line
+    ctx.setLineDash([3,3]);
+    ctx.strokeStyle = r(col, 0.4); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(MX+MS/2,MY); ctx.lineTo(MX+MS/2+10,MY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Labels
+    ctx.font = `bold 8.5px 'IBM Plex Mono',monospace`;
+    ctx.fillStyle = r(col, 0.9); ctx.textAlign='center';
+    ctx.fillText('AETHER·M', MX, y+MS+12);
+    ctx.font = `7px 'IBM Plex Mono',monospace`;
+    ctx.fillStyle = r(GRAY, 0.6);
+    ctx.fillText('FINANCIAL API', MX, y+MS+22);
   }
 
-  function drawIndustryCard(ind, t) {
-    const w = 72, h = 44;
-    const x = ind.x - w/2, y = ind.y - h/2;
-    const pulse = 0.7 + 0.3*Math.sin(t*0.035 + ind.y);
-
-    ctx.fillStyle = `rgba(10,18,22,0.9)`;
-    ctx.strokeStyle = hexToRgba(ind.color, 0.45*pulse);
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.roundRect(x, y, w, h, 4); ctx.fill(); ctx.stroke();
-
-    ctx.font = `18px serif`;
-    ctx.fillStyle = hexToRgba(ind.color, 0.85);
-    ctx.textAlign = 'center';
-    ctx.fillText(ind.icon, ind.x, ind.y + 4);
-
-    ctx.font = `bold 7.5px 'Chakra Petch',monospace`;
-    ctx.fillStyle = hexToRgba(ind.color, 0.8);
-    ctx.fillText(ind.label.toUpperCase(), ind.x, ind.y + h/2 + 2);
+  // ── Draw arrow from model to right or right to model ─────────────────
+  function drawArrow(fromModel, startTick, endTick, yFrac, col) {
+    const prog = easeOut(w01(startTick, endTick));
+    if (prog<=0) return;
+    const aY = H*yFrac;
+    const modelEdge = MX+MS/2+10;
+    const panelEdge = RX+4;
+    if (fromModel) {
+      const ex = panelEdge + (RW*0.2)*prog;
+      ctx.strokeStyle = r(col, 0.45); ctx.lineWidth=1.2; ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(modelEdge,aY); ctx.lineTo(ex,aY); ctx.stroke();
+      ctx.setLineDash([]);
+    } else {
+      const sx = panelEdge + RW*0.5 - (RW*0.5)*prog;
+      ctx.strokeStyle = r(col, 0.45); ctx.lineWidth=1.2; ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(sx,aY); ctx.lineTo(modelEdge,aY); ctx.stroke();
+      ctx.setLineDash([]);
+    }
   }
 
-  function drawConnections(t) {
-    models.forEach((m, mi) => {
-      industries.forEach((ind, ii) => {
-        const path = getPath(m, ind);
-        const alpha = 0.06 + 0.04*Math.sin(t*0.02 + mi + ii);
-        ctx.beginPath();
-        ctx.moveTo(path.mx, path.my);
-        ctx.bezierCurveTo(path.cx1, path.cy1, path.cx2, path.cy2, path.ix, path.iy);
-        ctx.strokeStyle = hexToRgba(m.color, alpha);
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      });
+  // ── Draw all right-panel items ────────────────────────────────────────
+  function drawItems() {
+    const {k} = phase();
+    // Fade out DENY when APPROVE arrives
+    const denyFade = k==='APPROVE'||k==='HOLD'||k==='FADE' ? 1-clamp(w01(P.APPROVE[0],P.APPROVE[0]+35),0,1) : 1;
+
+    ITEMS.forEach(([showAt, yFrac, type, text, col, bold]) => {
+      const alpha = easeOut(w01(showAt, showAt+30));
+      if (alpha<=0) return;
+
+      // DENY row fades when APPROVE comes in
+      const isResult = type==='result' && col===RED;
+      const fa = isResult ? alpha * denyFade : alpha;
+      if (fa<=0) return;
+
+      const iy = H * yFrac;
+      ctx.font = `${bold?'bold ':''} 8.5px 'IBM Plex Mono',monospace`;
+      const tw = ctx.measureText(text).width;
+      const pad=8, bh=18, bw=Math.max(tw+pad*2, RW*0.92);
+
+      if (type==='cmd') {
+        drawBox(RX, iy-bh/2, bw, bh, r(col,0.30*fa), r(col,0.05*fa), 3);
+        ctx.fillStyle=r(col,0.9*fa); ctx.textAlign='left';
+        ctx.fillText(text, RX+pad, iy+3.5);
+      } else if (type==='label') {
+        ctx.fillStyle=r(GRAY,0.65*fa); ctx.textAlign='left';
+        ctx.fillText(text, RX+pad, iy+3.5);
+      } else if (type==='result') {
+        const pulse = 0.8+0.2*Math.sin(tick*0.18);
+        drawBox(RX, iy-bh/2, bw, bh, r(col,0.7*fa*pulse), r(col,0.12*fa), 3);
+        ctx.fillStyle=r(col,fa*pulse); ctx.textAlign='left';
+        ctx.fillText(text, RX+pad, iy+3.5);
+      } else if (type==='row') {
+        const isBiasRow = col===ORANGE;
+        const bpulse = isBiasRow && (k==='BIAS'||k==='STEER') ? 0.75+0.25*Math.sin(tick*0.22) : 1;
+        drawBox(RX, iy-bh/2, bw, bh, r(col,0.22*fa*bpulse), r(col,0.04*fa), 2);
+        ctx.fillStyle=r(GRAY,0.8*fa); ctx.textAlign='left';
+        // left part
+        const parts = text.split('\u2192');
+        ctx.fillText(parts[0], RX+pad, iy+3.5);
+        // right part (result)
+        ctx.fillStyle=r(col,fa*bpulse); ctx.textAlign='right';
+        ctx.fillText('\u2192'+parts[1], RX+bw-pad, iy+3.5);
+        ctx.textAlign='left';
+      } else if (type==='alert') {
+        const ap = 0.7+0.3*Math.sin(tick*0.2);
+        drawBox(RX, iy-bh/2, bw, bh, r(col,0.85*fa*ap), r(col,0.16*fa), 3);
+        ctx.fillStyle=r(col,fa*ap); ctx.textAlign='left';
+        ctx.fillText(text, RX+pad, iy+3.5);
+      }
     });
+
+    // APPROVE — appears after DENY fades
+    if (tick >= P.APPROVE[0]) {
+      const fa = easeOut(w01(P.APPROVE[0], P.APPROVE[0]+40));
+      const iy = H * 0.295;
+      const bh = 18;
+      const pulse = 0.82+0.18*Math.sin(tick*0.1);
+      const bw = RW*0.92;
+      ctx.font = `bold 8.5px 'IBM Plex Mono',monospace`;
+      drawBox(RX, iy-bh/2, bw, bh, r(GREEN,0.8*fa*pulse), r(GREEN,0.14*fa), 3);
+      ctx.fillStyle = r(GREEN, fa*pulse); ctx.textAlign='left';
+      ctx.fillText('\u2713  DECISION: APPROVE', RX+8, iy+3.5);
+    }
   }
 
-  function drawParticles(t) {
-    particles.forEach(p => {
-      p.t += p.speed;
-      if (p.t > 1) p.t = -0.1 - Math.random()*0.5;
-      if (p.t < 0) return;
-      const pt = Math.min(p.t, 1);
-      const m = models[p.mIdx], ind = industries[p.iIdx];
-      const path = getPath(m, ind);
-      const px = bezierPoint(pt, path.mx, path.cx1, path.cx2, path.ix);
-      const py = bezierPoint(pt, path.my, path.cy1, path.cy2, path.iy);
-      const alpha = Math.sin(pt * Math.PI) * 0.9;
-      ctx.beginPath(); ctx.arc(px, py, 2.5, 0, Math.PI*2);
-      ctx.fillStyle = hexToRgba(m.color, alpha); ctx.fill();
-    });
+  // ── Directional arrows ────────────────────────────────────────────────
+  function drawArrows() {
+    drawArrow(false, P.QUERY[0],   P.QUERY[0]+40,  0.130, CYAN);   // query → model
+    drawArrow(true,  P.DENY[0],    P.DENY[0]+35,   0.295, RED);    // model → deny
+    drawArrow(false, P.AUDIT[0],   P.AUDIT[0]+35,  0.415, GOLD);   // audit cmd → model
+    drawArrow(true,  P.TRAIL[0],   P.TRAIL[0]+50,  0.515, CYAN);   // model → trail
+    drawArrow(false, P.STEER[0],   P.STEER[0]+40,  0.915, GOLD);   // steer → model
+    drawArrow(true,  P.APPROVE[0], P.APPROVE[0]+35,0.295, GREEN);  // model → approve
   }
 
+  // ── Phase label (top-left corner) ────────────────────────────────────
+  const PLABELS = {
+    IDLE:'READY', QUERY:'QUERYING', PROC:'PROCESSING', DENY:'RESPONSE',
+    AUDIT:'AUDIT REQUEST', TRAIL:'DECISION PATH', BIAS:'BIAS DETECTED',
+    STEER:'STEERING MODEL', REEVAL:'RE-EVALUATING', APPROVE:'CORRECTED',
+    HOLD:'CORRECTED', FADE:'CORRECTED',
+  };
+
+  // ── Main loop ─────────────────────────────────────────────────────────
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    drawConnections(tick);
-    models.forEach(m => drawGlassBox(m, tick));
-    industries.forEach(ind => drawIndustryCard(ind, tick));
-    drawParticles(tick);
+
+    const ph = phase();
+    const masterAlpha = ph.k==='FADE' ? 1-easeOut(ph.t) : 1;
+    ctx.globalAlpha = masterAlpha;
+
+    // Divider
+    ctx.strokeStyle = r(GRAY, 0.18); ctx.lineWidth=1; ctx.setLineDash([4,6]);
+    ctx.beginPath(); ctx.moveTo(RX-6,8); ctx.lineTo(RX-6,H-8); ctx.stroke();
+    ctx.setLineDash([]);
+
+    drawArrows();
+    drawModel();
+    drawItems();
+
+    // Phase label
+    ctx.font = `7px 'IBM Plex Mono',monospace`;
+    ctx.fillStyle = r(GRAY, 0.45); ctx.textAlign='left';
+    ctx.fillText(PLABELS[ph.k]||'', 4, H-6);
+
+    ctx.globalAlpha = 1;
     tick++;
+    if (tick >= LOOP) tick = 0;
     canvas._aetherRaf = requestAnimationFrame(draw);
   }
 
