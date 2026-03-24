@@ -3331,7 +3331,7 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 .yat-canvas {
   display: block;
   width: 100%;
-  height: clamp(200px, 28vh, 280px);
+  height: clamp(300px, 45vh, 480px);
   cursor: crosshair;
   background: #000;
 }
