@@ -6,7 +6,7 @@
 
 // ── State ──────────────────────────────────────────────────────────────
 let currentSlide = 1;
-const TOTAL_SLIDES = 13;
+const TOTAL_SLIDES = 15;
 
 // ── DOM refs ───────────────────────────────────────────────────────────
 let slides        = document.querySelectorAll('.slide');

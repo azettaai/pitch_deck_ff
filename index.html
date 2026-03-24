@@ -331,11 +331,130 @@
 
 
     <!-- ================================================================
-         04 — THE AZETTA APPROACH
+         04 — OUR RESEARCH
          ================================================================ -->
     <section class="slide" data-slide="4">
       <div class="content-wrapper">
-        <span class="slide-tag">// 04 — THE AZETTA APPROACH</span>
+        <span class="slide-tag">// 04 — OUR RESEARCH</span>
+        <h1>Physics Grounded AI: A New Mathematical Foundation</h1>
+        <h2>We reimagine AI through a physics lens — revealing fundamental structure that makes models interpretable, steerable, and efficient by design.</h2>
+
+        <div class="split-col" style="margin-top:1rem;">
+
+          <!-- Left: YAT Kernel -->
+          <div style="display:flex;flex-direction:column;gap:0.8rem;">
+            <div class="feature-card" style="padding:0.85rem 1rem;">
+              <h4 style="font-size:0.95rem;margin-bottom:0.5rem;color:var(--primary);">The YAT Kernel</h4>
+              <p style="margin-bottom:0.6rem;">Physics-grounded Mercer kernel capturing alignment <em>and</em> proximity — creating distinct gravity wells in representation space.</p>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;text-align:center;padding:0.6rem 0;color:var(--secondary);letter-spacing:1px;">
+                ⵟ(x, w) = (x·w)² / ‖x − w‖²
+              </div>
+              <p style="margin-top:0.5rem;font-size:0.82rem;color:var(--text-secondary);">Unlike dot products and cosines, the YAT kernel measures how much a weight vector acts as an <strong style="color:var(--text);">attractor</strong> for an input — yielding monosemantic neurons by design, not approximation.</p>
+            </div>
+
+            <div class="feature-card" style="padding:0.85rem 1rem;">
+              <h4 style="font-size:0.95rem;margin-bottom:0.4rem;color:var(--secondary);">2 Papers · ICML 2026</h4>
+              <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                <div style="display:flex;align-items:flex-start;gap:0.5rem;">
+                  <span style="color:var(--primary);font-family:'Chakra Petch',monospace;font-size:0.7rem;margin-top:0.15rem;">▸</span>
+                  <div>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text);">NoMoreDelulu</span>
+                    <span style="font-size:0.72rem;color:var(--text-secondary);margin-left:0.4rem;">Neural-Matter Networks outperform traditional architectures</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:0.5rem;">
+                  <span style="color:var(--primary);font-family:'Chakra Petch',monospace;font-size:0.7rem;margin-top:0.15rem;">▸</span>
+                  <div>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text);">SLAY Attention</span>
+                    <span style="font-size:0.72rem;color:var(--text-secondary);margin-left:0.4rem;">Linear-time YAT-powered attention, outperforms softmax</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Manifold visualization -->
+          <div>
+            <div class="pg-demo-wrap" style="height:100%;">
+              <div class="pg-demo-header">
+                <span class="pg-demo-kicker">⬡ PRESERVED GEOMETRIC MANIFOLD</span>
+                <span class="pg-phase-label">One Neuron · One Concept</span>
+              </div>
+              <div class="bb-prompt-wrap">
+                <div class="bb-prompt-row">
+                  <span class="bb-io-label">Input</span>
+                  <span class="bb-prompt-text">"the capital of Mexico is"</span>
+                </div>
+                <div class="bb-prompt-row">
+                  <span class="bb-io-label">Trace</span>
+                  <span class="bb-output-text" style="color:var(--primary);">Geography → Capital City → Named Entity → <strong>Mexico City ✓</strong></span>
+                </div>
+              </div>
+              <!-- Static manifold network diagram -->
+              <svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" width="100%" style="margin-top:0.5rem;">
+                <!-- Glass box border -->
+                <rect x="52" y="1" width="302" height="155" rx="3"
+                      fill="rgba(90,181,200,0.04)" stroke="rgba(90,181,200,0.28)"
+                      stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="203" y="11" text-anchor="middle"
+                      font-family="'IBM Plex Mono',monospace" font-size="6.5"
+                      fill="rgba(90,181,200,0.22)">· · · interpretable by design · · ·</text>
+
+                <!-- Manifold path (highlighted) -->
+                <path d="M28,80 Q95,40 140,53 Q185,66 200,80 Q215,94 260,107 Q305,120 378,80"
+                      fill="none" stroke="rgba(53,194,84,0.6)" stroke-width="2" stroke-dasharray="5,4"/>
+
+                <!-- Layer 1 nodes -->
+                <circle cx="140" cy="53" r="8" fill="rgba(53,194,84,0.25)" stroke="rgba(53,194,84,0.7)" stroke-width="1.5"/>
+                <text x="140" y="42" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(53,194,84,0.9)">Geography</text>
+                <circle cx="140" cy="80" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
+                <text x="140" y="96" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Syntax</text>
+                <circle cx="140" cy="107" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
+                <text x="140" y="122" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Emotion</text>
+
+                <!-- Layer 2 nodes -->
+                <circle cx="200" cy="80" r="8" fill="rgba(53,194,84,0.25)" stroke="rgba(53,194,84,0.7)" stroke-width="1.5"/>
+                <text x="200" y="69" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(53,194,84,0.9)">Capital City</text>
+                <circle cx="200" cy="53" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
+                <text x="200" y="42" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Grammar</text>
+                <circle cx="200" cy="107" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
+                <text x="200" y="122" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Sentiment</text>
+
+                <!-- Layer 3 nodes -->
+                <circle cx="260" cy="107" r="8" fill="rgba(53,194,84,0.25)" stroke="rgba(53,194,84,0.7)" stroke-width="1.5"/>
+                <text x="260" y="96" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(53,194,84,0.9)">Named Entity</text>
+                <circle cx="260" cy="80" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
+                <text x="260" y="69" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Verb Tense</text>
+                <circle cx="260" cy="53" r="6" fill="rgba(90,181,200,0.1)" stroke="rgba(90,181,200,0.3)" stroke-width="1"/>
+                <text x="260" y="42" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(90,181,200,0.5)">Factual</text>
+
+                <!-- Input/Output nodes -->
+                <circle cx="28" cy="80" r="7" fill="rgba(120,196,164,0.3)" stroke="#78c4a4" stroke-width="1.5"/>
+                <circle cx="378" cy="80" r="7" fill="rgba(120,196,164,0.3)" stroke="#78c4a4" stroke-width="1.5"/>
+                <text x="378" y="68" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="6" fill="rgba(53,194,84,1)" font-weight="bold">Mexico City</text>
+
+                <!-- Layer labels -->
+                <text x="28" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(120,196,164,0.45)">INPUT</text>
+                <text x="140" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(90,181,200,0.35)">LAYER 1</text>
+                <text x="200" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(90,181,200,0.35)">LAYER 2</text>
+                <text x="260" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(90,181,200,0.35)">LAYER 3</text>
+                <text x="378" y="158" text-anchor="middle" font-family="'Chakra Petch',monospace" font-size="5.5" fill="rgba(120,196,164,0.45)">OUTPUT</text>
+              </svg>
+              <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--text-secondary);margin-top:0.4rem;">Each active neuron fires for exactly one concept — full audit trail preserved</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         05 — THE AZETTA APPROACH
+         ================================================================ -->
+    <section class="slide" data-slide="5">
+      <div class="content-wrapper">
+        <span class="slide-tag">// 05 — THE AZETTA APPROACH</span>
         <h1>We are Building Glass Box Models + the Tools to Understand Them</h1>
         <h2>We believe information has its own physics, and that reimagining AI through this lens allows us to build models that are interpretable, steerable, efficient and state of the art performant.</h2>
 
@@ -413,11 +532,11 @@
 
 
     <!-- ================================================================
-         05 — COMPETITIVE LANDSCAPE
+         06 — COMPETITIVE LANDSCAPE
          ================================================================ -->
-    <section class="slide" data-slide="5">
+    <section class="slide" data-slide="6">
       <div class="content-wrapper">
-        <span class="slide-tag">// 05 — COMPETITIVE LANDSCAPE</span>
+        <span class="slide-tag">// 06 — COMPETITIVE LANDSCAPE</span>
         <h1>Everyone Else is Building Very Expensive Microscopes</h1>
         <h2>Azetta is the only player in this validated market competing with low-cost interpretability by design.</h2>
 
@@ -504,60 +623,6 @@
               <p>Arthur AI, Fiddler, W&amp;B observe <strong>outputs only</strong> — never the model internals.</p>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ================================================================
-         06 — TEAM
-         ================================================================ -->
-    <section class="slide" data-slide="6">
-      <div class="content-wrapper">
-        <span class="slide-tag">// 06 — THE TEAM</span>
-        <h1>The Founding Team</h1>
-        <h2> Founding Team balances mathematical rigor, robust entrepreneurial experience and product/business acumen.</h2>
-
-        <div class="team-grid">
-          <div class="team-card">
-            <img class="team-photo" src="team_images/taha_bouhsine_profile.jpeg" alt="Taha Bouhsine" loading="lazy" />
-            <div class="team-name">Taha Bouhsine</div>
-            <div class="team-role">Co-Founder &amp; CEO</div>
-            <p class="team-bio">Architect of the Physics Grounded AI framework. Authored the core interpretability methodology now under ICML 2026 review.</p>
-            <div class="team-tags">
-              <span class="team-tag">GOOGLE DEV</span>
-              <span class="team-tag">MATHEMATICIAN</span>
-            </div>
-          </div>
-
-          <div class="team-card">
-            <img class="team-photo" src="team_images/douglas.jpeg" alt="Douglas Seo" loading="lazy" />
-            <div class="team-name">Douglas Seo</div>
-            <div class="team-role">Co-Founder &amp; CTO</div>
-            <p class="team-bio">Third-time founder. Built and scaled two previous ventures via Founders Fund portfolio network; deep enterprise GTM experience.</p>
-            <div class="team-tags">
-              <span class="team-tag">FOUNDERS FUND</span>
-              <span class="team-tag">3× FOUNDER</span>
-              <span class="team-tag">BERKELEY CS</span>
-            </div>
-          </div>
-
-          <div class="team-card">
-            <img class="team-photo" src="team_images/jose_miguel_luna.jpeg" alt="Jose Miguel Luna" loading="lazy" />
-            <div class="team-name">Jose Miguel Luna</div>
-            <div class="team-role">Co-Founder &amp; CPO</div>
-            <p class="team-bio">Ex-Apple and ex-YC-backed Product Leader. Shipped AI/ML features to hundreds of millions of users; Columbia MBA + MS in AI/ML.</p>
-            <div class="team-tags">
-              <span class="team-tag">EX-APPLE</span>
-              <span class="team-tag">MBA + MS AI/ML</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="advisors-strip">
-          <span class="adv-label">Advisors</span>
-          <span class="adv-names">Lead Researcher at DeepMind and Anthropic</span>
-          <span class="adv-note">Name available under NDA</span>
         </div>
       </div>
     </section>
@@ -976,11 +1041,96 @@
 
 
     <!-- ================================================================
-         10 — MARKET OPPORTUNITY
+         10 — NEXT PRODUCT SPINOFF: AETHER MODELS
          ================================================================ -->
     <section class="slide" data-slide="10">
+      <div class="content-wrapper" style="display:flex;flex-direction:column;gap:0.25rem;height:100%;box-sizing:border-box;">
+        <span class="slide-tag">// 10 — NEXT PRODUCT SPINOFF</span>
+        <h1 style="margin-bottom:0.05rem;">Next Product Spinoff: Aether Models</h1>
+        <h2 style="margin-bottom:0.3rem;">Fully interpretable SOTA models, available via API. Physics Grounded AI in production.</h2>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;flex:1;min-height:0;">
+
+          <!-- Left: description + features -->
+          <div style="display:flex;flex-direction:column;gap:0.5rem;justify-content:center;">
+            <div class="feature-card" style="padding:0.75rem 1rem;">
+              <h4 style="font-size:0.95rem;margin-bottom:0.35rem;">What are Aether Models?</h4>
+              <p>Fully interpretable and steerable language models with State of the Art performance — built on Physics Grounded AI with <strong>~10× fewer parameters</strong> than leading models.</p>
+            </div>
+
+            <div class="feature-card" style="padding:0.75rem 1rem;">
+              <h4 style="font-size:0.95rem;margin-bottom:0.4rem;color:var(--primary);">Key Advantages</h4>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
+                <div style="display:flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
+                  <span style="color:var(--primary);">✓</span> Fully Interpretable
+                </div>
+                <div style="display:flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
+                  <span style="color:var(--primary);">✓</span> 10× Smaller
+                </div>
+                <div style="display:flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
+                  <span style="color:var(--primary);">✓</span> Lower Price
+                </div>
+                <div style="display:flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
+                  <span style="color:var(--primary);">✓</span> SOTA Performance
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-card" style="padding:0.75rem 1rem;">
+              <h4 class="cyan" style="font-size:0.95rem;margin-bottom:0.35rem;">Business Model</h4>
+              <p>API-first distribution — pay-per-token pricing with interpretability and steerability built in. No add-ons, no black boxes.</p>
+            </div>
+          </div>
+
+          <!-- Right: comparison table -->
+          <div style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="feature-card" style="padding:0.85rem 1rem;">
+              <h4 style="font-size:0.95rem;margin-bottom:0.7rem;text-align:center;">Aether vs. SOTA Models</h4>
+              <table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;padding:0.3rem 0.4rem;border-bottom:1px solid var(--border);color:var(--text-secondary);font-weight:400;"></th>
+                    <th style="text-align:center;padding:0.3rem 0.4rem;border-bottom:1px solid var(--border);color:var(--text-secondary);font-weight:400;">SOTA Models</th>
+                    <th style="text-align:center;padding:0.3rem 0.4rem;border-bottom:1px solid var(--border);color:var(--secondary);font-weight:600;">Aether</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--text-secondary);">Parameters</td>
+                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);">~70B</td>
+                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--primary);font-weight:600;">~7B</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--text-secondary);">Performance</td>
+                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);">SOTA</td>
+                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--primary);font-weight:600;">SOTA+</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--text-secondary);">Interpretable</td>
+                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:#e84545;">✗ black box</td>
+                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--primary);font-weight:600;">✓ fully</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:0.35rem 0.4rem;color:var(--text-secondary);">Steerable</td>
+                    <td style="text-align:center;padding:0.35rem 0.4rem;color:#e84545;font-size:0.68rem;">✗ trial &amp; error + retraining</td>
+                    <td style="text-align:center;padding:0.35rem 0.4rem;color:var(--primary);font-weight:600;font-size:0.68rem;">✓ targeted, no retraining</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         11 — MARKET OPPORTUNITY
+         ================================================================ -->
+    <section class="slide" data-slide="11">
       <div class="content-wrapper">
-        <span class="slide-tag">// 10 — MARKET OPPORTUNITY</span>
+        <span class="slide-tag">// 11 — MARKET OPPORTUNITY</span>
         <h1>Periodica Market: $1B Today, $25B by 2035.</h1>
         <h2>2K+ companies training proprietary models, growing 38% YoY with significant automation and regulation tailwinds.</h2>
 
@@ -1048,11 +1198,11 @@
 
 
     <!-- ================================================================
-         11 — EXIT SCENARIOS
+         12 — EXIT SCENARIOS
          ================================================================ -->
-    <section class="slide" data-slide="11">
+    <section class="slide" data-slide="12">
       <div class="content-wrapper">
-        <span class="slide-tag">// 11 — EXIT SCENARIOS</span>
+        <span class="slide-tag">// 12 — EXIT SCENARIOS</span>
         <h1>Three Exit Scenarios</h1>
         <h2>We are building for the long run, but expect highly attractive returns multiples even with more conservative scenarios.</h2>
 
@@ -1106,11 +1256,65 @@
 
 
     <!-- ================================================================
-         12 — THE ASK
+         13 — THE TEAM
          ================================================================ -->
-    <section class="slide" data-slide="12">
+    <section class="slide" data-slide="13">
       <div class="content-wrapper">
-        <span class="slide-tag">// 12 — THE ASK</span>
+        <span class="slide-tag">// 13 — THE TEAM</span>
+        <h1>The Founding Team</h1>
+        <h2> Founding Team balances mathematical rigor, robust entrepreneurial experience and product/business acumen.</h2>
+
+        <div class="team-grid">
+          <div class="team-card">
+            <img class="team-photo" src="team_images/taha_bouhsine_profile.jpeg" alt="Taha Bouhsine" loading="lazy" />
+            <div class="team-name">Taha Bouhsine</div>
+            <div class="team-role">Co-Founder &amp; CEO</div>
+            <p class="team-bio">Architect of the Physics Grounded AI framework. Authored the core interpretability methodology now under ICML 2026 review.</p>
+            <div class="team-tags">
+              <span class="team-tag">GOOGLE DEV</span>
+              <span class="team-tag">MATHEMATICIAN</span>
+            </div>
+          </div>
+
+          <div class="team-card">
+            <img class="team-photo" src="team_images/douglas.jpeg" alt="Douglas Seo" loading="lazy" />
+            <div class="team-name">Douglas Seo</div>
+            <div class="team-role">Co-Founder &amp; CTO</div>
+            <p class="team-bio">Third-time founder. Built and scaled two previous ventures via Founders Fund portfolio network; deep enterprise GTM experience.</p>
+            <div class="team-tags">
+              <span class="team-tag">FOUNDERS FUND</span>
+              <span class="team-tag">3× FOUNDER</span>
+              <span class="team-tag">BERKELEY CS</span>
+            </div>
+          </div>
+
+          <div class="team-card">
+            <img class="team-photo" src="team_images/jose_miguel_luna.jpeg" alt="Jose Miguel Luna" loading="lazy" />
+            <div class="team-name">Jose Miguel Luna</div>
+            <div class="team-role">Co-Founder &amp; CPO</div>
+            <p class="team-bio">Ex-Apple and ex-YC-backed Product Leader. Shipped AI/ML features to hundreds of millions of users; Columbia MBA + MS in AI/ML.</p>
+            <div class="team-tags">
+              <span class="team-tag">EX-APPLE</span>
+              <span class="team-tag">MBA + MS AI/ML</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="advisors-strip">
+          <span class="adv-label">Advisors</span>
+          <span class="adv-names">Established Researchers in Interpretability Space and Experienced Technical Entrepreneurs</span>
+          <span class="adv-note">Names available under NDA</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         14 — THE ASK
+         ================================================================ -->
+    <section class="slide" data-slide="14">
+      <div class="content-wrapper">
+        <span class="slide-tag">// 14 — THE ASK</span>
 
         <div class="ask-amount">$250,000</div>
 
@@ -1209,9 +1413,9 @@
 
 
     <!-- ================================================================
-         13 — CLOSING
+         15 — CLOSING
          ================================================================ -->
-    <section class="slide" data-slide="13">
+    <section class="slide" data-slide="15">
       <div class="content-wrapper">
         <!-- Atom SVG logo -->
         <div style="margin-bottom:1.4rem;">
