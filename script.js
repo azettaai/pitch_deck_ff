@@ -1432,6 +1432,7 @@ function startYatManifold() {
   }
 
   canvas.onclick = e => {
+    e.stopPropagation();
     const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left-w/2,my=e.clientY-rect.top-h/2+10;
     const c=Math.cos(-rotationAngle),s=Math.sin(-rotationAngle),wx=mx*c-(my/tiltAngle)*s,wy=mx*s+(my/tiltAngle)*c;
     for(let i=0;i<neurons.length;i++){const dx=neurons[i].x-wx,dy=neurons[i].y-wy;if(Math.sqrt(dx*dx+dy*dy)<20&&neurons.length>1){neurons.splice(i,1);return;}}
