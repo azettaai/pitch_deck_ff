@@ -962,80 +962,99 @@
          10 — NEXT PRODUCT SPINOFF: AETHER MODELS
          ================================================================ -->
     <section class="slide" data-slide="10">
-      <div class="content-wrapper" style="display:flex;flex-direction:column;gap:0.25rem;height:100%;box-sizing:border-box;">
+      <div class="content-wrapper" style="display:flex;flex-direction:column;gap:0.5rem;height:100%;box-sizing:border-box;justify-content:center;">
         <span class="slide-tag">// 10 — NEXT PRODUCT SPINOFF</span>
-        <h1 style="margin-bottom:0.05rem;">Next Product Spinoff: Aether Models</h1>
-        <h2 style="margin-bottom:0.3rem;">Fully interpretable SOTA models, available via API. Physics Grounded AI in production.</h2>
+        <h1>Next Product Spinoff: Aether Models</h1>
+        <h2>Fully interpretable SOTA models, available via API. Physics Grounded AI in production.</h2>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;flex:1;min-height:0;">
+        <div class="aether-slide-grid">
 
-          <!-- Left: description + features -->
-          <div style="display:flex;flex-direction:column;gap:0.5rem;justify-content:center;">
-            <div class="feature-card" style="padding:0.75rem 1rem;">
-              <h4 style="font-size:0.95rem;margin-bottom:0.35rem;">What are Aether Models?</h4>
-              <p>Fully interpretable and steerable language models with State of the Art performance — built on Physics Grounded AI with <strong>~10× fewer parameters</strong> than leading models.</p>
-            </div>
+          <!-- Left: highlights + comparison table -->
+          <div style="display:flex;flex-direction:column;gap:1rem;">
 
-            <div class="feature-card" style="padding:0.75rem 1rem;">
-              <h4 style="font-size:0.95rem;margin-bottom:0.4rem;color:var(--primary);">Key Advantages</h4>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
-                <div style="display:flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
-                  <span style="color:var(--primary);">✓</span> Fully Interpretable
+            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+              <div class="aether-highlight-row">
+                <span class="aether-hl-check">✓</span>
+                <div>
+                  <span class="aether-hl-title">Fully Interpretable &amp; Steerable</span>
+                  <span class="aether-hl-desc">Every neuron maps to one concept. Correct behavior directly — no retraining required.</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
-                  <span style="color:var(--primary);">✓</span> 10× Smaller
+              </div>
+              <div class="aether-highlight-row">
+                <span class="aether-hl-check">✓</span>
+                <div>
+                  <span class="aether-hl-title">No Efficiency Sacrifice</span>
+                  <span class="aether-hl-desc">~10× fewer parameters than leading SOTA models at equivalent or better performance.</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
-                  <span style="color:var(--primary);">✓</span> Lower Price
-                </div>
-                <div style="display:flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
-                  <span style="color:var(--primary);">✓</span> SOTA Performance
+              </div>
+              <div class="aether-highlight-row">
+                <span class="aether-hl-check">✓</span>
+                <div>
+                  <span class="aether-hl-title">API-First, Drop-In Replacement</span>
+                  <span class="aether-hl-desc">Same API surface as frontier models. Switch without changing your stack.</span>
                 </div>
               </div>
             </div>
 
-            <div class="feature-card" style="padding:0.75rem 1rem;">
-              <h4 class="cyan" style="font-size:0.95rem;margin-bottom:0.35rem;">Business Model</h4>
-              <p>API-first distribution — pay-per-token pricing with interpretability and steerability built in. No add-ons, no black boxes.</p>
+            <div class="aether-compare">
+              <div class="ac-header">
+                <div class="ac-metric-spacer"></div>
+                <div class="ac-col-label ac-sota-label">SOTA Models</div>
+                <div class="ac-col-label ac-aether-label">Aether</div>
+              </div>
+              <div class="ac-row">
+                <div class="ac-metric-name">Size</div>
+                <div class="ac-sota-cell">
+                  <span class="ac-val">~70B</span>
+                  <span class="ac-sub">avg. parameters</span>
+                  <div class="ac-bar-wrap"><div class="ac-bar ac-bar-sota ac-bar-animate" style="--w:100%;"></div></div>
+                </div>
+                <div class="ac-aether-cell">
+                  <span class="ac-val ac-good">~7B</span>
+                  <span class="ac-sub ac-good">10× smaller</span>
+                  <div class="ac-bar-wrap"><div class="ac-bar ac-bar-aether ac-bar-animate" style="--w:10%;"></div></div>
+                </div>
+              </div>
+              <div class="ac-row">
+                <div class="ac-metric-name">Performance</div>
+                <div class="ac-sota-cell">
+                  <span class="ac-val">SOTA</span>
+                  <div class="ac-bar-wrap"><div class="ac-bar ac-bar-sota ac-bar-animate" style="--w:87%;"></div></div>
+                </div>
+                <div class="ac-aether-cell">
+                  <span class="ac-val ac-good">SOTA+</span>
+                  <div class="ac-bar-wrap"><div class="ac-bar ac-bar-aether ac-bar-animate" style="--w:95%;"></div></div>
+                </div>
+              </div>
+              <div class="ac-row">
+                <div class="ac-metric-name">Interpretable</div>
+                <div class="ac-sota-cell ac-cell-bool">
+                  <span class="ac-cross">✗</span>
+                  <span class="ac-sub">black box</span>
+                </div>
+                <div class="ac-aether-cell ac-cell-bool">
+                  <span class="ac-check">✓</span>
+                  <span class="ac-sub ac-good">fully interpretable</span>
+                </div>
+              </div>
+              <div class="ac-row">
+                <div class="ac-metric-name">Steerable</div>
+                <div class="ac-sota-cell ac-cell-bool">
+                  <span class="ac-cross">✗</span>
+                  <span class="ac-sub">trial &amp; error + retraining</span>
+                </div>
+                <div class="ac-aether-cell ac-cell-bool">
+                  <span class="ac-check">✓</span>
+                  <span class="ac-sub ac-good">targeted, no retraining</span>
+                </div>
+              </div>
             </div>
+
           </div>
 
-          <!-- Right: comparison table -->
-          <div style="display:flex;flex-direction:column;justify-content:center;">
-            <div class="feature-card" style="padding:0.85rem 1rem;">
-              <h4 style="font-size:0.95rem;margin-bottom:0.7rem;text-align:center;">Aether vs. SOTA Models</h4>
-              <table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">
-                <thead>
-                  <tr>
-                    <th style="text-align:left;padding:0.3rem 0.4rem;border-bottom:1px solid var(--border);color:var(--text-secondary);font-weight:400;"></th>
-                    <th style="text-align:center;padding:0.3rem 0.4rem;border-bottom:1px solid var(--border);color:var(--text-secondary);font-weight:400;">SOTA Models</th>
-                    <th style="text-align:center;padding:0.3rem 0.4rem;border-bottom:1px solid var(--border);color:var(--secondary);font-weight:600;">Aether</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style="padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--text-secondary);">Parameters</td>
-                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);">~70B</td>
-                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--primary);font-weight:600;">~7B</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--text-secondary);">Performance</td>
-                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);">SOTA</td>
-                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--primary);font-weight:600;">SOTA+</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--text-secondary);">Interpretable</td>
-                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:#e84545;">✗ black box</td>
-                    <td style="text-align:center;padding:0.35rem 0.4rem;border-bottom:1px solid rgba(255,255,255,0.06);color:var(--primary);font-weight:600;">✓ fully</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:0.35rem 0.4rem;color:var(--text-secondary);">Steerable</td>
-                    <td style="text-align:center;padding:0.35rem 0.4rem;color:#e84545;font-size:0.68rem;">✗ trial &amp; error + retraining</td>
-                    <td style="text-align:center;padding:0.35rem 0.4rem;color:var(--primary);font-weight:600;font-size:0.68rem;">✓ targeted, no retraining</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <!-- Right: animated glass-box model family -->
+          <div class="aether-canvas-wrap">
+            <canvas id="aether-models-canvas"></canvas>
           </div>
 
         </div>

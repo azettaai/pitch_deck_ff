@@ -82,12 +82,13 @@ function onSlideEnter(n) {
   if (n === 3) { initBlackboxDemo(); return; }
   if (n === 4) { startYatManifold(); return; }
   if (n === 5) { initPGDemo();       return; }
-  if (n === 7) { initFlywheel();     return; }
+  if (n === 7)  { initFlywheel();      return; }
+  if (n === 10) { initAetherModels();  return; }
   if (initiated.has(n)) return;
   initiated.add(n);
 
   switch (n) {
-    case 10: initTAMChart(); break;
+    case 11: initTAMChart(); break;
     case 2:  animateStatNumbers(); break;
     case 9:  initPeriodica(); pdShowScreen('pd-splash'); break;
   }
@@ -1438,6 +1439,174 @@ function startYatManifold() {
     for(let i=0;i<neurons.length;i++){const dx=neurons[i].x-wx,dy=neurons[i].y-wy;if(Math.sqrt(dx*dx+dy*dy)<20&&neurons.length>1){neurons.splice(i,1);return;}}
     if(neurons.length<5)neurons.push({x:Math.max(-120,Math.min(120,wx)),y:Math.max(-120,Math.min(120,wy)),color:neuronColors[neurons.length%neuronColors.length]});
   };
+
+  draw();
+}
+
+// ── Aether Models Animation (Slide 10) ────────────────────────────────
+function initAetherModels() {
+  const canvas = document.getElementById('aether-models-canvas');
+  if (!canvas) return;
+  if (canvas._aetherRaf) { cancelAnimationFrame(canvas._aetherRaf); }
+
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const W = rect.width, H = rect.height;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  // Model definitions (left side) — different sizes
+  const models = [
+    { id: 'S', label: 'Aether·S', params: '1B params',  size: 52, x: W*0.22, y: H*0.22, color: '#78c4a4' },
+    { id: 'M', label: 'Aether·M', params: '7B params',  size: 70, x: W*0.22, y: H*0.50, color: '#5ab5c8' },
+    { id: 'L', label: 'Aether·L', params: '13B params', size: 88, x: W*0.22, y: H*0.78, color: '#78c4a4' },
+  ];
+
+  // Industry cards (right side)
+  const industries = [
+    { label: 'Healthcare',   icon: '⚕',  x: W*0.78, y: H*0.22, color: '#4deeea' },
+    { label: 'Legal Tech',   icon: '⚖',  x: W*0.78, y: H*0.50, color: '#4ff975' },
+    { label: 'Finance',      icon: '◈',  x: W*0.78, y: H*0.78, color: '#f9d71c' },
+  ];
+
+  // Particles for each model→industry connection
+  const particles = [];
+  let tick = 0;
+
+  function spawnParticle(mIdx, iIdx, delay) {
+    particles.push({ mIdx, iIdx, t: -delay, speed: 0.006 + Math.random()*0.004 });
+  }
+
+  // Stagger spawning
+  models.forEach((m, mi) => {
+    industries.forEach((ind, ii) => {
+      for (let k = 0; k < 2; k++) {
+        spawnParticle(mi, ii, Math.random() * 160);
+      }
+    });
+  });
+
+  function getPath(m, ind) {
+    const mx = m.x + m.size/2, my = m.y;
+    const ix = ind.x - 36, iy = ind.y;
+    const cx1 = mx + (ix-mx)*0.4, cy1 = my;
+    const cx2 = mx + (ix-mx)*0.6, cy2 = iy;
+    return { mx, my, cx1, cy1, cx2, cy2, ix, iy };
+  }
+
+  function bezierPoint(t, p0, p1, p2, p3) {
+    const u = 1-t;
+    return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
+  }
+
+  function hexToRgba(hex, a) {
+    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  function drawGlassBox(m, t) {
+    const x = m.x - m.size/2, y = m.y - m.size/2;
+    const s = m.size;
+    const pulse = 0.7 + 0.3*Math.sin(t*0.04 + m.x);
+
+    // Box background
+    ctx.fillStyle = `rgba(10,18,14,0.85)`;
+    ctx.strokeStyle = hexToRgba(m.color, 0.5*pulse);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(x, y, s, s, 4); ctx.fill(); ctx.stroke();
+
+    // Corner accent
+    const ca = 8;
+    ctx.strokeStyle = hexToRgba(m.color, 0.9);
+    ctx.lineWidth = 2;
+    [[x,y],[x+s,y],[x,y+s],[x+s,y+s]].forEach(([cx,cy],i) => {
+      const sx = i%2===0?1:-1, sy = i<2?1:-1;
+      ctx.beginPath(); ctx.moveTo(cx+sx*ca,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+sy*ca); ctx.stroke();
+    });
+
+    // Neurons inside
+    const nCount = Math.round(s / 18);
+    for (let r=0; r<nCount; r++) {
+      for (let c=0; c<nCount; c++) {
+        const nx = x + s*(c+1)/(nCount+1), ny = y + s*(r+1)/(nCount+1);
+        const phase = Math.sin(t*0.05 + nx*0.1 + ny*0.1);
+        const alpha = 0.25 + 0.35*Math.max(0,phase);
+        ctx.beginPath(); ctx.arc(nx, ny, 2, 0, Math.PI*2);
+        ctx.fillStyle = hexToRgba(m.color, alpha); ctx.fill();
+      }
+    }
+
+    // Label below
+    ctx.font = `bold 9px 'IBM Plex Mono',monospace`;
+    ctx.fillStyle = hexToRgba(m.color, 0.9);
+    ctx.textAlign = 'center';
+    ctx.fillText(m.label, m.x, y + s + 13);
+    ctx.font = `8px 'IBM Plex Mono',monospace`;
+    ctx.fillStyle = hexToRgba(m.color, 0.5);
+    ctx.fillText(m.params, m.x, y + s + 23);
+  }
+
+  function drawIndustryCard(ind, t) {
+    const w = 72, h = 44;
+    const x = ind.x - w/2, y = ind.y - h/2;
+    const pulse = 0.7 + 0.3*Math.sin(t*0.035 + ind.y);
+
+    ctx.fillStyle = `rgba(10,18,22,0.9)`;
+    ctx.strokeStyle = hexToRgba(ind.color, 0.45*pulse);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 4); ctx.fill(); ctx.stroke();
+
+    ctx.font = `18px serif`;
+    ctx.fillStyle = hexToRgba(ind.color, 0.85);
+    ctx.textAlign = 'center';
+    ctx.fillText(ind.icon, ind.x, ind.y + 4);
+
+    ctx.font = `bold 7.5px 'Chakra Petch',monospace`;
+    ctx.fillStyle = hexToRgba(ind.color, 0.8);
+    ctx.fillText(ind.label.toUpperCase(), ind.x, ind.y + h/2 + 2);
+  }
+
+  function drawConnections(t) {
+    models.forEach((m, mi) => {
+      industries.forEach((ind, ii) => {
+        const path = getPath(m, ind);
+        const alpha = 0.06 + 0.04*Math.sin(t*0.02 + mi + ii);
+        ctx.beginPath();
+        ctx.moveTo(path.mx, path.my);
+        ctx.bezierCurveTo(path.cx1, path.cy1, path.cx2, path.cy2, path.ix, path.iy);
+        ctx.strokeStyle = hexToRgba(m.color, alpha);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+    });
+  }
+
+  function drawParticles(t) {
+    particles.forEach(p => {
+      p.t += p.speed;
+      if (p.t > 1) p.t = -0.1 - Math.random()*0.5;
+      if (p.t < 0) return;
+      const pt = Math.min(p.t, 1);
+      const m = models[p.mIdx], ind = industries[p.iIdx];
+      const path = getPath(m, ind);
+      const px = bezierPoint(pt, path.mx, path.cx1, path.cx2, path.ix);
+      const py = bezierPoint(pt, path.my, path.cy1, path.cy2, path.iy);
+      const alpha = Math.sin(pt * Math.PI) * 0.9;
+      ctx.beginPath(); ctx.arc(px, py, 2.5, 0, Math.PI*2);
+      ctx.fillStyle = hexToRgba(m.color, alpha); ctx.fill();
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawConnections(tick);
+    models.forEach(m => drawGlassBox(m, tick));
+    industries.forEach(ind => drawIndustryCard(ind, tick));
+    drawParticles(tick);
+    tick++;
+    canvas._aetherRaf = requestAnimationFrame(draw);
+  }
 
   draw();
 }
