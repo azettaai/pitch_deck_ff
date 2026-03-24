@@ -3240,7 +3240,7 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 /* ── Slide 04: YAT Kernel / Our Approach ─────────────────────────────── */
 .yat-container {
   display: grid;
-  grid-template-columns: 5fr 7fr;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
   align-items: center;
 }
