@@ -80,7 +80,8 @@ const initiated = new Set();
 
 function onSlideEnter(n) {
   if (n === 3) { initBlackboxDemo(); return; }
-  if (n === 4) { initPGDemo();       return; }
+  if (n === 4) { startYatManifold(); return; }
+  if (n === 5) { initPGDemo();       return; }
   if (n === 7) { initFlywheel();     return; }
   if (initiated.has(n)) return;
   initiated.add(n);
@@ -1370,22 +1371,23 @@ function stopFlywheel() {
 })();
 
 // ── YAT Kernel Manifold (Slide 04) ────────────────────────────────────
-(function initYatManifold() {
+let yatRafId = null;
+function startYatManifold() {
   const canvas = document.getElementById('yat-manifold-canvas');
   if (!canvas) return;
+  if (yatRafId) { cancelAnimationFrame(yatRafId); yatRafId = null; }
+
   const ctx = canvas.getContext('2d');
-  let w, h, animRunning = false, rafId = null;
   let rotationAngle = 0.5;
   const tiltAngle = 0.6;
   const neuronColors = ['#4ff975', '#4deeea', '#f9d71c', '#f038ff', '#ed217c'];
   let neurons = [{ x: 80, y: 60, color: neuronColors[0] }];
 
-  function resize() {
-    const rect = canvas.getBoundingClientRect();
-    w = rect.width; h = rect.height;
-    canvas.width = w * devicePixelRatio; canvas.height = h * devicePixelRatio;
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  canvas.width = w * devicePixelRatio; canvas.height = h * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
   function computeYat(px, py, n) {
     const dot = n.x*px + n.y*py, dx = px-n.x, dy = py-n.y, d2 = dx*dx+dy*dy;
     return d2 < 0.01 ? 200 : (dot*dot)/d2;
@@ -1426,19 +1428,15 @@ function stopFlywheel() {
     ctx.font='9px monospace';ctx.fillStyle='rgba(79,249,117,0.6)';ctx.textAlign='left';ctx.fillText('ⵟ = Σ (x·wᵢ)² / ||x-wᵢ||²',10,h-10);
     ctx.textAlign='right';ctx.fillText(`neurons: ${neurons.length}/5`,w-10,h-10);
     rotationAngle+=0.003;
-    if(animRunning) rafId=requestAnimationFrame(draw);
+    yatRafId = requestAnimationFrame(draw);
   }
-  canvas.addEventListener('click', e => {
+
+  canvas.onclick = e => {
     const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left-w/2,my=e.clientY-rect.top-h/2+10;
     const c=Math.cos(-rotationAngle),s=Math.sin(-rotationAngle),wx=mx*c-(my/tiltAngle)*s,wy=mx*s+(my/tiltAngle)*c;
     for(let i=0;i<neurons.length;i++){const dx=neurons[i].x-wx,dy=neurons[i].y-wy;if(Math.sqrt(dx*dx+dy*dy)<20&&neurons.length>1){neurons.splice(i,1);return;}}
     if(neurons.length<5)neurons.push({x:Math.max(-120,Math.min(120,wx)),y:Math.max(-120,Math.min(120,wy)),color:neuronColors[neurons.length%neuronColors.length]});
-  });
-  const obs = new IntersectionObserver(entries => entries.forEach(e => {
-    if(e.isIntersecting){animRunning=true;resize();if(!rafId)draw();}
-    else{animRunning=false;if(rafId){cancelAnimationFrame(rafId);rafId=null;}}
-  }), {threshold:0.1});
-  obs.observe(canvas);
-  window.addEventListener('resize', ()=>{if(animRunning)resize();});
-  resize(); draw();
-})();
+  };
+
+  draw();
+}
