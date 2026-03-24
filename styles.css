@@ -3242,7 +3242,7 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
-  align-items: start;
+  align-items: stretch;
 }
 .yat-content {
   display: flex;
@@ -3333,7 +3333,7 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   display: block;
   width: 100%;
   flex: 1;
-  min-height: 0;
+  min-height: 200px;
   cursor: crosshair;
   background: #000;
 }
