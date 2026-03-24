@@ -1,125 +1,125 @@
-# Azetta.ai Investor Pitch Deck
+# Azetta.ai — Friends & Family Pitch Deck
 
-> **Interactive pitch deck for Azetta.ai — Foundational AI Research Lab pioneering interpretable and efficient intelligence through YAT-Product mathematics.**
+> **Interactive pitch deck for Azetta.ai — Physics Grounded AI research lab building interpretable, steerable, and efficient AI systems.**
 
-![Status](https://img.shields.io/badge/status-Pre--Seed-blue.svg)
+![Status](https://img.shields.io/badge/status-Friends_%26_Family_Round-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-GitHub%20Pages-green.svg)
 ![Live](https://img.shields.io/badge/demo-live-brightgreen.svg)
 
----
-
-## 📄 Overview
-
-This repository contains the **interactive investor pitch deck** for **Azetta.ai**, featuring:
-
-- **YAT-Product Mathematical Foundation** — Research approach and validation results
-- **Go-to-Market Products** — Omnilingual, Cosma DB, and Periodica
-- **Business Model & Unit Economics** — Projected revenue, EBITDA targets, and funding requirements
-- **Interactive Technical Explanations** — Hover tooltips for deep dives into key concepts
+**🌐 Live Deck:** [https://www.azetta.ai/pitch_deck_ff/](https://www.azetta.ai/pitch_deck_ff/)
 
 ---
 
-## 🎯 Go-to-Market Products
+## Overview
 
-YAT-Product research enables three product applications:
+This repository contains the **interactive Friends & Family investor pitch deck** for **Azetta.ai**, a Physics Grounded AI research lab building glass-box models that are interpretable, steerable, and efficient by design.
+
+---
+
+## Deck Structure (15 Slides)
+
+| # | Slide | Description |
+|---|-------|-------------|
+| 01 | Cover | Friends & Family Round — Feb 2026 |
+| 02 | The Problem | AI scaled without interpretability; every major AI risk traces back to this gap |
+| 03 | The Incumbent Approach | How black-box models work and why they fail |
+| 04 | Our Research | YAT kernel formula, manifold geometry, and 2 ICML 2026 papers |
+| 05 | The Azetta Approach | Physics Grounded AI: Interpretable, Steerable, Efficient, Performant |
+| 06 | Competitive Landscape | 2×2 matrix positioning Azetta vs. the field |
+| 07 | Go-To-Market | Research → Patent → Build → Publish → Sell → Enterprise flywheel |
+| 08 | Research Agenda | NoMoreDelulu & SLAY Attention (ICML 2026); NeurIPS roadmap |
+| 09 | First Product Spinoff: Periodica | Full model interpretability & steering platform |
+| 10 | Next Product Spinoff: Aether Models | Fully interpretable SOTA models via API, ~10× fewer parameters |
+| 11 | Market Opportunity | $1B SAM today → $25B by 2035 at 38% CAGR |
+| 12 | Exit Scenarios | Acqui-hire ($50–100M) → Strategic acquisition → IPO-scale |
+| 13 | The Team | Taha Bouhsine (CEO), Douglas Seo (CTO), Jose Miguel Luna (CPO) + Advisors |
+| 14 | The Ask | $250K F&F · Post-Money SAFE · $5M cap · Min. $50K ticket |
+| 15 | Closing | contact@azetta.ai |
+
+---
+
+## The Science: YAT Kernel
+
+The core innovation is the **YAT kernel** — a physics-grounded Mercer kernel that replaces the dot product in neural networks:
+
+```
+ⵟ(x, w) = (x·w)² / ‖x − w‖²
+```
+
+Unlike dot products and cosines, the YAT kernel measures how much a weight vector acts as an **attractor** for an input — yielding monosemantic neurons by design, not approximation. Each neuron fires for exactly one concept, preserving a geometric manifold that creates a full audit trail from input to output.
+
+**Research output:** 2 papers submitted to ICML 2026 — *NoMoreDelulu* and *SLAY Attention*.
+
+---
+
+## Products
 
 | Product | Description | Status |
 |---------|-------------|--------|
-| **YAT-Product** | First-Principled Gravitational Mercer Kernel replacing dot-product in neural networks | Research Foundation |
-| **Omnilingual** | Multilingual embedding models within unified YAT-Product latent space | In Development |
-| **Cosma DB** | High-performance vector database utilizing YAT-Product based embeddings | Architecture Designed |
-| **Periodica** | Full-interpretability suite for safety-critical industries | Planned |
-
-### Core Innovation (YAT-Product Mathematics)
-
-- **10x Smaller Models** — Projected 100M params achieving performance of 500M+ standard models
-- **90% More Efficient** — Inference and indexing efficiency (projected)
-- **White-Box Interpretable** — Every weight and gradient traces back to physical principles
-- **Enables Applications** — Cosma DB's efficient operations and Omnilingual's unified latent space
-
-**Validation Status:**
-- Vision tasks: CIFAR-100 (+2.68%), STL-10 (+2.49%), ImageNet-1K (+1.11%) ✓ Validated
-- Language models: AetherGPT (YatFormer) competitive with GPT-2 ✓ Small-scale validated
-- Production-scale (100M+ params): Requires GPU infrastructure for benchmarking
-
-**Research Availability:** Code and models available on [pypi.org](https://pypi.org/project/nmn/) and [arXiv](https://arxiv.org/search/cs?searchtype=author&query=Bouhsine%2C+T). Collaboration with Prof. Krzysztof Choromanski (Google DeepMind & Columbia University).
+| **Periodica** | Full model interpretability & steering platform. Upload any model — get a neuron map and direct steering controls, no retraining required. | First spinoff |
+| **Aether Models** | Fully interpretable SOTA language models available via API. ~7B params vs ~70B for comparable SOTA models. | Next spinoff |
 
 ---
 
-## 📁 Repository Structure
+## The Ask
 
-```
-azetta_pitch_deck/
-├── index.html             # Interactive pitch deck
-├── styles.css             # CRT terminal styling
-├── script.js              # Navigation & visualizations
-├── concepts.js            # Tooltip system
-└── README.md
-```
+| Term | Detail |
+|------|--------|
+| Round | Friends & Family |
+| Amount | $250,000 |
+| Instrument | Post-Money SAFE |
+| Valuation Cap | $5M |
+| Minimum Ticket | $50,000 |
+| Runway | 6 months to Pre-Seed |
+
+**Use of Funds:** 40% Talent · 30% Compute · 30% Business Operations
 
 ---
 
-## 🖥️ Interactive Pitch Deck
+## Repository Structure
 
-**🌐 Live Demo:** [https://azettaai.github.io/azetta_pitch_deck/](https://azettaai.github.io/azetta_pitch_deck/)
-
-The pitch deck features:
-
-- **CRT Terminal Aesthetic** — Retro-futuristic green phosphor design
-- **Interactive Tooltips** — Click any highlighted term for detailed explanation
-- **Animated Visualizations** — Canvas-based complexity graphs and platform diagrams
-- **Keyboard Navigation** — Arrow keys, Home/End, F for fullscreen
+```
+pitch_deck_ff/
+├── index.html              # Pitch deck (source, read by build.js)
+├── styles.css              # Dark physics-themed UI
+├── script.js               # Navigation & interactive visualizations
+├── build.js                # Encrypts deck and outputs to dist/ for deployment
+├── logos/                  # Competitor and partner logos
+├── team_images/            # Founder photos
+├── Assets/                 # Diagrams and supporting images
+└── New_Pitch_Deck/         # Development working copy
+```
 
 ### Running Locally
 
 ```bash
-# Simply open in browser
-open index.html
-
-# Or serve with any HTTP server
+# Serve with any HTTP server (file:// won't work due to JS modules)
 python -m http.server 8000
-# Then open http://localhost:8000
+# Open http://localhost:8000
 ```
 
----
+### Deployment
 
-## 📊 Financial Summary
-
-**Note:** Financial projections are contingent on successful model training and benchmark validation.
-
-| Metric | Year 1 | Year 3 | Year 5 |
-|--------|--------|--------|--------|
-| ARR (Projected) | $350K | $10.4M | $44.6M |
-| Customers | 5 | 75 | 200 |
-| Team Size | 4 | 12 | 19 |
-| EBITDA | -$1.1M | -$0.9M | +$8.0M |
-
-**Funding Ask:** $2M Pre-Seed Round (Minimum check: $50K)
-
-**Use of Funds:**
-- $1,000,000 (50%): 5 World-Class Machine Learning Engineers
-- $700,000 (35%): GPU Compute and Infrastructure
-- $300,000 (15%): Legal, Operations, and GTM Strategy
+Pushes to `main` trigger the **Encrypt & Deploy** GitHub Actions workflow, which:
+1. Runs `build.js` to AES-256-GCM encrypt the deck content (password stored as `DECK_PASSWORD` secret)
+2. Outputs to `dist/`
+3. Deploys to GitHub Pages → [https://www.azetta.ai/pitch_deck_ff/](https://www.azetta.ai/pitch_deck_ff/)
 
 ---
 
-## 🔧 Building the Whitepaper
+## Team
 
-Requires TeX Live or similar LaTeX distribution:
-
-```bash
-cd tex
-latexmk -pdf main.tex
-```
+- **Taha Bouhsine** — Co-Founder & CEO. Architect of Physics Grounded AI. ICML 2026 author.
+- **Douglas Seo** — Co-Founder & CTO. 3× founder, Founders Fund network, Berkeley CS.
+- **Jose Miguel Luna** — Co-Founder & CPO. Ex-Apple, Columbia MBA + MS AI/ML.
 
 ---
 
-## 📬 Contact
+## Contact
 
-- **Company**: Azetta.ai
-- **Email**: investors@azetta.ai
-- **Website**: https://azetta.ai
+- **Email:** contact@azetta.ai
+- **Website:** [https://azetta.ai](https://azetta.ai)
 
 ---
 
-**Confidential — For Investor Review Only**
+*Confidential — For Investor Review Only*
