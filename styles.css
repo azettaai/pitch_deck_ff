@@ -3339,8 +3339,8 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 /* ── Slide 10: Aether Models ─────────────────────────────────────────── */
 .aether-slide-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: 3rem;
   align-items: center;
   margin-top: 0.5rem;
 }
