@@ -89,6 +89,7 @@ function onSlideEnter(n) {
 
   switch (n) {
     case 11: initTAMChart(); break;
+    case 12: initRevenueChart(); break;
     case 2:  animateStatNumbers(); break;
     case 9:  initPeriodica(); pdShowScreen('pd-splash'); break;
   }
@@ -120,6 +121,24 @@ function initTAMChart() {
     bar.style.height = '0px';
     bar.style.transition = 'none';
 
+    setTimeout(() => {
+      bar.style.transition = `height 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${i * 0.08}s`;
+      bar.style.height = targetH + 'px';
+    }, 100);
+  });
+}
+
+// ── Revenue Bar Chart (slide 12) ──────────────────────────────────────
+function initRevenueChart() {
+  const container = document.getElementById('revenue-chart');
+  if (!container) return;
+  const barEls = container.querySelectorAll('.bar');
+  const maxHeight = container.clientHeight * 0.75;
+  barEls.forEach((bar, i) => {
+    const pct = parseFloat(bar.dataset.pct) / 100;
+    const targetH = Math.max(pct * maxHeight, 4);
+    bar.style.height = '0px';
+    bar.style.transition = 'none';
     setTimeout(() => {
       bar.style.transition = `height 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${i * 0.08}s`;
       bar.style.height = targetH + 'px';
