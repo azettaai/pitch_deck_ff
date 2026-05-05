@@ -967,16 +967,15 @@
         <h1 style="margin-bottom:0;">Future Product Spinoffs</h1>
 
         <!-- ── TOP HALF: Aether Models ─────────────────────────────────── -->
-        <div class="aether-slide-grid" style="flex:0 0 auto;margin-top:0;align-items:start;">
+        <div style="border:1px solid rgba(120,196,164,0.2);border-top:2px solid var(--primary);flex:0 0 auto;">
+          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.35rem 0.75rem;background:rgba(120,196,164,0.05);">
+            <span style="font-family:'Chakra Petch',monospace;font-size:clamp(1rem,1.5vw,1.2rem);font-weight:700;color:var(--primary);letter-spacing:1px;text-transform:uppercase;">Aether Models</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:0.56rem;color:var(--primary);border:1px solid rgba(120,196,164,0.4);padding:0.15rem 0.5rem;letter-spacing:1.5px;background:rgba(120,196,164,0.06);text-transform:uppercase;">Est. Launch 2028</span>
+          </div>
+          <div class="aether-slide-grid" style="margin-top:0;align-items:start;padding:0.5rem 0.75rem;">
 
           <!-- Left: Aether info -->
           <div style="display:flex;flex-direction:column;gap:0.6rem;">
-
-            <!-- Aether header + date badge -->
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span style="font-family:'Chakra Petch',monospace;font-size:0.9rem;font-weight:700;color:var(--primary);letter-spacing:0.5px;">Aether Models</span>
-              <span style="font-family:'IBM Plex Mono',monospace;font-size:0.56rem;color:var(--primary);border:1px solid rgba(120,196,164,0.4);padding:0.15rem 0.5rem;letter-spacing:1.5px;background:rgba(120,196,164,0.06);text-transform:uppercase;">Est. Launch 2028</span>
-            </div>
 
             <div class="aether-compare">
               <div class="ac-header">
@@ -1035,18 +1034,20 @@
             <canvas id="aether-models-canvas"></canvas>
           </div>
 
+          </div>
         </div>
 
         <!-- ── BOTTOM HALF: Quantized Models (gold box) ─────────────────── -->
-        <div style="border:1px solid rgba(196,160,74,0.3);border-left:3px solid var(--accent);background:rgba(196,160,74,0.06);padding:0.6rem 1.2rem;display:flex;align-items:center;gap:2rem;flex-shrink:0;">
+        <div style="border:1px solid rgba(196,160,74,0.3);border-top:2px solid var(--accent);background:rgba(196,160,74,0.04);flex-shrink:0;">
+          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.35rem 0.75rem;background:rgba(196,160,74,0.05);">
+            <span style="font-family:'Chakra Petch',monospace;font-size:clamp(1rem,1.5vw,1.2rem);font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;">Quantized Models</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:0.56rem;color:var(--accent);border:1px solid rgba(196,160,74,0.4);padding:0.15rem 0.5rem;letter-spacing:1.5px;background:rgba(196,160,74,0.06);text-transform:uppercase;">Est. Launch 2030</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:2rem;padding:0.5rem 0.75rem;">
 
           <!-- Label + description -->
           <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.35rem;">
-              <span style="font-family:'Chakra Petch',monospace;font-size:0.88rem;font-weight:700;color:var(--accent);letter-spacing:0.5px;">Quantized Models</span>
-              <span style="font-family:'IBM Plex Mono',monospace;font-size:0.56rem;color:var(--accent);border:1px solid rgba(196,160,74,0.4);padding:0.15rem 0.5rem;letter-spacing:1.5px;background:rgba(196,160,74,0.06);text-transform:uppercase;">Est. Launch 2030</span>
-            </div>
-            <p style="font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-secondary);line-height:1.6;margin:0;">Physics Grounded AI compressed for edge deployment — full interpretability at a fraction of the compute cost. Designed for on-device inference across mobile, embedded, and low-power hardware.</p>
+            <p style="font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-secondary);line-height:1.6;margin:0;">Physics Grounded AI compressed for edge deployment — full interpretability at a fraction of the compute cost. Designed for on-device inference across mobile, embedded, and low-power hardware. We believe this will have huge potential in robotics, consumer electronics, and IoT.</p>
           </div>
 
           <!-- Stat chips -->
@@ -1065,6 +1066,7 @@
             </div>
           </div>
 
+          </div>
         </div>
 
       </div>
@@ -1077,7 +1079,7 @@
     <section class="slide" data-slide="11">
       <div class="content-wrapper">
         <span class="slide-tag">// 11 — MARKET OPPORTUNITY</span>
-        <h1>Periodica &amp; Aether Market: $1B Today, $25B by 2035.</h1>
+        <h1>Periodica Market: $1B today, $25B by 2035</h1>
         <h2>2K+ companies training proprietary models, growing 38% YoY with significant automation and regulation tailwinds.</h2>
 
         <div class="metric-row cols-4" style="margin-top:1rem;">
@@ -1150,44 +1152,70 @@
       <div class="content-wrapper" style="display:flex;flex-direction:column;gap:0.5rem;height:100%;box-sizing:border-box;">
         <span class="slide-tag">// 12 — REVENUE TRAJECTORY</span>
         <h1>Monthly Revenue Trajectory</h1>
-        <h2>Driven by Periodica adoption, Frontier Models (2028), and Edge AI Quantized (2030) product launches.</h2>
+        <h2>Driven by Periodica adoption, Aether Models launch (2028), and Edge AI Quantized (2030).</h2>
 
-        <!-- Bar chart — fixed height so ARR table sits naturally below -->
-        <div style="display:flex;flex-direction:column;gap:0;">
+        <!-- Bar chart — stacked by segment, pushed down for even spacing -->
+        <div style="display:flex;flex-direction:column;gap:0;margin-top:1.2rem;">
           <div class="chart-bars" id="revenue-chart" style="height:clamp(140px,24vh,220px);">
             <div class="bar-col">
               <span class="bar-val">$1M</span>
-              <div class="bar" data-pct="1.4"></div>
+              <div class="bar-stack">
+                <div class="bar-seg seg-periodica" data-pct="1.44"></div>
+              </div>
               <span class="bar-yr">2026</span>
             </div>
             <div class="bar-col">
               <span class="bar-val">$10M</span>
-              <div class="bar" data-pct="14.3"></div>
+              <div class="bar-stack">
+                <div class="bar-seg seg-periodica" data-pct="14.44"></div>
+              </div>
               <span class="bar-yr">2027</span>
             </div>
             <div class="bar-col">
               <span class="bar-val">$23M</span>
-              <div class="bar" data-pct="32.9"></div>
+              <div class="bar-stack">
+                <div class="bar-seg seg-periodica" data-pct="24.55"></div>
+                <div class="bar-seg seg-aether" data-pct="8.66"></div>
+              </div>
               <span class="bar-yr">2028</span>
             </div>
             <div class="bar-col">
-              <span class="bar-val">$40M</span>
-              <div class="bar" data-pct="57.1"></div>
+              <span class="bar-val">$37M</span>
+              <div class="bar-stack">
+                <div class="bar-seg seg-periodica" data-pct="37.55"></div>
+                <div class="bar-seg seg-aether" data-pct="15.88"></div>
+              </div>
               <span class="bar-yr">2029</span>
             </div>
             <div class="bar-col">
-              <span class="bar-val">$70M</span>
-              <div class="bar highlight" data-pct="100"></div>
+              <span class="bar-val">$69.3M</span>
+              <div class="bar-stack">
+                <div class="bar-seg seg-periodica" data-pct="47.65"></div>
+                <div class="bar-seg seg-aether" data-pct="51.99"></div>
+                <div class="bar-seg seg-edge" data-pct="0.36"></div>
+              </div>
               <span class="bar-yr hi">2030</span>
             </div>
           </div>
-          <!-- Launch annotations row — one slot per bar column, aligned with x-axis labels -->
+          <!-- Launch annotations row -->
           <div style="display:flex;gap:clamp(0.5rem,1.2vw,1.2rem);margin-top:0.25rem;">
             <div style="flex:1;"></div>
             <div style="flex:1;"></div>
-            <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:0.52rem;color:var(--primary);letter-spacing:0.4px;line-height:1.3;">▲ Frontier<br>Models</div>
+            <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:0.52rem;color:var(--secondary);letter-spacing:0.4px;line-height:1.3;">▲ Aether<br>Models</div>
             <div style="flex:1;"></div>
             <div style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:0.52rem;color:var(--accent);letter-spacing:0.4px;line-height:1.3;">▲ Edge AI<br>Quantized</div>
+          </div>
+          <!-- Segment legend -->
+          <div class="bar-legend">
+            <div class="bar-legend-item">
+              <div class="bar-legend-swatch" style="background:rgba(120,196,164,0.35);border:1px solid rgba(120,196,164,0.5);"></div>Periodica
+            </div>
+            <div class="bar-legend-item">
+              <div class="bar-legend-swatch" style="background:rgba(90,181,200,0.35);border:1px solid rgba(90,181,200,0.5);"></div>Aether Models
+            </div>
+            <div class="bar-legend-item">
+              <div class="bar-legend-swatch" style="background:rgba(196,160,74,0.35);border:1px solid rgba(196,160,74,0.5);"></div>Edge AI Quantized
+            </div>
           </div>
         </div>
 
@@ -1217,14 +1245,14 @@
 
             <div style="background:var(--panel-bg);border:1px solid var(--border);border-top:2px solid var(--primary);padding:0.55rem 0.7rem;">
               <div style="font-family:'Chakra Petch',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:1px;margin-bottom:0.2rem;">2029</div>
-              <div style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--text-secondary);">$40M / mo</div>
-              <div style="font-family:'Chakra Petch',monospace;font-size:clamp(0.85rem,1.3vw,1.05rem);font-weight:700;color:var(--primary);margin-top:0.1rem;">$480M ARR</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--text-secondary);">$37M / mo</div>
+              <div style="font-family:'Chakra Petch',monospace;font-size:clamp(0.85rem,1.3vw,1.05rem);font-weight:700;color:var(--primary);margin-top:0.1rem;">$444M ARR</div>
             </div>
 
             <div style="background:var(--panel-bg);border:1px solid rgba(196,160,74,0.4);border-top:2px solid var(--accent);padding:0.55rem 0.7rem;">
               <div style="font-family:'Chakra Petch',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:1px;margin-bottom:0.2rem;">2030 <span style="color:var(--accent);">▲</span></div>
-              <div style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--text-secondary);">$70M / mo</div>
-              <div style="font-family:'Chakra Petch',monospace;font-size:clamp(0.85rem,1.3vw,1.05rem);font-weight:700;color:var(--accent);margin-top:0.1rem;">$840M ARR</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--text-secondary);">$69.3M / mo</div>
+              <div style="font-family:'Chakra Petch',monospace;font-size:clamp(0.85rem,1.3vw,1.05rem);font-weight:700;color:var(--accent);margin-top:0.1rem;">$831M ARR</div>
               <div style="font-family:'IBM Plex Mono',monospace;font-size:0.52rem;color:var(--accent);margin-top:0.25rem;opacity:0.75;">Launch: Edge AI Quantized</div>
             </div>
 

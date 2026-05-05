@@ -128,21 +128,22 @@ function initTAMChart() {
   });
 }
 
-// ── Revenue Bar Chart (slide 12) ──────────────────────────────────────
+// ── Revenue Bar Chart — stacked segments (slide 12) ───────────────────
 function initRevenueChart() {
   const container = document.getElementById('revenue-chart');
   if (!container) return;
-  const barEls = container.querySelectorAll('.bar');
-  const maxHeight = container.clientHeight * 0.75;
-  barEls.forEach((bar, i) => {
-    const pct = parseFloat(bar.dataset.pct) / 100;
-    const targetH = Math.max(pct * maxHeight, 4);
-    bar.style.height = '0px';
-    bar.style.transition = 'none';
-    setTimeout(() => {
-      bar.style.transition = `height 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${i * 0.08}s`;
-      bar.style.height = targetH + 'px';
-    }, 100);
+  const maxH = container.clientHeight * 0.75;
+  container.querySelectorAll('.bar-stack').forEach((stack, colIdx) => {
+    stack.querySelectorAll('.bar-seg').forEach(seg => {
+      const pct = parseFloat(seg.dataset.pct) / 100;
+      const targetH = pct > 0 ? Math.max(pct * maxH, 3) : 0;
+      seg.style.height = '0px';
+      seg.style.transition = 'none';
+      setTimeout(() => {
+        seg.style.transition = `height 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${colIdx * 0.1}s`;
+        seg.style.height = targetH + 'px';
+      }, 100);
+    });
   });
 }
 

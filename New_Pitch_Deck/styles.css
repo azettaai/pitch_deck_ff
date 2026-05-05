@@ -3487,3 +3487,50 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   width: 100%;
   height: clamp(200px, 28vh, 300px);
 }
+
+/* ── Stacked bar segments (slide 12) ──────────────────────────────────── */
+.bar-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  width: 100%;
+}
+.bar-seg {
+  width: 100%;
+  min-height: 0;
+}
+.seg-periodica {
+  background: rgba(120, 196, 164, 0.30);
+  border: 1px solid rgba(120, 196, 164, 0.55);
+  border-bottom: none;
+}
+.seg-aether {
+  background: rgba(90, 181, 200, 0.30);
+  border: 1px solid rgba(90, 181, 200, 0.55);
+  border-bottom: 1px solid rgba(90, 181, 200, 0.15);
+}
+.seg-edge {
+  background: rgba(196, 160, 74, 0.30);
+  border: 1px solid rgba(196, 160, 74, 0.55);
+  border-bottom: 1px solid rgba(196, 160, 74, 0.15);
+}
+.bar-legend {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.bar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+.bar-legend-swatch {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
