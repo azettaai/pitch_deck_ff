@@ -3485,5 +3485,5 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
 .aether-canvas-wrap canvas {
   display: block;
   width: 100%;
-  height: clamp(260px, 42vh, 420px);
+  height: clamp(200px, 28vh, 300px);
 }
