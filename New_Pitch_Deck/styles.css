@@ -2539,6 +2539,7 @@ tr:hover td { background: rgba(120, 196, 164, 0.04); }
   height: 100%;
   gap: 0.7rem;
   box-sizing: border-box;
+  justify-content: center;
 }
 
 .s2-head {
